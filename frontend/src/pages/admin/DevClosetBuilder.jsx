@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Package, Plus, Trash, Save, Check, Download, Upload, Image as ImageIcon } from "../../components/Icons.jsx";
+import { Package, Plus, Trash, Save, Check, Download, Upload, Image as ImageIcon, Eye, EyeOff } from "../../components/Icons.jsx";
 import {
   adminGetTemplates,
   adminGetTemplate,
@@ -80,6 +80,7 @@ export default function DevClosetBuilder() {
   //   "open"   (rendered in open position — slid outward / swung)
   //   "hidden" (not rendered)
   const [doorStates, setDoorStates] = useState({});
+  const [doorsHidden, setDoorsHidden] = useState(false);
 
   // Per-door active compartment variant. Tracks which variant tab
   // is selected for editing AND which variant the 3D preview
@@ -248,14 +249,14 @@ export default function DevClosetBuilder() {
       compartmentVariants[door.id] = activeId;
     }
     return {
-      hideDoors: false,
+      hideDoors: doorsHidden,
       doorSlide: 0,
       openDoorIds,
       hideDoorIds,
       openDrawerIds,
       compartmentVariants,
     };
-  }, [doorStates, activeVariantPerDoor, openDrawerIds, config.doors]);
+  }, [doorStates, activeVariantPerDoor, openDrawerIds, config.doors, doorsHidden]);
 
   async function reloadTemplates() {
     try {
@@ -633,6 +634,15 @@ export default function DevClosetBuilder() {
 
           <div className="closet-builder__preview">
             <div className="dev-closet-3d__stage closet-builder__stage">
+              <button
+                type="button"
+                className={"closet-builder__eye-btn" + (doorsHidden ? " closet-builder__eye-btn--active" : "")}
+                onClick={() => setDoorsHidden((v) => !v)}
+                title={doorsHidden ? "הצג דלתות" : "הסתר דלתות"}
+                aria-pressed={doorsHidden}
+              >
+                {doorsHidden ? <EyeOff /> : <Eye />}
+              </button>
               <ClosetScene
                 cameraPosition={[Math.max(5, totalWidth(config) / 100 + 2), 3.0, 6.2]}
                 targetY={config.dimensions.H / 200}

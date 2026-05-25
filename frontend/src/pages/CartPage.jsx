@@ -36,6 +36,13 @@ export default function CartPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Override body background so the dark-theme page background shows correctly
+  // regardless of what the global body style sets.
+  useEffect(() => {
+    document.body.style.background = "#0d0d0f";
+    return () => { document.body.style.background = ""; };
+  }, []);
+
   useEffect(() => {
     return subscribeToCart((items) => setCart(items));
   }, []);
