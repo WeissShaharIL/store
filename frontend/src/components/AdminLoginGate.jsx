@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import FormaLogo from "./FormaLogo.jsx";
 import "../pages/LoginPage.css";
@@ -35,6 +35,7 @@ export default function AdminLoginGate({ children }) {
       <div className="login-card">
         <div className="login-brand"><FormaLogo /></div>
         <p className="login-title">כניסה למנהל</p>
+        <Link to="/" className="login-back-link">← חזרה לאתר</Link>
         <form onSubmit={handleSubmit} className="login-form">
           <label>
             <span>שם משתמש</span>

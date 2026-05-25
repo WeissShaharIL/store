@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "../styles/splash.css";
 
-const BRAND   = "FORMA";
-const HIDE_AT = 1800;
-const DONE_AT = 2100;
+const BRAND = "FORMA";
 
 export default function SplashScreen() {
+  const location = useLocation();
+  const quick = location.pathname.startsWith("/admin");
+
+  const HIDE_AT = quick ? 350  : 1800;
+  const DONE_AT = quick ? 550  : 2100;
+
   const [stage, setStage] = useState("show");
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage("hide"), HIDE_AT);
     const t2 = setTimeout(() => setStage("done"), DONE_AT);
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+  }, [HIDE_AT, DONE_AT]);
 
   if (stage === "done") return null;
 
@@ -24,7 +29,7 @@ export default function SplashScreen() {
             <span
               key={i}
               className="splash__letter"
-              style={{ animationDelay: `${i * 75}ms` }}
+              style={{ animationDelay: quick ? "0ms" : `${i * 75}ms` }}
             >
               {ch}
             </span>

@@ -2,27 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
-import ClosetTemplatesTab from "./admin/ClosetTemplatesTab.jsx";
 import LeadsTab from "./admin/LeadsTab.jsx";
-import ColorsTab from "./admin/ColorsTab.jsx";
-import HandlesTab from "./admin/HandlesTab.jsx";
 import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
+import PituchTab from "./admin/PituchTab.jsx";
 import "./AdminDashboard.css";
 
 const TABS = [
-  { id: "templates", label: "ארונות" },
-  { id: "leads", label: "פניות" },
-  { id: "colors", label: "צבעים" },
-  { id: "handles", label: "ידיות" },
-  { id: "landing", label: "דף בית" },
+  { id: "pituch",   label: "פיתוח" },
+  { id: "leads",    label: "פניות" },
+  { id: "landing",  label: "דף בית" },
   { id: "settings", label: "הגדרות" },
 ];
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("templates");
+  const [activeTab, setActiveTab] = useState("pituch");
 
   async function handleLogout() {
     await logout();
@@ -52,11 +48,9 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-content">
-        {activeTab === "templates" && <ClosetTemplatesTab />}
-        {activeTab === "leads" && <LeadsTab />}
-        {activeTab === "colors" && <ColorsTab />}
-        {activeTab === "handles" && <HandlesTab />}
-        {activeTab === "landing" && <LandingSettingsTab />}
+        {activeTab === "pituch"   && <PituchTab />}
+        {activeTab === "leads"    && <LeadsTab />}
+        {activeTab === "landing"  && <LandingSettingsTab />}
         {activeTab === "settings" && <SettingsTab />}
       </div>
     </div>
