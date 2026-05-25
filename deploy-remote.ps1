@@ -35,7 +35,7 @@ git checkout dev
 git reset --hard origin/dev
 sed -i 's/\r$//' deploy.sh
 chmod +x deploy.sh
-./deploy.sh
+./deploy.sh dev
 '@
 
 $Bytes = [System.Text.Encoding]::UTF8.GetBytes($RemoteScript)
