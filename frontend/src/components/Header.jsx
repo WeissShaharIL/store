@@ -9,7 +9,7 @@ export default function Header({ title }) {
 
   function handleLogout() {
     logout();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   }
 
   return (

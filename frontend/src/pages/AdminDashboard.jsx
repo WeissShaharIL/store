@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
   async function handleLogout() {
     await logout();
-    navigate("/login");
+    navigate("/admin");
   }
 
   return (
