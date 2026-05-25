@@ -37,6 +37,7 @@ chmod +x deploy.sh
 ./deploy.sh
 '@
 
+$RemoteScript = $RemoteScript -replace "`r`n", "`n"
 $Bytes = [System.Text.Encoding]::UTF8.GetBytes($RemoteScript)
 $B64 = [Convert]::ToBase64String($Bytes)
 $RemoteCommand = "echo $B64 | base64 -d | bash"
