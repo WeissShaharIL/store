@@ -3,6 +3,7 @@ import {
   getLandingSettings, updateLandingSettings,
   adminGetHeroBanners, adminUploadHeroBanner, adminDeleteHeroBanner,
   adminUploadDefaultClosetImage, adminDeleteDefaultClosetImage,
+  adminGetDoorTypeCovers, adminUploadDoorTypeCover, adminDeleteDoorTypeCover,
   getPublicSettings,
 } from "../../api.js";
 import "./AdminTab.css";
@@ -152,6 +153,100 @@ function HeroBannerManager() {
   );
 }
 
+const DOOR_KINDS = [
+  { key: "sliding", label: "דלתות הזזה" },
+  { key: "hinged",  label: "דלתות פתיחה" },
+];
+
+function DoorTypeCoversManager() {
+  const [covers, setCovers] = useState({});
+  const [uploading, setUploading] = useState({});
+  const [error, setError] = useState("");
+  const slidingRef = useRef(null);
+  const hingedRef  = useRef(null);
+  const fileRefs = { sliding: slidingRef, hinged: hingedRef };
+
+  useEffect(() => {
+    adminGetDoorTypeCovers()
+      .then((rows) => {
+        const map = {};
+        for (const c of (rows || [])) map[c.kind] = c.image_path;
+        setCovers(map);
+      })
+      .catch((e) => setError(e.message));
+  }, []);
+
+  async function handleUpload(kind, e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading((prev) => ({ ...prev, [kind]: true }));
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await adminUploadDoorTypeCover(kind, fd);
+      setCovers((prev) => ({ ...prev, [kind]: res.image_path }));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading((prev) => ({ ...prev, [kind]: false }));
+      e.target.value = "";
+    }
+  }
+
+  async function handleDelete(kind) {
+    try {
+      await adminDeleteDoorTypeCover(kind);
+      setCovers((prev) => { const n = { ...prev }; delete n[kind]; return n; });
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="settings-section">
+      <div className="settings-section__head">
+        <h3>תמונות קטגוריות דף הבית</h3>
+        <p className="settings-section__sub">מוצגות בכרטיסי הקטגוריה (דלתות הזזה / פתיחה) בדף הבית.</p>
+      </div>
+      {error && <p className="tab-error">{error}</p>}
+      <div className="door-covers-grid">
+        {DOOR_KINDS.map(({ key, label }) => (
+          <div key={key} className="door-cover-item">
+            <p className="door-cover-item__label">{label}</p>
+            {covers[key] ? (
+              <div className="default-closet-image__preview">
+                <img src={`/uploads/${covers[key]}`} alt={label} />
+                <button
+                  className="default-closet-image__delete"
+                  onClick={() => handleDelete(key)}
+                  title="הסר תמונה"
+                >✕</button>
+              </div>
+            ) : (
+              <div className="default-closet-image__placeholder">אין תמונה</div>
+            )}
+            <button
+              className="btn btn--ghost btn--sm"
+              onClick={() => fileRefs[key].current?.click()}
+              disabled={uploading[key]}
+            >
+              {uploading[key] ? "מעלה..." : covers[key] ? "החלף תמונה" : "העלה תמונה"}
+            </button>
+            <input
+              ref={fileRefs[key]}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => handleUpload(key, e)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DefaultClosetImageManager() {
   const [imagePath, setImagePath] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -273,6 +368,7 @@ export default function LandingSettingsTab() {
       {error && <p className="tab-error">{error}</p>}
 
       <HeroBannerManager />
+      <DoorTypeCoversManager />
       <DefaultClosetImageManager />
 
       <form onSubmit={handleSave} className="settings-form">

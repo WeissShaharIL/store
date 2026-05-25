@@ -249,7 +249,7 @@ export default function DevClosetBuilder() {
       compartmentVariants[door.id] = activeId;
     }
     return {
-      hideDoors: doorsHidden,
+      slidingDoorsHidden: doorsHidden,
       doorSlide: 0,
       openDoorIds,
       hideDoorIds,
