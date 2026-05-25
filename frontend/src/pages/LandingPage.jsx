@@ -195,20 +195,17 @@ export default function LandingPage() {
             <p className="landing-hero__eyebrow">ייצור ישראלי מקצועי</p>
             <RippleTitle text={settings.welcome_title} className="landing-hero__title" />
             <p className="landing-hero__sub">{settings.hero_tagline || settings.welcome_subtitle}</p>
-            <div className="landing-hero__cta-row">
-              <Link to="/showroom" className="btn btn--primary btn--lg">
-                לתצוגת הארונות <ArrowRight />
-              </Link>
-              <Link to="/display-sale" className="btn btn--ghost-on-dark btn--lg">
-                מכירה מתצוגה <ArrowRight />
-              </Link>
-            </div>
           </div>
         </section>
 
         <section id="categories" className="landing-section landing-categories">
           <header className="landing-section__head">
-            <h2 className="landing-section__title">הקטגוריות שלנו</h2>
+            <div className="section-hover-title">
+              <h2 className="section-hover-title__h2 landing-section__title">הארונות שלנו</h2>
+              <Link to="/showroom" className="section-hover-title__reveal btn btn--primary btn--lg">
+                הצג <ArrowRight />
+              </Link>
+            </div>
             <p className="landing-section__sub">שני סוגי ארונות, כל אחד מתוכנן אישית</p>
           </header>
           <div className="landing-category-grid">
