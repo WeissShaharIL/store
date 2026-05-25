@@ -1,15 +1,14 @@
-# deploy-remote.ps1 — SSH into the home server, pull, and deploy.
+# deploy-remote.ps1 — SSH into the home server, pull latest tag from main, and deploy.
 #
 # Usage:
 #   .\deploy-remote.ps1 <user> <host>
 #
 # What it does on the remote (one SSH round-trip):
 #   1. cd ~/code/store
-#   2. git checkout -- deploy.sh   — undo any local corruption
-#   3. git pull                    — refresh repo + tags
-#   4. sed -i 's/\r$//' deploy.sh  — strip any CRLF endings
-#   5. chmod +x deploy.sh
-#   6. ./deploy.sh                 — picks latest tag, falls back to dev
+#   2. git fetch --tags --prune --force origin
+#   3. git checkout main && git reset --hard origin/main
+#   4. chmod +x deploy.sh
+#   5. ./deploy.sh   (no args — picks the latest version tag automatically)
 
 param(
     [Parameter(Mandatory = $true, Position = 0,
@@ -17,7 +16,7 @@ param(
     [string]$Username,
 
     [Parameter(Mandatory = $true, Position = 1,
-        HelpMessage = "Remote host or IP, e.g. '10.10.10.1' or 'ubuntu.local'")]
+        HelpMessage = "Remote host or IP, e.g. '89.139.33.201'")]
     [string]$Hostname
 )
 
@@ -30,12 +29,12 @@ Write-Host ""
 $RemoteScript = @'
 set -e
 cd code/store
-git fetch origin
-git checkout dev
-git reset --hard origin/dev
+git fetch --tags --prune --force origin
+git checkout main
+git reset --hard origin/main
 sed -i 's/\r$//' deploy.sh
 chmod +x deploy.sh
-./deploy.sh dev
+./deploy.sh
 '@
 
 $Bytes = [System.Text.Encoding]::UTF8.GetBytes($RemoteScript)
