@@ -371,14 +371,6 @@ function CategoryCard({ variant, title, body, image, ctaLabel, to }) {
                   {variant === "sliding" ? "הזזה" : "פתיחה"}
                 </div>
               </div>
-              <div className="closet-anim__door-wrap">
-                <div className="closet-anim__door closet-anim__door--right">
-                  <div className="closet-anim__handle" />
-                </div>
-                <div className="closet-anim__door closet-anim__door--left">
-                  <div className="closet-anim__handle" />
-                </div>
-              </div>
             </div>
             <div className="closet-anim__base">
               <div className="closet-anim__leg" />

@@ -3,8 +3,8 @@ import { PaletteColorsProvider } from "./PaletteContext.jsx";
 import { HandlesProvider } from "./HandlesContext.jsx";
 import DevClosetBuilder from "./DevClosetBuilder.jsx";
 import DevClosetGallery from "./DevClosetGallery.jsx";
-import ColorsTab from "./ColorsTab.jsx";
-import HandlesTab from "./HandlesTab.jsx";
+import PalettesEditor from "./PalettesEditor.jsx";
+import HandlesEditor from "./HandlesEditor.jsx";
 import "./AdminTab.css";
 
 /**
@@ -52,8 +52,8 @@ export default function PituchTab() {
           <div className="pituch-tab__content">
             {activeTab === "builder" && <DevClosetBuilder />}
             {activeTab === "gallery" && <DevClosetGallery />}
-            {activeTab === "colors"  && <ColorsTab />}
-            {activeTab === "handles" && <HandlesTab />}
+            {activeTab === "colors"  && <PalettesEditor />}
+            {activeTab === "handles" && <HandlesEditor />}
           </div>
         </div>
       </HandlesProvider>
