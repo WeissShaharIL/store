@@ -10,13 +10,11 @@ import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import MessagesPage from "./pages/MessagesPage.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import SplashScreen from "./components/SplashScreen.jsx";
 import AnnouncementGate from "./components/AnnouncementGate.jsx";
 
 export default function App() {
   return (
     <>
-      <SplashScreen />
       <AnnouncementGate />
       <Routes>
         <Route path="/" element={<LandingPage />} />
