@@ -1,0 +1,78 @@
+.closet-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.closet-card-image {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+.closet-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.closet-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--color-border);
+}
+.closet-card-badge {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-start: 0.5rem;
+  background: var(--color-accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.closet-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+.closet-card-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.closet-card-price {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.closet-card-btn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  margin-top: auto;
+  transition: background 0.15s;
+}
+.closet-card-btn.added {
+  background: #27ae60;
+}
+.closet-card-btn:disabled {
+  cursor: default;
+}

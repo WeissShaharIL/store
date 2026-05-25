@@ -1,0 +1,18 @@
+# Local dev override — uses SQLite so no external postgres/redis needed.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.local.yml -p store up --build -d
+# App at http://localhost:3082  admin/admin
+services:
+  backend:
+    environment:
+      DATABASE_URL: sqlite:///./store.db
+      SECRET_KEY: local-dev-insecure
+      ADMIN_CUSTOMER_ID: admin
+      ADMIN_PASSWORD: admin
+      COOKIE_SECURE: "false"
+    networks:
+      - default
+
+networks:
+  shared:
+    external: false
+    name: store_local_shared
