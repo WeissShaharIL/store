@@ -24,6 +24,7 @@ LANDING_KEYS = {
     "contact_whatsapp",
     "hero_tagline",
     "about_text",
+    "trust_items",  # JSON array of {title, body} objects
 }
 
 DEFAULT_CLOSET_IMAGE_KEY = "default_closet_image"

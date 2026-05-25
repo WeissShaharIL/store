@@ -16,7 +16,7 @@
   line-height: 1.1;
 }
 .landing-section__sub {
-  margin: 0 auto;
+  margin: var(--space-4) auto 0;
   font-size: var(--text-md);
   color: rgba(242, 242, 244, 0.45);
   max-width: 50ch;
@@ -190,6 +190,30 @@
 @media (max-width: 900px) {
   .landing-category-grid { grid-template-columns: 1fr; gap: var(--space-4); }
   .landing-category-card__art { height: 200px; }
+}
+
+/* On touch devices the hover-reveal animation is inaccessible,
+   so show both the heading and the reveal button side by side. */
+@media (hover: none), (max-width: 768px) {
+  .section-hover-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .section-hover-title__h2 {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+    margin-bottom: 0;
+  }
+  .section-hover-title__reveal {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto;
+    transition: none !important;
+  }
 }
 
 /* Trust bar */

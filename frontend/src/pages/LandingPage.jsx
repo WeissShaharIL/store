@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { getActiveLogo, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
+import { getActiveLogo, getDoorTypeCovers, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
@@ -24,7 +24,7 @@ const DEFAULTS = {
   contact_whatsapp: "",
 };
 
-const TRUST = [
+const TRUST_DEFAULTS = [
   { title: "ייצור עצמי", body: "שליטה מלאה על האיכות" },
   { title: "אחריות 5 שנים", body: "על כל המוצרים שלנו" },
   { title: "התקנה מקצועית", body: "צוות מנוסה בשטח" },
@@ -38,6 +38,7 @@ export default function LandingPage() {
   const [closets, setClosets] = useState([]);
   const [banners, setBanners] = useState([]);
   const [bannerIdx, setBannerIdx] = useState(0);
+  const [doorCovers, setDoorCovers] = useState({});
 
   useEffect(() => {
     let alive = true;
@@ -52,6 +53,14 @@ export default function LandingPage() {
     getPublicHeroBanners()
       .then((rows) => { if (alive) setBanners(rows || []); })
       .catch(() => {});
+    getDoorTypeCovers()
+      .then((rows) => {
+        if (!alive) return;
+        const map = {};
+        for (const c of (rows || [])) map[c.kind] = c.image_path;
+        setDoorCovers(map);
+      })
+      .catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -62,6 +71,13 @@ export default function LandingPage() {
   }, [banners.length]);
 
   const defaultClosetImage = settings.default_closet_image || null;
+
+  const trustItems = useMemo(() => {
+    try {
+      const parsed = JSON.parse(settings.trust_items || "[]");
+      return Array.isArray(parsed) && parsed.length ? parsed : TRUST_DEFAULTS;
+    } catch { return TRUST_DEFAULTS; }
+  }, [settings.trust_items]);
 
   const galleryItems = useMemo(
     () => closets.filter((c) => c.image_path || defaultClosetImage).slice(0, 6),
@@ -246,6 +262,7 @@ export default function LandingPage() {
               body="ארונות עם דלתות מסילה — חיסכון במקום, נראות נקייה ומודרנית."
               ctaLabel="לדגמי הזזה"
               to="/showroom?kind=sliding"
+              image={doorCovers.sliding ? `/uploads/${doorCovers.sliding}` : undefined}
               slides={slidingSlides}
             />
             <CategoryCard
@@ -254,6 +271,7 @@ export default function LandingPage() {
               body="ארונות עם דלתות צירים — גישה מלאה לתוכן, מגוון עיצובים."
               ctaLabel="לדגמי פתיחה"
               to="/showroom?kind=hinged"
+              image={doorCovers.hinged ? `/uploads/${doorCovers.hinged}` : undefined}
               slides={hingedSlides}
             />
           </div>
@@ -261,7 +279,7 @@ export default function LandingPage() {
 
         <section data-scroll-section className="landing-scroll-section landing-trust" aria-label="יתרונות">
           <ul className="landing-trust__list">
-            {TRUST.map((t, i) => (
+            {trustItems.map((t, i) => (
               <li key={i}>
                 <Check />
                 <div>
