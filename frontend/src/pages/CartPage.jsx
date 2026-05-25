@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { submitLead } from "../api.js";
-import { clearCart, getCart, removeFromCart } from "../lib/cart.js";
+import { clearCart, getCart, removeFromCart, subscribeToCart } from "../lib/cart.js";
 import "./CartPage.css";
 
 export default function CartPage() {
@@ -13,9 +13,7 @@ export default function CartPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const sync = () => setCart(getCart());
-    window.addEventListener("store:cart-changed", sync);
-    return () => window.removeEventListener("store:cart-changed", sync);
+    return subscribeToCart((items) => setCart(items));
   }, []);
 
   function handleRemove(id) {

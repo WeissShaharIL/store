@@ -1,0 +1,152 @@
+.closet-anim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.closet-anim__body {
+  position: relative;
+  width: 64%;
+  height: 155px;
+  overflow: hidden;
+  background: #f9f0e3;
+  border: 3px solid #a98865;
+  border-radius: 3px 3px 0 0;
+  box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.07), 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+.closet-anim__interior {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 12px;
+}
+.closet-anim__shelf {
+  width: 74%;
+  height: 3px;
+  background: #c4a373;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+.closet-anim__reveal {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #7a5f43;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 260ms ease 220ms, transform 260ms ease 220ms;
+}
+.closet-anim__door-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.closet-anim__door {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(170deg, #d0a96e 0%, #b8915a 55%, #a07848 100%);
+}
+.closet-anim__door::before {
+  content: "";
+  position: absolute;
+  inset: 9px 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.20);
+  border-radius: 2px;
+}
+.closet-anim__door--left { border-right: 1.5px solid rgba(100, 70, 30, 0.45); }
+.closet-anim__handle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 26px;
+  background: linear-gradient(to bottom, #8a6840, #6b4f30);
+  border-radius: 2.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+.closet-anim__door--left  .closet-anim__handle { right: 9px; }
+.closet-anim__door--right .closet-anim__handle { left:  9px; }
+.closet-anim__base {
+  width: 62%;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 10px;
+}
+.closet-anim__leg {
+  width: 8px;
+  height: 11px;
+  background: #9a7848;
+  border-radius: 0 0 3px 3px;
+}
+
+.closet-anim--sliding .closet-anim__door--left {
+  z-index: 2;
+  transform: translateX(0);
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.closet-anim--sliding .closet-anim__door--right {
+  z-index: 1;
+  transform: translateX(0);
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1) 40ms;
+}
+.closet-anim--hinged .closet-anim__door--left {
+  transform-origin: left center;
+  transform: perspective(380px) rotateY(0deg);
+  transition: transform 720ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.closet-anim--hinged .closet-anim__door--right {
+  transform-origin: right center;
+  transform: perspective(380px) rotateY(0deg);
+  transition: transform 720ms cubic-bezier(0.4, 0, 0.2, 1) 70ms;
+}
+
+.closet-anim--hinged .closet-anim__door::after {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
+.closet-anim--hinged .closet-anim__door--right::after { content: "דלתות"; }
+.closet-anim--hinged .closet-anim__door--left::after  { content: "פתיחה"; }
+.closet-anim--hinged .closet-anim__reveal { display: none; }
+.closet-anim--sliding .closet-anim__reveal {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  margin-top: 0;
+  transform: translateY(calc(-50% + 5px));
+}
+
+.landing-category-card:hover .closet-anim--sliding .closet-anim__door--left  { transform: translateX(0); }
+.landing-category-card:hover .closet-anim--sliding .closet-anim__door--right { transform: translateX(-100%); }
+.landing-category-card:hover .closet-anim--hinged .closet-anim__door--left  { transform: perspective(380px) rotateY(-82deg); }
+.landing-category-card:hover .closet-anim--hinged .closet-anim__door--right { transform: perspective(380px) rotateY( 82deg); }
+.landing-category-card:hover .closet-anim__reveal { opacity: 1; transform: translateY(0); }
+.landing-category-card:hover .closet-anim--sliding .closet-anim__reveal { opacity: 1; transform: translateY(-50%); }
+
+@media (hover: none) {
+  .closet-anim--sliding .closet-anim__door--left  { transform: translateX(0); }
+  .closet-anim--sliding .closet-anim__door--right { transform: translateX(-30%); }
+  .closet-anim--hinged  .closet-anim__door--left  { transform: perspective(380px) rotateY(-28deg); }
+  .closet-anim--hinged  .closet-anim__door--right { transform: perspective(380px) rotateY( 28deg); }
+  .closet-anim--sliding .closet-anim__reveal { opacity: 0.7; transform: translateY(-50%); }
+}
+@media (max-width: 900px) {
+  .closet-anim__body { height: 124px; }
+}

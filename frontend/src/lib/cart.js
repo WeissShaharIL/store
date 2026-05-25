@@ -1,4 +1,11 @@
 const CART_KEY = "store_cart";
+const listeners = new Set();
+
+function emit() {
+  for (const fn of listeners) {
+    try { fn(getCart()); } catch { /* ignore */ }
+  }
+}
 
 export function getCart() {
   try {
@@ -8,25 +15,36 @@ export function getCart() {
   }
 }
 
-export function setCart(items) {
+function writeCart(items) {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
-  window.dispatchEvent(new Event("store:cart-changed"));
+  emit();
 }
 
 export function addToCart(item) {
   const cart = getCart();
   cart.push(item);
-  setCart(cart);
+  writeCart(cart);
 }
 
 export function removeFromCart(itemId) {
-  setCart(getCart().filter((i) => i.id !== itemId));
+  writeCart(getCart().filter((i) => i.id !== itemId));
 }
 
 export function clearCart() {
-  setCart([]);
+  writeCart([]);
 }
 
 export function getCartCount() {
   return getCart().length;
+}
+
+export function subscribeToCart(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === CART_KEY) emit();
+  });
 }

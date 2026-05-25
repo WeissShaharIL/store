@@ -1,0 +1,91 @@
+.landing {
+  min-height: 100%;
+  background:
+    radial-gradient(1100px 600px at 90% -10%, rgba(124, 58, 237, 0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 30%, rgba(79, 70, 229, 0.08), transparent 60%),
+    var(--bg);
+  color: var(--text);
+}
+
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(150%) blur(12px);
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.landing-nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-5);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.landing-nav__brand {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  text-decoration: none;
+  color: inherit;
+}
+.landing-nav__brand-mark {
+  font-family: "Manrope", "Inter", "Rubik", system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--brand-violet-deep);
+}
+.landing-nav__brand-sub {
+  font-family: "Rubik", "Heebo", "Noto Sans Hebrew", system-ui, sans-serif;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+  color: var(--text-soft);
+}
+.landing-nav__brand-logo {
+  height: 36px;
+  max-width: 140px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.landing-nav__links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+.landing-nav__links a {
+  color: var(--text-soft);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-1);
+  border-bottom: 2px solid transparent;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.landing-nav__links a:hover {
+  color: var(--brand-violet-deep);
+  border-bottom-color: var(--brand-violet);
+}
+
+.landing-nav__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.landing-nav__supplier { white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .landing-nav__inner {
+    grid-template-columns: 1fr auto;
+    padding: var(--space-3) var(--space-4);
+  }
+  .landing-nav__links { display: none; }
+}

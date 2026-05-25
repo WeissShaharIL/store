@@ -1,60 +1,116 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDisplaySale } from "../api.js";
-import { addToCart } from "../lib/cart.js";
-import ClosetCard from "../components/ClosetCard.jsx";
-import "./ShowroomPage.css";
+import { addToCart, getCart } from "../lib/cart.js";
+import CartIcon from "../components/CartIcon.jsx";
+import { ArrowRight } from "../components/Icons.jsx";
+import "../styles/landing/01-shell-nav.css";
+import "../styles/showroom/01-shell.css";
+import "../styles/showroom/02-grid.css";
 
 export default function DisplaySalePage() {
   const [closets, setClosets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [addedId, setAddedId] = useState(null);
+  const [addedIds, setAddedIds] = useState(() =>
+    new Set(getCart().filter((i) => i.displaySaleId).map((i) => i.templateId))
+  );
 
   useEffect(() => {
     getDisplaySale()
-      .then(setClosets)
+      .then((rows) => setClosets(rows || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
   function handleAddToCart(closet) {
+    if (addedIds.has(closet.id)) return;
     addToCart({
-      id: `display-${closet.id}-${Date.now()}`,
+      id: "display-" + closet.id + "-" + Date.now(),
       templateId: closet.id,
       name: closet.name,
       displaySaleId: closet.id,
       displaySalePrice: closet.display_sale_price,
       image_path: closet.image_path,
     });
-    setAddedId(closet.id);
-    setTimeout(() => setAddedId(null), 1500);
+    setAddedIds((prev) => new Set([...prev, closet.id]));
   }
 
   return (
     <div className="showroom">
-      <header className="showroom-header">
-        <Link to="/" className="showroom-back">← חזרה</Link>
-        <h1>מכירת מתצוגה</h1>
-        <Link to="/cart" className="showroom-cart-link">לסל הצעות →</Link>
+      <header className="landing-nav showroom__nav">
+        <div className="landing-nav__inner">
+          <Link to="/" className="landing-nav__brand">
+            <span className="landing-nav__brand-mark">Store</span>
+            <span className="landing-nav__brand-sub">ארונות</span>
+          </Link>
+          <nav className="landing-nav__links" aria-label="ניווט ראשי">
+            <Link to="/">דף הבית</Link>
+            <Link to="/showroom?kind=sliding">דלתות הזזה</Link>
+            <Link to="/showroom?kind=hinged">דלתות פתיחה</Link>
+            <Link to="/display-sale">מכירה מתצוגה</Link>
+          </nav>
+          <div className="landing-nav__right">
+            <CartIcon />
+          </div>
+        </div>
       </header>
 
-      {loading ? (
-        <div className="showroom-loading">טוען...</div>
-      ) : closets.length === 0 ? (
-        <div className="showroom-empty">אין מוצרי מתצוגה כרגע</div>
-      ) : (
-        <div className="showroom-grid" style={{ padding: "1.25rem" }}>
-          {closets.map((c) => (
-            <ClosetCard
-              key={c.id}
-              closet={c}
-              onAddToCart={() => handleAddToCart(c)}
-              added={addedId === c.id}
-              showPrice
-            />
-          ))}
-        </div>
-      )}
+      <header className="showroom__header">
+        <Link to="/" className="showroom__back">
+          <ArrowRight /> חזרה לדף הבית
+        </Link>
+        <h1 className="showroom__title">מכירה מתצוגה</h1>
+        <p className="showroom__sub">
+          ארונות תצוגה במחירים מיוחדים — חד-פעמי, כמות מוגבלת.
+        </p>
+      </header>
+
+      <main className="showroom__main">
+        {loading ? (
+          <div className="showroom-grid__empty muted">טוען…</div>
+        ) : closets.length === 0 ? (
+          <div className="showroom-grid__empty">
+            <p>אין מוצרי מתצוגה כרגע. בדקו שוב בקרוב.</p>
+          </div>
+        ) : (
+          <div className="showroom-grid">
+            {closets.map((c) => (
+              <div key={c.id} className="showroom-card">
+                <div className="showroom-card__head">
+                  <h3 className="showroom-card__name">{c.name}</h3>
+                </div>
+                <div className="showroom-card__image-wrap">
+                  {c.image_path ? (
+                    <img
+                      className="showroom-card__photo"
+                      src={`/uploads/${c.image_path}`}
+                      alt={c.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="showroom-card__placeholder">🪟</div>
+                  )}
+                  <span className="showroom-card__badge">מתצוגה</span>
+                </div>
+                <div className="showroom-card__foot">
+                  {c.display_sale_price && (
+                    <span className="showroom-card__price">
+                      ₪{Number(c.display_sale_price).toLocaleString()}
+                    </span>
+                  )}
+                  <button
+                    className={"showroom-card__add-btn" + (addedIds.has(c.id) ? " showroom-card__add-btn--added" : "")}
+                    onClick={() => handleAddToCart(c)}
+                    disabled={addedIds.has(c.id)}
+                  >
+                    {addedIds.has(c.id) ? "✓ נוסף לסל" : "הוסף לסל"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }
