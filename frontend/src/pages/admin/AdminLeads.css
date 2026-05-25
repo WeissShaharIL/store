@@ -1,0 +1,57 @@
+.leads-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.leads-filter-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+.leads-filter-btn:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.25); }
+.leads-filter-btn.active { background: #ffffff; color: #0d0d0f; border-color: #ffffff; }
+.leads-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.lead-card {
+  background: #161618;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 200ms ease;
+}
+.lead-card:hover { border-color: rgba(255,255,255,0.15); }
+.lead-card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.lead-name { font-weight: 600; color: rgba(255,255,255,0.9); }
+.lead-phone { font-size: 0.9rem; color: rgba(255,255,255,0.4); direction: ltr; }
+.lead-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.lead-status.new { color: #f0a050; border-color: rgba(240,160,80,0.4); background: rgba(240,160,80,0.1); }
+.lead-status.contacted { color: #60a8e0; border-color: rgba(96,168,224,0.4); background: rgba(96,168,224,0.1); }
+.lead-status.closed { color: #5cba7e; border-color: rgba(92,186,126,0.4); background: rgba(92,186,126,0.1); }
+.lead-date { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+.lead-cart-count { font-size: 0.82rem; color: rgba(255,255,255,0.35); }
+.lead-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.lead-action-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.lead-action-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); }
+.lead-action-btn.danger { color: #f1948a; border-color: rgba(241,148,138,0.3); }
+.lead-action-btn.danger:hover { background: rgba(192,57,43,0.15); border-color: rgba(241,148,138,0.5); }

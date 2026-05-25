@@ -227,7 +227,7 @@ function DoorTypeCoversManager() {
               <div className="default-closet-image__placeholder">אין תמונה</div>
             )}
             <button
-              className="btn btn--ghost btn--sm"
+              className="btn btn--primary btn--sm"
               onClick={() => fileRefs[key].current?.click()}
               disabled={uploading[key]}
             >
@@ -311,7 +311,7 @@ function DefaultClosetImageManager() {
           <div className="default-closet-image__placeholder">אין תמונה</div>
         )}
         <button
-          className="btn btn--ghost btn--sm"
+          className="btn btn--primary btn--sm"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
         >
