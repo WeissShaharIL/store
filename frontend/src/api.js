@@ -80,6 +80,12 @@ export const adminGetAssets = () => api.get("/api/admin/assets");
 export const adminUploadAsset = (formData) => api.postForm("/api/admin/assets", formData);
 export const adminDeleteAsset = (id) => api.delete(`/api/admin/assets/${id}`);
 
+// ── Admin — Hero Banners ──────────────────────────────────────────────────────
+export const adminGetHeroBanners = () => api.get("/api/admin/hero-banners");
+export const adminUploadHeroBanner = (formData) => api.postForm("/api/admin/hero-banners", formData);
+export const adminDeleteHeroBanner = (id) => api.delete(`/api/admin/hero-banners/${id}`);
+export const getPublicHeroBanners = () => api.get("/api/public/hero-banners");
+
 // ── Admin — Logos ─────────────────────────────────────────────────────────────
 export const adminGetLogos = () => api.get("/api/admin/logos");
 export const adminUploadLogo = (formData) => api.postForm("/api/admin/logos", formData);

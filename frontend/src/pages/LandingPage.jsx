@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { getActiveLogo, getPublicClosets, getPublicSettings, submitLead } from "../api.js";
+import { getActiveLogo, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
@@ -34,6 +34,8 @@ export default function LandingPage() {
   const [settingsResolved, setSettingsResolved] = useState(false);
   const [logo, setLogo] = useState(null);
   const [closets, setClosets] = useState([]);
+  const [banners, setBanners] = useState([]);
+  const [bannerIdx, setBannerIdx] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -45,8 +47,17 @@ export default function LandingPage() {
     getPublicClosets()
       .then((rows) => { if (alive) setClosets(rows || []); })
       .catch(() => {});
+    getPublicHeroBanners()
+      .then((rows) => { if (alive) setBanners(rows || []); })
+      .catch(() => {});
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => {
+    if (banners.length < 2) return;
+    const id = setInterval(() => setBannerIdx((i) => (i + 1) % banners.length), 5000);
+    return () => clearInterval(id);
+  }, [banners.length]);
 
   const galleryItems = useMemo(
     () => closets.filter((c) => c.image_path).slice(0, 6),
@@ -133,8 +144,17 @@ export default function LandingPage() {
           }
         >
           <div className="landing-hero__media" aria-hidden="true">
-            {heroSrc ? (
-              <img src={heroSrc} alt="" />
+            {banners.length > 0 ? (
+              banners.map((b, i) => (
+                <img
+                  key={b.id}
+                  src={`/uploads/${b.image_path}`}
+                  alt=""
+                  className={`landing-hero__slide${i === bannerIdx ? " landing-hero__slide--active" : ""}`}
+                />
+              ))
+            ) : heroSrc ? (
+              <img src={heroSrc} alt="" className="landing-hero__slide landing-hero__slide--active" />
             ) : settingsResolved ? (
               <div className="landing-hero__panel">
                 <div className="landing-hero__door landing-hero__door--a" />

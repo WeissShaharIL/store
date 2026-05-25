@@ -286,6 +286,15 @@ class Logo(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+class HeroBanner(Base):
+    __tablename__ = "hero_banners"
+
+    id = Column(Integer, primary_key=True)
+    image_path = Column(String(255), nullable=False)
+    sort_order = Column(Integer, nullable=False, default=0, index=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
 class Setting(Base):
     __tablename__ = "settings"
 

@@ -13,6 +13,7 @@ from helpers import active_catalog_id
 from models import (
     GUEST_CUSTOMER_ID,
     Catalog,
+    HeroBanner,
     ClosetTemplate,
     DoorTypeCover,
     Handle,
@@ -29,6 +30,7 @@ from schemas import (
     ClosetTemplateOut,
     DoorTypeCoverOut,
     HandleOut,
+    HeroBannerOut,
     LogoOut,
     PaletteColorOut,
 )
@@ -186,3 +188,13 @@ def public_contact(payload: GuestContact, db: Session = Depends(get_db)):
     db.add(Message(sender_id=guest.id, recipient_id=admin.id, body=composed))
     db.commit()
     return {"ok": True}
+
+
+@router.get("/hero-banners", response_model=List[HeroBannerOut])
+def list_public_hero_banners(db: Session = Depends(get_db)):
+    rows = (
+        db.query(HeroBanner)
+        .order_by(HeroBanner.sort_order, HeroBanner.created_at)
+        .all()
+    )
+    return [HeroBannerOut.model_validate(r) for r in rows]
