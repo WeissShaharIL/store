@@ -7,6 +7,7 @@
  * Extracted from DevClosetBuilder.jsx in v1.46.0.
  */
 
+import { useState } from "react";
 import { Plus, Trash } from "../../../components/Icons.jsx";
 import { withClone } from "./helpers.js";
 import { ColorPicker, NumberField, TextField, ToggleField } from "./Fields.jsx";
@@ -66,9 +67,9 @@ const CONSTRAINT_ROWS = [
 ];
 
 export function ConstraintsEditor({ config, setConfig }) {
-  // If older templates lack constraints, surface zeros — admin will
-  // edit them. The runtime designer has its own fallbacks.
+  const [openDim, setOpenDim] = useState(null);
   const c = config.constraints ?? { height: {}, width: {}, depth: {} };
+
   function setVal(dim, key, v) {
     setConfig(withClone(config, (d) => {
       d.constraints = d.constraints ?? { height: {}, width: {}, depth: {} };
@@ -76,50 +77,44 @@ export function ConstraintsEditor({ config, setConfig }) {
       d.constraints[dim][key] = v;
     }));
   }
+
   return (
     <div className="closet-builder__group">
-      <h4 className="closet-builder__group-title">
-        אילוצי מימדים ללקוח (ס״מ)
-      </h4>
-      <div className="muted small">
-        מגבילים את הסליידרים שהלקוח רואה בעמוד התכנון. ה״רוחב״
-        כאן הוא רוחב הארון הכולל.
+      <h4 className="closet-builder__group-title">אילוצי מימדים ללקוח (ס״מ)</h4>
+      <div className="constraint-accordion">
+        {CONSTRAINT_ROWS.map((row) => {
+          const isOpen = openDim === row.dim;
+          const dim = c[row.dim] ?? {};
+          return (
+            <div key={row.dim} className={"constraint-item" + (isOpen ? " constraint-item--open" : "")}>
+              <button
+                type="button"
+                className="constraint-item__header"
+                onClick={() => setOpenDim(isOpen ? null : row.dim)}
+              >
+                <span className="constraint-item__label">{row.label}</span>
+                <span className="constraint-item__summary">
+                  {dim.min ?? "—"} – {dim.max ?? "—"} ס״מ
+                  {dim.default != null ? ` (ברירת מחדל: ${dim.default})` : ""}
+                </span>
+                <span className="constraint-item__chevron">{isOpen ? "▲" : "▼"}</span>
+              </button>
+              {isOpen && (
+                <div className="constraint-item__body">
+                  <NumberField label="מינ׳" value={dim.min ?? 0} min={0} step={5}
+                    onChange={(v) => setVal(row.dim, "min", v)} />
+                  <NumberField label="מקס׳" value={dim.max ?? 0} min={0} step={5}
+                    onChange={(v) => setVal(row.dim, "max", v)} />
+                  <NumberField label="צעד" value={dim.step ?? 1} min={1} step={1}
+                    onChange={(v) => setVal(row.dim, "step", v)} />
+                  <NumberField label="ברירת מחדל" value={dim.default ?? 0} min={0} step={5}
+                    onChange={(v) => setVal(row.dim, "default", v)} />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-      {CONSTRAINT_ROWS.map((row) => (
-        <div key={row.dim} className="closet-builder__row">
-          <div className="closet-builder__label" style={{ minWidth: 70 }}>
-            {row.label}
-          </div>
-          <NumberField
-            label="מינ׳"
-            value={c[row.dim]?.min ?? 0}
-            min={0}
-            step={5}
-            onChange={(v) => setVal(row.dim, "min", v)}
-          />
-          <NumberField
-            label="מקס׳"
-            value={c[row.dim]?.max ?? 0}
-            min={0}
-            step={5}
-            onChange={(v) => setVal(row.dim, "max", v)}
-          />
-          <NumberField
-            label="צעד"
-            value={c[row.dim]?.step ?? 1}
-            min={1}
-            step={1}
-            onChange={(v) => setVal(row.dim, "step", v)}
-          />
-          <NumberField
-            label="ברירת מחדל"
-            value={c[row.dim]?.default ?? 0}
-            min={0}
-            step={5}
-            onChange={(v) => setVal(row.dim, "default", v)}
-          />
-        </div>
-      ))}
     </div>
   );
 }

@@ -202,8 +202,8 @@ export default function LandingPage() {
           <header className="landing-section__head">
             <div className="section-hover-title">
               <h2 className="section-hover-title__h2 landing-section__title">הארונות שלנו</h2>
-              <Link to="/showroom" className="section-hover-title__reveal btn btn--primary btn--lg">
-                הצג <ArrowRight />
+              <Link to="/showroom" className="section-hover-title__reveal">
+                הצג
               </Link>
             </div>
             <p className="landing-section__sub">שני סוגי ארונות, כל אחד מתוכנן אישית</p>
