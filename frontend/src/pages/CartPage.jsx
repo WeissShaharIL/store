@@ -2,7 +2,31 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { submitLead } from "../api.js";
 import { clearCart, getCart, removeFromCart, subscribeToCart } from "../lib/cart.js";
+import CartIcon from "../components/CartIcon.jsx";
+import { ArrowRight } from "../components/Icons.jsx";
+import "../styles/landing/01-shell-nav.css";
 import "./CartPage.css";
+
+function CartNav() {
+  return (
+    <header className="landing-nav cart-nav">
+      <div className="landing-nav__inner">
+        <Link to="/" className="landing-nav__brand">
+          <span className="landing-nav__brand-mark">Store</span>
+          <span className="landing-nav__brand-sub">ארונות</span>
+        </Link>
+        <nav className="landing-nav__links" aria-label="ניווט ראשי">
+          <Link to="/">דף הבית</Link>
+          <Link to="/showroom?kind=sliding">דלתות הזזה</Link>
+          <Link to="/showroom?kind=hinged">דלתות פתיחה</Link>
+        </nav>
+        <div className="landing-nav__right">
+          <CartIcon />
+        </div>
+      </div>
+    </header>
+  );
+}
 
 export default function CartPage() {
   const [cart, setCart] = useState(getCart());
@@ -53,11 +77,12 @@ export default function CartPage() {
   if (step === "done") {
     return (
       <div className="cart-page">
-        <div className="cart-done">
-          <div className="cart-done-icon">✓</div>
-          <h2>תודה! קיבלנו את הפנייה שלך</h2>
-          <p>ניצור קשר בהקדם עם הצעת מחיר.</p>
-          <Link to="/" className="btn-back">חזרה לדף הבית</Link>
+        <CartNav />
+        <div className="cart-page__inner cart-done">
+          <div className="cart-done__icon">✓</div>
+          <h2 className="cart-done__title">תודה! קיבלנו את הפנייה שלך</h2>
+          <p className="cart-done__sub">ניצור קשר בהקדם עם הצעת מחיר.</p>
+          <Link to="/" className="cart-btn cart-btn--primary">חזרה לדף הבית <ArrowRight /></Link>
         </div>
       </div>
     );
@@ -66,109 +91,85 @@ export default function CartPage() {
   if (step === "contact") {
     return (
       <div className="cart-page">
-        <header className="cart-header">
-          <button onClick={() => setStep("cart")} className="cart-back-btn">← חזרה לסל</button>
-          <h1>פרטי קשר</h1>
-        </header>
-        <form onSubmit={handleSubmit} className="contact-form">
-          <label>
-            שם מלא *
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              required
-            />
-          </label>
-          <label>
-            טלפון *
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              required
-            />
-          </label>
-          <label>
-            אימייל
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-            />
-          </label>
-          <label>
-            כתובת
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-            />
-          </label>
-          <label>
-            הערות
-            <textarea
-              value={form.notes}
-              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-              rows={3}
-            />
-          </label>
-          {error && <p className="form-error">{error}</p>}
-          <button type="submit" disabled={loading} className="cart-submit-btn">
-            {loading ? "שולח..." : "שלח הצעה"}
+        <CartNav />
+        <div className="cart-page__inner">
+          <button onClick={() => setStep("cart")} className="cart-back-btn">
+            <ArrowRight style={{ transform: "rotate(180deg)" }} /> חזרה לסל
           </button>
-        </form>
+          <h1 className="cart-page__title">פרטי קשר</h1>
+          <form onSubmit={handleSubmit} className="cart-contact-form">
+            <label className="cart-field">
+              <span>שם מלא *</span>
+              <input type="text" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
+            </label>
+            <label className="cart-field">
+              <span>טלפון *</span>
+              <input type="tel" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} required />
+            </label>
+            <label className="cart-field">
+              <span>אימייל</span>
+              <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
+            </label>
+            <label className="cart-field">
+              <span>כתובת</span>
+              <input type="text" value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} />
+            </label>
+            <label className="cart-field">
+              <span>הערות</span>
+              <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={3} />
+            </label>
+            {error && <p className="cart-error">{error}</p>}
+            <button type="submit" disabled={loading} className="cart-btn cart-btn--primary cart-btn--full">
+              {loading ? "שולח..." : "שלח הצעה"}
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="cart-page">
-      <header className="cart-header">
-        <Link to="/showroom" className="cart-back-btn">← חזרה לתצוגה</Link>
-        <h1>סל הצעות ({cart.length})</h1>
-      </header>
+      <CartNav />
+      <div className="cart-page__inner">
+        <Link to="/showroom" className="cart-back-btn">
+          <ArrowRight style={{ transform: "rotate(180deg)" }} /> חזרה לתצוגה
+        </Link>
+        <h1 className="cart-page__title">סל הצעות <span className="cart-page__count">({cart.length})</span></h1>
 
-      {cart.length === 0 ? (
-        <div className="cart-empty">
-          <p>הסל ריק</p>
-          <Link to="/showroom" className="btn-to-showroom">לתצוגת הארונות</Link>
-        </div>
-      ) : (
-        <>
-          <ul className="cart-list">
-            {cart.map((item) => (
-              <li key={item.id} className="cart-item">
-                {item.image_path && (
-                  <img
-                    src={`/uploads/${item.image_path}`}
-                    alt={item.name}
-                    className="cart-item-image"
-                  />
-                )}
-                <div className="cart-item-info">
-                  <span className="cart-item-name">{item.name}</span>
-                  {item.displaySalePrice && (
-                    <span className="cart-item-price">{item.displaySalePrice}</span>
-                  )}
-                </div>
-                <button
-                  onClick={() => handleRemove(item.id)}
-                  className="cart-item-remove"
-                  aria-label="הסר"
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className="cart-footer">
-            <button className="cart-checkout-btn" onClick={() => setStep("contact")}>
-              המשך להצעת מחיר
-            </button>
+        {cart.length === 0 ? (
+          <div className="cart-empty">
+            <p className="cart-empty__text">הסל ריק</p>
+            <Link to="/showroom" className="cart-btn cart-btn--primary">
+              לתצוגת הארונות <ArrowRight />
+            </Link>
           </div>
-        </>
-      )}
+        ) : (
+          <>
+            <ul className="cart-list">
+              {cart.map((item) => (
+                <li key={item.id} className="cart-item">
+                  {item.image_path && (
+                    <img src={`/uploads/${item.image_path}`} alt={item.name} className="cart-item__image" />
+                  )}
+                  <div className="cart-item__info">
+                    <span className="cart-item__name">{item.name}</span>
+                    {item.displaySalePrice && (
+                      <span className="cart-item__price">₪{item.displaySalePrice.toLocaleString()}</span>
+                    )}
+                  </div>
+                  <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
+                </li>
+              ))}
+            </ul>
+            <div className="cart-footer">
+              <button className="cart-btn cart-btn--primary cart-btn--full" onClick={() => setStep("contact")}>
+                המשך להצעת מחיר <ArrowRight />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

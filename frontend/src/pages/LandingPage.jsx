@@ -245,7 +245,7 @@ export default function LandingPage() {
         {galleryItems.length > 0 && (
           <section id="gallery" className="landing-gallery">
             <header className="landing-section__head">
-              <h2 className="landing-section__title">מהתצוגה שלנו</h2>
+              <h2 className="landing-section__title">הנמכרים ביותר</h2>
               <p className="landing-section__sub">דגמים נבחרים מהקטלוג שלנו.</p>
             </header>
             <div className="landing-gallery__grid">
