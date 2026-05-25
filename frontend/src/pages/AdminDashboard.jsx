@@ -9,10 +9,10 @@ import PituchTab from "./admin/PituchTab.jsx";
 import "./AdminDashboard.css";
 
 const TABS = [
-  { id: "pituch",   label: "פיתוח" },
-  { id: "leads",    label: "פניות" },
-  { id: "landing",  label: "דף בית" },
   { id: "settings", label: "הגדרות" },
+  { id: "landing",  label: "דף הבית" },
+  { id: "leads",    label: "פניות" },
+  { id: "pituch",   label: "פיתוח" },
 ];
 
 export default function AdminDashboard() {
