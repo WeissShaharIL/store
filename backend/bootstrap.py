@@ -4,6 +4,7 @@ from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from auth import hash_password
+from db import engine
 from models import (
     Catalog, Handle, PaletteColor, Setting, User,
     GUEST_CUSTOMER_ID,
@@ -37,14 +38,14 @@ DEFAULT_HANDLES = [
 ]
 
 
-def run_migrations(db: Session) -> None:
+def run_migrations(_db: Session) -> None:
     """Idempotent ALTER TABLE migrations for columns added after initial deploy.
 
-    Uses SQLAlchemy introspection to check column existence — works on both
-    PostgreSQL (production) and SQLite (dev/test).
+    Uses the engine directly (SQLAlchemy 2 compatible — Session.get_bind()
+    was removed in 2.0).
     """
-    insp = inspect(db.get_bind())
-    is_pg = db.get_bind().dialect.name == "postgresql"
+    insp = inspect(engine)
+    is_pg = engine.dialect.name == "postgresql"
 
     def _has_col(table: str, col: str) -> bool:
         try:
@@ -55,15 +56,15 @@ def run_migrations(db: Session) -> None:
     def _add_col(table: str, col: str, col_type: str, default: str) -> None:
         if _has_col(table, col):
             return
-        if is_pg:
-            db.execute(text(
-                f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {col_type} DEFAULT {default}"
-            ))
-        else:
-            db.execute(text(
-                f"ALTER TABLE {table} ADD COLUMN {col} {col_type} DEFAULT {default}"
-            ))
-        db.commit()
+        with engine.begin() as conn:
+            if is_pg:
+                conn.execute(text(
+                    f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {col_type} DEFAULT {default}"
+                ))
+            else:
+                conn.execute(text(
+                    f"ALTER TABLE {table} ADD COLUMN {col} {col_type} DEFAULT {default}"
+                ))
 
     # New User columns
     _add_col("users", "phone", "VARCHAR(32)", "NULL")

@@ -10,6 +10,7 @@ import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import MessagesPage from "./pages/MessagesPage.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AdminLoginGate from "./components/AdminLoginGate.jsx";
 import AnnouncementGate from "./components/AnnouncementGate.jsx";
 
 export default function App() {
@@ -50,9 +51,9 @@ export default function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute adminOnly>
+            <AdminLoginGate>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminLoginGate>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
