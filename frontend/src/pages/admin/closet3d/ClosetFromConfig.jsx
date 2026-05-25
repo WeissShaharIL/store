@@ -465,6 +465,7 @@ export default function ClosetFromConfig({
           woodColor={palette.wood}
           woodTexture={palette.texture}
           handleMaterial={handleMaterial}
+          fadeOpacity={state.slidingDoorsHidden ? 0 : 1}
         />
       );
     }

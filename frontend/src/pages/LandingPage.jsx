@@ -457,23 +457,7 @@ function CategoryCard({ variant, title, body, image, slides = [], ctaLabel, to }
           <img src={image} alt="" />
         ) : slides.length > 0 ? (
           <CategorySlideshow slides={slides} />
-        ) : (
-          <div className={"closet-anim closet-anim--" + variant}>
-            <div className="closet-anim__body">
-              <div className="closet-anim__interior">
-                <div className="closet-anim__shelf" />
-                <div className="closet-anim__shelf" />
-                <div className="closet-anim__reveal">
-                  {variant === "sliding" ? "הזזה" : "פתיחה"}
-                </div>
-              </div>
-            </div>
-            <div className="closet-anim__base">
-              <div className="closet-anim__leg" />
-              <div className="closet-anim__leg" />
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
       <h3>{title}</h3>
       <p>{body}</p>

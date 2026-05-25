@@ -574,68 +574,79 @@ export function HingedDoor({
   woodColor,
   woodTexture,
   material = "wood",
-  // v1.69.0 — handle is now a {color, roughness, metalness} object
-  // resolved from the closet's HANDLES catalog (silver / white /
-  // black) rather than a bare color string. Falls back to silver
-  // for callers that don't pass anything explicit yet.
   handleMaterial = HANDLES[DEFAULT_HANDLE],
+  fadeOpacity = 1,
 }) {
   const isLeft = hingeSide === "left";
   const pivotSign = isLeft ? -1 : 1;
-  // Vertical aluminum bar handle near the FAR edge from the hinge,
-  // at roughly mid-height of the door. Length scaled with the
-  // door's actual panel height so shortened doors get smaller
-  // handles too. (v1.28.0 — was a brass cylinder.)
   const handleX = -pivotSign * (width - 0.07);
   const handleY = -panelHeight * 0.05;
   const handleLen = Math.min(0.32, panelHeight * 0.18);
-  // v1.44.0 — smooth swing. The rotation.y eases toward the target
-  // angle instead of snapping; first frame still snaps so a freshly
-  // mounted door appears in its correct closed/open position with
-  // no opening animation on initial render.
   const ref = useAnimatedAxis(
     [0, pivotSign * openAngle, 0],
     "rotation",
     "y"
   );
+  const contentRef = useRef();
+  const animRef = useRef({ current: fadeOpacity, from: fadeOpacity, target: fadeOpacity, start: null });
+  useEffect(() => {
+    const a = animRef.current;
+    if (a.target === fadeOpacity) return;
+    a.from = a.current;
+    a.target = fadeOpacity;
+    a.start = performance.now();
+  }, [fadeOpacity]);
+  useFrame(() => {
+    const a = animRef.current;
+    if (a.start !== null) {
+      const elapsed = performance.now() - a.start;
+      const t = Math.min(1, elapsed / SLIDING_DOOR_FADE_MS);
+      a.current = a.from + (a.target - a.from) * t;
+      if (t >= 1) a.start = null;
+    }
+    contentRef.current?.traverse((obj) => {
+      if (!obj.isMesh || !obj.material) return;
+      obj.material.opacity = a.current;
+      if (a.current < 1 && !obj.material.transparent) {
+        obj.material.transparent = true;
+        obj.material.needsUpdate = true;
+      }
+    });
+  });
   return (
-    <group
-      ref={ref}
-      position={hingeWorldPos}
-    >
-      <RoundedBox
-        position={[(-pivotSign * width) / 2, 0, thickness / 2]}
-        args={[width, panelHeight, thickness]}
-        radius={PLANK_EDGE_RADIUS}
-        smoothness={PLANK_EDGE_SMOOTHNESS}
-        castShadow={material !== "glass"}
-        receiveShadow
-      >
-        <DoorPanelMaterials
-          key={material}
-          kind={material}
-          woodColor={woodColor}
-          woodTexture={woodTexture}
-        />
-      </RoundedBox>
-      <mesh
-        position={[handleX, handleY, thickness + 0.012]}
-        castShadow
-      >
-        <boxGeometry args={[0.022, handleLen, 0.022]} />
-        <meshStandardMaterial
-          color={handleMaterial.color}
-          roughness={handleMaterial.roughness}
-          metalness={handleMaterial.metalness}
-        />
-      </mesh>
-      {material === "mirror" && (
-        <MirrorInsetPanel
-          position={[(-pivotSign * width) / 2, 0, -0.005]}
-          width={width}
-          height={panelHeight}
-        />
-      )}
+    <group ref={ref} position={hingeWorldPos}>
+      <group ref={contentRef}>
+        <RoundedBox
+          position={[(-pivotSign * width) / 2, 0, thickness / 2]}
+          args={[width, panelHeight, thickness]}
+          radius={PLANK_EDGE_RADIUS}
+          smoothness={PLANK_EDGE_SMOOTHNESS}
+          castShadow={material !== "glass"}
+          receiveShadow
+        >
+          <DoorPanelMaterials
+            key={material}
+            kind={material}
+            woodColor={woodColor}
+            woodTexture={woodTexture}
+          />
+        </RoundedBox>
+        <mesh position={[handleX, handleY, thickness + 0.012]} castShadow>
+          <boxGeometry args={[0.022, handleLen, 0.022]} />
+          <meshStandardMaterial
+            color={handleMaterial.color}
+            roughness={handleMaterial.roughness}
+            metalness={handleMaterial.metalness}
+          />
+        </mesh>
+        {material === "mirror" && (
+          <MirrorInsetPanel
+            position={[(-pivotSign * width) / 2, 0, -0.005]}
+            width={width}
+            height={panelHeight}
+          />
+        )}
+      </group>
     </group>
   );
 }
