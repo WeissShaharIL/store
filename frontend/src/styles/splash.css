@@ -23,8 +23,9 @@
 
 .splash__wordmark {
   display: flex;
+  direction: ltr;
   letter-spacing: 0.38em;
-  margin-inline-end: -0.38em; /* compensate trailing letter-spacing */
+  margin-inline-end: -0.38em;
 }
 .splash__letter {
   font-family: "Manrope", "Inter", system-ui, sans-serif;
