@@ -39,35 +39,41 @@
 }
 .section-hover-title__reveal {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  transform: translateX(-50%) translateY(calc(-50% + 14px));
   opacity: 0;
   transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1), opacity 380ms ease;
   pointer-events: none;
   white-space: nowrap;
-  /* Match the title's typographic style — no pill, no border */
-  background: none;
+
+  /* White pill button */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
   border: none;
-  font-size: clamp(28px, 4vw, 48px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: rgba(242, 242, 244, 0.55);
+  border-radius: 999px;
+  padding: 0.6rem 2.2rem;
   font-family: inherit;
-  line-height: 1.1;
-  padding: 0;
+  font-size: clamp(15px, 1.4vw, 19px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #0d0d0f;
   cursor: pointer;
   text-decoration: none;
+
+  /* Depth: soft shadow beneath + faint white glow */
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 .section-hover-title:hover .section-hover-title__reveal {
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(-50%);
   opacity: 1;
   pointer-events: auto;
-  color: #f2f2f4;
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-  text-decoration-color: rgba(242, 242, 244, 0.35);
 }
 
 /* Category cards */
