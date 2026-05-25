@@ -283,11 +283,14 @@ export default function DevClosetBuilder() {
         const created = await adminCreateTemplate({
           name: config.name,
           config_json: JSON.stringify(config),
-          is_ready: isReady,
-          is_display_sale: isDisplaySale,
-          display_sale_price: displaySalePrice,
         });
         setCurrentId(created.id);
+        // persist flags now that we have an id
+        await adminUpdateTemplate(created.id, {
+          is_ready: isReady,
+          is_display_sale: isDisplaySale,
+          display_sale_price: displaySalePrice || null,
+        });
       }
       setStatus("saved");
       await reloadTemplates();
