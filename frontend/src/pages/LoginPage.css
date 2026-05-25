@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
+  background: var(--surface);
   padding: 1rem;
 }
 
@@ -19,7 +19,7 @@
 .login-title {
   margin: 0 0 1.5rem;
   font-size: 1.4rem;
-  color: var(--color-primary);
+  color: var(--primary);
   text-align: center;
 }
 
@@ -39,7 +39,7 @@
 
 .login-form input {
   padding: 0.6rem 0.75rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
   font-family: inherit;
@@ -48,7 +48,7 @@
 
 .login-form input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--primary);
 }
 
 .login-error {
@@ -59,7 +59,7 @@
 }
 
 .login-btn {
-  background: var(--color-primary);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: var(--radius);
