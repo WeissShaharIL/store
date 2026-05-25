@@ -88,11 +88,12 @@ export default function LandingPage() {
     [closets],
   );
 
-  // Scroll-driven section focus: the section whose center is closest to the
-  // viewport center gets --active; all others are the muted dark-grey default.
-  // This ensures exactly one section is highlighted at a time.
+  // Scroll-driven section focus: once a section turns black it never goes grey
+  // again — maxReached only increases, so scrolling back up keeps prior
+  // sections black.
   useEffect(() => {
     const getSections = () => [...document.querySelectorAll("[data-scroll-section]")];
+    let maxReached = 0;
 
     function activate() {
       const sections = getSections();
@@ -106,8 +107,8 @@ export default function LandingPage() {
         const d = Math.abs(center - mid);
         if (d < bestDist) { bestDist = d; bestIdx = i; }
       });
-      // All sections up to and including the focused one stay black.
-      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i <= bestIdx));
+      maxReached = Math.max(maxReached, bestIdx);
+      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i <= maxReached));
     }
 
     window.addEventListener("scroll", activate, { passive: true });
