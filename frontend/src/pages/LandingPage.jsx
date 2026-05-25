@@ -88,7 +88,10 @@ export default function LandingPage() {
     () => closets
       .filter((c) => {
         if (!c.image_path) return false;
-        try { return JSON.parse(c.config_json || "{}").kind === "sliding"; }
+        try {
+          const cfg = JSON.parse(c.config_json || "{}");
+          return (cfg.kind || cfg.doors?.[0]?.kind) === "sliding";
+        }
         catch { return false; }
       })
       .map((c) => c.image_path),
@@ -98,7 +101,10 @@ export default function LandingPage() {
     () => closets
       .filter((c) => {
         if (!c.image_path) return false;
-        try { return JSON.parse(c.config_json || "{}").kind === "hinged"; }
+        try {
+          const cfg = JSON.parse(c.config_json || "{}");
+          return (cfg.kind || cfg.doors?.[0]?.kind) === "hinged";
+        }
         catch { return false; }
       })
       .map((c) => c.image_path),

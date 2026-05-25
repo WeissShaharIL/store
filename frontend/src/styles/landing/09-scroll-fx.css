@@ -1,12 +1,16 @@
 /* Scroll-driven section focus effect.
  * The section whose center is closest to the viewport center gets --active
- * (handled by a scroll listener in LandingPage.jsx — only one section is
- * active at a time). Inactive sections fade from black at the top to grey
- * at the bottom, creating a seamless gradient at the boundary. */
+ * (handled by a scroll listener in LandingPage.jsx). Inactive sections show
+ * a visible dark-grey; active sections animate to near-black over 800ms.
+ *
+ * NOTE: background-color is used (not background) — CSS cannot
+ * transition between a gradient and a solid color. */
+
 .landing-scroll-section {
-  background: linear-gradient(to bottom, #0d0d0f 0%, #18181f 100%) !important;
-  transition: background 600ms ease;
+  background-color: #252535;
+  transition: background-color 800ms ease;
 }
+
 .landing-scroll-section--active {
-  background: #0d0d0f !important;
+  background-color: #0d0d0f;
 }

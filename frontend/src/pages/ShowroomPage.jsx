@@ -45,8 +45,12 @@ export default function ShowroomPage() {
   const filtered = kind === "all"
     ? closets
     : closets.filter((c) => {
-        try { return JSON.parse(c.config_json || "{}").doorKind === kind; }
-        catch { return true; }
+        try {
+          const cfg = JSON.parse(c.config_json || "{}");
+          const closetKind = cfg.kind || cfg.doors?.[0]?.kind;
+          return closetKind === kind;
+        }
+        catch { return false; }
       });
 
   return (
