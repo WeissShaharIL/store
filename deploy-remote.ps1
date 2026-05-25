@@ -1,10 +1,15 @@
-# deploy-remote.ps1 — SSH into the home server and deploy the latest release.
+# deploy-remote.ps1 — SSH into the home server, pull, and deploy.
 #
 # Usage:
 #   .\deploy-remote.ps1 <user> <host>
 #
-# The server runs deploy.sh which finds the latest git tag and deploys from it.
-# Run release.ps1 first to cut a new release before deploying.
+# What it does on the remote (one SSH round-trip):
+#   1. cd ~/code/store
+#   2. git checkout -- deploy.sh   — undo any local corruption
+#   3. git pull                    — refresh repo + tags
+#   4. sed -i 's/\r$//' deploy.sh  — strip any CRLF endings
+#   5. chmod +x deploy.sh
+#   6. ./deploy.sh                 — picks latest tag, falls back to dev
 
 param(
     [Parameter(Mandatory = $true, Position = 0,
@@ -16,7 +21,7 @@ param(
     [string]$Hostname
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 $SshTarget = "$Username@$Hostname"
 
 Write-Host "=> Connecting to $SshTarget ..."
@@ -25,14 +30,13 @@ Write-Host ""
 $RemoteScript = @'
 set -e
 cd code/store
-git fetch --tags origin
 git checkout -- deploy.sh 2>/dev/null || true
+git pull
 sed -i 's/\r$//' deploy.sh
 chmod +x deploy.sh
 ./deploy.sh
 '@
 
-$RemoteScript = $RemoteScript -replace "`r`n", "`n"
 $Bytes = [System.Text.Encoding]::UTF8.GetBytes($RemoteScript)
 $B64 = [Convert]::ToBase64String($Bytes)
 $RemoteCommand = "echo $B64 | base64 -d | bash"
