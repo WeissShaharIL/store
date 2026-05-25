@@ -66,6 +66,27 @@ export default function LandingPage() {
     [closets, defaultClosetImage],
   );
 
+  const slidingSlides = useMemo(
+    () => closets
+      .filter((c) => {
+        if (!c.image_path) return false;
+        try { return JSON.parse(c.config_json || "{}").kind === "sliding"; }
+        catch { return false; }
+      })
+      .map((c) => c.image_path),
+    [closets],
+  );
+  const hingedSlides = useMemo(
+    () => closets
+      .filter((c) => {
+        if (!c.image_path) return false;
+        try { return JSON.parse(c.config_json || "{}").kind === "hinged"; }
+        catch { return false; }
+      })
+      .map((c) => c.image_path),
+    [closets],
+  );
+
   const contactRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -197,6 +218,7 @@ export default function LandingPage() {
               body="ארונות עם דלתות מסילה — חיסכון במקום, נראות נקייה ומודרנית."
               ctaLabel="לדגמי הזזה"
               to="/showroom?kind=sliding"
+              slides={slidingSlides}
             />
             <CategoryCard
               variant="hinged"
@@ -204,6 +226,7 @@ export default function LandingPage() {
               body="ארונות עם דלתות צירים — גישה מלאה לתוכן, מגוון עיצובים."
               ctaLabel="לדגמי פתיחה"
               to="/showroom?kind=hinged"
+              slides={hingedSlides}
             />
           </div>
         </section>
@@ -354,15 +377,40 @@ function RippleTitle({ text, className }) {
   );
 }
 
-function CategoryCard({ variant, title, body, image, ctaLabel, to }) {
+function CategorySlideshow({ slides }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % slides.length), 3500);
+    return () => clearInterval(id);
+  }, [slides.length]);
+  return (
+    <div className="category-slides">
+      {slides.map((src, i) => (
+        <img
+          key={src}
+          className={"category-slides__img" + (i === idx ? " category-slides__img--active" : "")}
+          src={`/uploads/${src}`}
+          alt=""
+          loading={i === 0 ? "eager" : "lazy"}
+        />
+      ))}
+    </div>
+  );
+}
+
+function CategoryCard({ variant, title, body, image, slides = [], ctaLabel, to }) {
+  const hasMedia = image || slides.length > 0;
   const className =
     "landing-category-card landing-category-card--" + variant +
-    (image ? " landing-category-card--has-image" : "");
+    (hasMedia ? " landing-category-card--has-image" : "");
   return (
     <article className={className}>
       <div className="landing-category-card__art" aria-hidden="true">
         {image ? (
           <img src={image} alt="" />
+        ) : slides.length > 0 ? (
+          <CategorySlideshow slides={slides} />
         ) : (
           <div className={"closet-anim closet-anim--" + variant}>
             <div className="closet-anim__body">
