@@ -99,6 +99,10 @@ export const getSettings = () => api.get("/api/settings");
 export const updateSettings = (values) => api.patch("/api/settings", { values });
 export const getLandingSettings = () => api.get("/api/admin/landing");
 export const updateLandingSettings = (data) => api.patch("/api/admin/landing", data);
+export const adminUploadDefaultClosetImage = (formData) =>
+  api.postForm("/api/admin/landing/image/default-closet", formData);
+export const adminDeleteDefaultClosetImage = () =>
+  api.delete("/api/admin/landing/image/default-closet");
 
 // ── Admin — Leads ─────────────────────────────────────────────────────────────
 export const adminGetLeads = (status) =>
