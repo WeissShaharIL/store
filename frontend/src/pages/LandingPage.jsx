@@ -98,15 +98,16 @@ export default function LandingPage() {
       const sections = getSections();
       if (!sections.length) return;
       const mid = window.scrollY + window.innerHeight / 2;
-      let best = sections[0];
+      let bestIdx = 0;
       let bestDist = Infinity;
-      for (const s of sections) {
+      sections.forEach((s, i) => {
         const rect = s.getBoundingClientRect();
         const center = window.scrollY + rect.top + rect.height / 2;
         const d = Math.abs(center - mid);
-        if (d < bestDist) { bestDist = d; best = s; }
-      }
-      for (const s of sections) s.classList.toggle("landing-scroll-section--active", s === best);
+        if (d < bestDist) { bestDist = d; bestIdx = i; }
+      });
+      // All sections up to and including the focused one stay black.
+      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i <= bestIdx));
     }
 
     window.addEventListener("scroll", activate, { passive: true });
