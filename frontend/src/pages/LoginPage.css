@@ -3,23 +3,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
+  background: #0d0d0f;
   padding: 1rem;
 }
 
 .login-card {
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2rem;
+  background: #161618;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 2.5rem 2rem;
   width: 100%;
-  max-width: 360px;
+  max-width: 340px;
+}
+
+.login-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.4rem;
 }
 
 .login-title {
-  margin: 0 0 1.5rem;
-  font-size: 1.4rem;
-  color: var(--primary);
+  margin: 0 0 2rem;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
   text-align: center;
 }
 
@@ -32,43 +41,56 @@
 .login-form label {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.9rem;
+  gap: 0.35rem;
+  font-size: 0.78rem;
   font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
 }
 
 .login-form input {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 1rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  font-size: 0.95rem;
   font-family: inherit;
   direction: ltr;
+  background: #111113;
+  color: #f2f2f4;
+  outline: none;
+  transition: border-color 150ms ease;
 }
 
 .login-form input:focus {
-  outline: none;
-  border-color: var(--primary);
+  border-color: rgba(255,255,255,0.3);
 }
 
 .login-error {
   margin: 0;
-  color: #c0392b;
-  font-size: 0.9rem;
+  color: #f1948a;
+  font-size: 0.85rem;
   text-align: center;
 }
 
 .login-btn {
-  background: var(--primary);
-  color: white;
+  background: #ffffff;
+  color: #0d0d0f;
   border: none;
-  border-radius: var(--radius);
+  border-radius: 6px;
   padding: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-family: inherit;
+  cursor: pointer;
   margin-top: 0.5rem;
+  transition: background 150ms ease;
 }
 
+.login-btn:hover { background: rgba(255,255,255,0.85); }
+
 .login-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
