@@ -244,8 +244,6 @@ class LogoOut(BaseModel):
 
 
 class HeroBannerOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
     image_path: str
     sort_order: int
