@@ -1,8 +1,7 @@
 .showroom {
   min-height: 100%;
-  background:
-    radial-gradient(900px 500px at 80% -10%, rgba(124, 58, 237, 0.10), transparent 60%),
-    var(--bg);
+  background: #0d0d0f;
+  color: #f2f2f4;
 }
 
 .showroom__header {
@@ -16,24 +15,24 @@
   align-items: center;
   gap: var(--space-1);
   font-size: var(--text-sm);
-  color: var(--text-soft);
+  color: rgba(242, 242, 244, 0.45);
   text-decoration: none;
   margin-bottom: var(--space-4);
 }
-.showroom__back:hover { color: var(--brand-violet-deep); text-decoration: underline; }
+.showroom__back:hover { color: #f2f2f4; }
 .showroom__back svg { width: 14px; height: 14px; }
 .showroom__title {
   margin: 0 0 var(--space-2);
   font-size: clamp(24px, 3.5vw, 36px);
   font-weight: 700;
-  color: var(--text);
-  letter-spacing: var(--letter-tight);
+  color: #f2f2f4;
+  letter-spacing: -0.02em;
 }
 .showroom__sub {
   margin: 0 auto;
   max-width: 60ch;
   font-size: var(--text-md);
-  color: var(--text-soft);
+  color: rgba(242, 242, 244, 0.45);
   line-height: var(--leading-relaxed);
 }
 
@@ -44,24 +43,30 @@
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+  justify-content: center;
 }
 .showroom__filter-btn {
-  padding: 6px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text-soft);
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(242, 242, 244, 0.55);
   font: inherit;
   font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all 140ms ease;
 }
-.showroom__filter-btn:hover { border-color: var(--brand-violet); color: var(--brand-violet-deep); }
+.showroom__filter-btn:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #f2f2f4;
+  background: rgba(255, 255, 255, 0.08);
+}
 .showroom__filter-btn--active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 18px rgba(37, 99, 235, 0.45);
 }
 
 .showroom__main {
