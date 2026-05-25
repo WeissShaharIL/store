@@ -6,6 +6,7 @@ import {
   adminGetDoorTypeCovers,
   adminUploadDoorTypeCover,
   adminDeleteDoorTypeCover,
+  getPublicSettings,
 } from "../../api.js";
 import { resizeImageForUpload } from "./closet-builder/helpers.js";
 import ClosetScene from "./closet3d/ClosetScene.jsx";
@@ -45,6 +46,7 @@ export default function DevClosetGallery() {
   const [activeType, setActiveType] = useState("sliding");
   // Door-type picker cover photos, indexed by kind.
   const [covers, setCovers] = useState({});
+  const [defaultImage, setDefaultImage] = useState(null);
 
   async function reloadCovers() {
     try {
@@ -63,10 +65,12 @@ export default function DevClosetGallery() {
       setLoading(true);
       setError("");
       try {
-        const [list, coverList] = await Promise.all([
+        const [list, coverList, settings] = await Promise.all([
           adminGetTemplates(),
           adminGetDoorTypeCovers().catch(() => []),
+          getPublicSettings().catch(() => ({})),
         ]);
+        if (!cancelled) setDefaultImage(settings.default_closet_image || null);
         const readyOnly = list.filter((t) => t.is_ready);
         const full = await Promise.all(
           readyOnly.map((t) => adminGetTemplate(t.id))
@@ -122,6 +126,7 @@ export default function DevClosetGallery() {
             onCoversChanged={reloadCovers}
             slidingCount={slidingItems.length}
             hingedCount={hingedItems.length}
+            defaultImage={defaultImage}
           />
           {filteredItems.length === 0 ? (
             <div className="closet-gallery__empty muted">
@@ -135,6 +140,7 @@ export default function DevClosetGallery() {
                 <GalleryCard
                   key={t.id}
                   item={t}
+                  defaultImage={defaultImage}
                 />
               ))}
             </div>
@@ -160,6 +166,7 @@ function GalleryTypePicker({
   onCoversChanged,
   slidingCount,
   hingedCount,
+  defaultImage,
 }) {
   return (
     <div className="closet-gallery__type-picker" role="tablist">
@@ -170,6 +177,7 @@ function GalleryTypePicker({
         cover={covers.sliding}
         onPick={() => onChange("sliding")}
         onCoverChanged={onCoversChanged}
+        defaultImage={defaultImage}
       />
       <TypePickerCard
         kind="hinged"
@@ -178,12 +186,13 @@ function GalleryTypePicker({
         cover={covers.hinged}
         onPick={() => onChange("hinged")}
         onCoverChanged={onCoversChanged}
+        defaultImage={defaultImage}
       />
     </div>
   );
 }
 
-function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged }) {
+function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged, defaultImage }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const label = TYPE_LABELS[kind];
@@ -240,6 +249,8 @@ function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged }) 
       <div className="closet-gallery__type-card-media">
         {cover ? (
           <img src={`/uploads/${cover.image_path}`} alt={label} loading="lazy" />
+        ) : defaultImage ? (
+          <img src={`/uploads/${defaultImage}`} alt={label} loading="lazy" style={{ opacity: 0.6 }} />
         ) : (
           <div className="closet-gallery__type-card-placeholder">
             <ImageIcon />
@@ -293,7 +304,7 @@ function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged }) 
 }
 
 /* Static gallery card — 3D thumbnail or product photo. */
-function GalleryCard({ item }) {
+function GalleryCard({ item, defaultImage }) {
   const cfg = item.config;
   const w = totalWidth(cfg);
   const sceneCamera = [
@@ -302,6 +313,7 @@ function GalleryCard({ item }) {
     w / 100 + 3,
   ];
   const sceneTargetY = cfg.dimensions.H / 200;
+  const displayImage = item.image_path || defaultImage;
 
   return (
     <div className="closet-gallery__card">
@@ -309,10 +321,10 @@ function GalleryCard({ item }) {
         <h4 className="closet-gallery__name">{item.name}</h4>
       </div>
       <div className="closet-gallery__canvas-wrap">
-        {item.image_path ? (
+        {displayImage ? (
           <img
             className="closet-gallery__photo"
-            src={`/uploads/${item.image_path}`}
+            src={`/uploads/${displayImage}`}
             alt={item.name}
             loading="lazy"
           />

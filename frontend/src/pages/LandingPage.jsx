@@ -12,6 +12,7 @@ import "../styles/landing/05-contact.css";
 import "../styles/landing/06-footer.css";
 import "../styles/landing/07-whatsapp.css";
 import "../styles/landing/08-closet-anim.css";
+import "../styles/landing/09-scroll-fx.css";
 
 const DEFAULTS = {
   welcome_title: "ארונות בהתאמה אישית",
@@ -87,6 +88,32 @@ export default function LandingPage() {
     [closets],
   );
 
+  // Scroll-driven section focus: the section whose center is closest to the
+  // viewport center gets --active; all others are the muted dark-grey default.
+  // This ensures exactly one section is highlighted at a time.
+  useEffect(() => {
+    const getSections = () => [...document.querySelectorAll("[data-scroll-section]")];
+
+    function activate() {
+      const sections = getSections();
+      if (!sections.length) return;
+      const mid = window.scrollY + window.innerHeight / 2;
+      let best = sections[0];
+      let bestDist = Infinity;
+      for (const s of sections) {
+        const rect = s.getBoundingClientRect();
+        const center = window.scrollY + rect.top + rect.height / 2;
+        const d = Math.abs(center - mid);
+        if (d < bestDist) { bestDist = d; best = s; }
+      }
+      for (const s of sections) s.classList.toggle("landing-scroll-section--active", s === best);
+    }
+
+    window.addEventListener("scroll", activate, { passive: true });
+    activate();
+    return () => window.removeEventListener("scroll", activate);
+  }, []);
+
   const contactRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -157,8 +184,9 @@ export default function LandingPage() {
 
       <main>
         <section
+          data-scroll-section
           className={
-            "landing-hero " +
+            "landing-scroll-section landing-hero " +
             (!settingsResolved
               ? "landing-hero--loading"
               : heroSrc
@@ -198,7 +226,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="categories" className="landing-section landing-categories">
+        <section id="categories" data-scroll-section className="landing-scroll-section landing-section landing-categories">
           <header className="landing-section__head">
             <div className="section-hover-title">
               <h2 className="section-hover-title__h2 landing-section__title">הארונות שלנו</h2>
@@ -228,7 +256,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="landing-trust" aria-label="יתרונות">
+        <section data-scroll-section className="landing-scroll-section landing-trust" aria-label="יתרונות">
           <ul className="landing-trust__list">
             {TRUST.map((t, i) => (
               <li key={i}>
@@ -243,7 +271,7 @@ export default function LandingPage() {
         </section>
 
         {galleryItems.length > 0 && (
-          <section id="gallery" className="landing-gallery">
+          <section id="gallery" data-scroll-section className="landing-scroll-section landing-gallery">
             <header className="landing-section__head">
               <h2 className="landing-section__title">הנמכרים ביותר</h2>
               <p className="landing-section__sub">דגמים נבחרים מהקטלוג שלנו.</p>
@@ -265,7 +293,7 @@ export default function LandingPage() {
         )}
 
         {settings.about_text && (
-          <section id="about" className="landing-section landing-about">
+          <section id="about" data-scroll-section className="landing-scroll-section landing-section landing-about">
             <div className="landing-about__inner">
               <header className="landing-section__head">
                 <h2 className="landing-section__title">אודות</h2>
@@ -275,7 +303,7 @@ export default function LandingPage() {
           </section>
         )}
 
-        <section id="contact" ref={contactRef} className="landing-section landing-contact">
+        <section id="contact" ref={contactRef} data-scroll-section className="landing-scroll-section landing-section landing-contact">
           <div className="landing-contact__inner">
             <header className="landing-section__head">
               <h2 className="landing-section__title">צרו קשר</h2>
