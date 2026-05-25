@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getActiveLogo, getPublicClosets, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
-import { ArrowRight, Check, Package, Send } from "../components/Icons.jsx";
+import FormaLogo from "../components/FormaLogo.jsx";
+import { ArrowRight, Check, Send } from "../components/Icons.jsx";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/landing/02-hero.css";
 import "../styles/landing/03-categories.css";
@@ -102,10 +103,7 @@ export default function LandingPage() {
             {logo ? (
               <img src={`/uploads/${logo.image_path}`} alt={brandName} className="landing-nav__brand-logo" />
             ) : (
-              <>
-                <span className="landing-nav__brand-mark">{brandName}</span>
-                <span className="landing-nav__brand-sub">ארונות</span>
-              </>
+              <FormaLogo height={13} style={{ color: "#ffffff" }} />
             )}
           </Link>
 
@@ -279,8 +277,7 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <div className="landing-footer__inner">
           <div className="landing-footer__brand">
-            <Package />
-            <span>{brandName} ארונות</span>
+            <FormaLogo height={11} style={{ color: "rgba(255,255,255,0.4)" }} />
           </div>
           <p className="landing-footer__copy">
             © {new Date().getFullYear()} {brandName} ארונות. כל הזכויות שמורות.
