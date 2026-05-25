@@ -13,6 +13,7 @@ import "../styles/landing/06-footer.css";
 import "../styles/landing/07-whatsapp.css";
 import "../styles/landing/08-closet-anim.css";
 import "../styles/landing/09-scroll-fx.css";
+import "../styles/landing/10-landing-buttons.css";
 
 const DEFAULTS = {
   welcome_title: "ארונות בהתאמה אישית",
@@ -236,7 +237,7 @@ export default function LandingPage() {
                 הצג
               </Link>
             </div>
-            <p className="landing-section__sub">שני סוגי ארונות, כל אחד מתוכנן אישית</p>
+            <p className="landing-section__sub">בחרו מדגם מוכן או עצבו ארון בדיוק לפי הצורך שלכם</p>
           </header>
           <div className="landing-category-grid">
             <CategoryCard

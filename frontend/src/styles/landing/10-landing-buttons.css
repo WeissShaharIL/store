@@ -1,0 +1,65 @@
+/* Landing-page primary CTAs: vivid blue pill with ambient glow.
+   Overrides the base btn--primary which is tuned for light surfaces. */
+
+.landing .btn--primary {
+  border-radius: 999px;
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 0 28px rgba(37, 99, 235, 0.50),
+    0 8px 32px rgba(37, 99, 235, 0.35);
+}
+.landing .btn--primary:hover:not(:disabled) {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 40px rgba(59, 130, 246, 0.65),
+    0 12px 40px rgba(59, 130, 246, 0.45);
+}
+.landing .btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 0 18px rgba(37, 99, 235, 0.40),
+    0 4px 16px rgba(37, 99, 235, 0.30);
+}
+
+/* Hover-reveal "הצג" button: blue pill instead of white */
+.section-hover-title__reveal {
+  background: #2563eb;
+  color: #ffffff;
+  text-shadow: none;
+  box-shadow:
+    0 0 28px rgba(37, 99, 235, 0.55),
+    0 8px 32px rgba(37, 99, 235, 0.40),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.section-hover-title:hover .section-hover-title__reveal {
+  background: #3b82f6;
+  box-shadow:
+    0 0 40px rgba(59, 130, 246, 0.65),
+    0 12px 40px rgba(59, 130, 246, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.20);
+}
+
+/* Category card CTAs: small blue mini-pill buttons */
+.landing-category-card__cta {
+  padding: 0.4rem 1.1rem;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  border-radius: 999px;
+  color: #60a5fa;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.18);
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.landing-category-card__cta:hover {
+  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 22px rgba(37, 99, 235, 0.38);
+}

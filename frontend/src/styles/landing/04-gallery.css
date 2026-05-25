@@ -87,18 +87,6 @@
   justify-content: center;
   margin-top: var(--space-10);
 }
-.landing-gallery__cta-row .btn--primary {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-}
-.landing-gallery__cta-row .btn--primary:hover {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.5);
-  background: transparent;
-}
 
 @media (max-width: 900px) { .landing-gallery__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) {
