@@ -59,9 +59,11 @@ export default function LandingPage() {
     return () => clearInterval(id);
   }, [banners.length]);
 
+  const defaultClosetImage = settings.default_closet_image || null;
+
   const galleryItems = useMemo(
-    () => closets.filter((c) => c.image_path).slice(0, 6),
-    [closets],
+    () => closets.filter((c) => c.image_path || defaultClosetImage).slice(0, 6),
+    [closets, defaultClosetImage],
   );
 
   const contactRef = useRef(null);
@@ -229,7 +231,7 @@ export default function LandingPage() {
             <div className="landing-gallery__grid">
               {galleryItems.map((c) => (
                 <figure key={c.id} className="landing-gallery__card">
-                  <img src={`/uploads/${c.image_path}`} alt={c.name} loading="lazy" />
+                  <img src={`/uploads/${c.image_path || defaultClosetImage}`} alt={c.name} loading="lazy" />
                   <figcaption>{c.name}</figcaption>
                 </figure>
               ))}

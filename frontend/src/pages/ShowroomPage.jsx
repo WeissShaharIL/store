@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getPublicClosets } from "../api.js";
+import { getPublicClosets, getPublicSettings } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight } from "../components/Icons.jsx";
@@ -18,6 +18,7 @@ export default function ShowroomPage() {
   const [params, setParams] = useSearchParams();
   const [closets, setClosets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [defaultImage, setDefaultImage] = useState(null);
   const [addedIds, setAddedIds] = useState(() =>
     new Set(getCart().map((i) => i.templateId))
   );
@@ -30,6 +31,9 @@ export default function ShowroomPage() {
       .then((rows) => setClosets(rows || []))
       .catch(() => setClosets([]))
       .finally(() => setLoading(false));
+    getPublicSettings()
+      .then((s) => setDefaultImage(s.default_closet_image || null))
+      .catch(() => {});
   }, []);
 
   function handleAddToCart(closet) {
@@ -106,6 +110,7 @@ export default function ShowroomPage() {
                 closet={c}
                 added={addedIds.has(c.id)}
                 onAddToCart={() => handleAddToCart(c)}
+                defaultImage={defaultImage}
               />
             ))}
           </div>
@@ -115,17 +120,17 @@ export default function ShowroomPage() {
   );
 }
 
-function ShowroomCard({ closet, added, onAddToCart }) {
+function ShowroomCard({ closet, added, onAddToCart, defaultImage }) {
   return (
     <div className="showroom-card">
       <div className="showroom-card__head">
         <h3 className="showroom-card__name">{closet.name}</h3>
       </div>
       <div className="showroom-card__image-wrap">
-        {closet.image_path ? (
+        {closet.image_path || defaultImage ? (
           <img
             className="showroom-card__photo"
-            src={`/uploads/${closet.image_path}`}
+            src={`/uploads/${closet.image_path || defaultImage}`}
             alt={closet.name}
             loading="lazy"
           />

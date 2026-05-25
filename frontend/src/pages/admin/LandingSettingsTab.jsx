@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   getLandingSettings, updateLandingSettings,
   adminGetHeroBanners, adminUploadHeroBanner, adminDeleteHeroBanner,
+  adminUploadDefaultClosetImage, adminDeleteDefaultClosetImage,
+  getPublicSettings,
 } from "../../api.js";
 import "./AdminTab.css";
 
@@ -96,6 +98,88 @@ function HeroBannerManager() {
   );
 }
 
+function DefaultClosetImageManager() {
+  const [imagePath, setImagePath] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const fileRef = useRef(null);
+
+  useEffect(() => {
+    getPublicSettings()
+      .then((s) => setImagePath(s.default_closet_image || null))
+      .catch(() => {});
+  }, []);
+
+  async function handleUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await adminUploadDefaultClosetImage(fd);
+      setImagePath(res.image_path);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      await adminDeleteDefaultClosetImage();
+      setImagePath(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="settings-section">
+      <div className="settings-section__head">
+        <h3>תמונת ארון ברירת מחדל</h3>
+        <p className="settings-section__sub">
+          מוצגת בכרטיסי הארונות כאשר לדגם לא הועלתה תמונה ספציפית.
+        </p>
+      </div>
+      {error && <p className="tab-error">{error}</p>}
+      <div className="default-closet-image">
+        {imagePath ? (
+          <div className="default-closet-image__preview">
+            <img src={`/uploads/${imagePath}`} alt="ברירת מחדל" />
+            <button
+              className="default-closet-image__delete"
+              onClick={handleDelete}
+              title="הסר תמונה"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <div className="default-closet-image__placeholder">אין תמונה</div>
+        )}
+        <button
+          className="btn btn--ghost btn--sm"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? "מעלה..." : imagePath ? "החלף תמונה" : "העלה תמונה"}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleUpload}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function LandingSettingsTab() {
   const [values, setValues] = useState({});
   const [loading, setLoading] = useState(true);
@@ -135,6 +219,7 @@ export default function LandingSettingsTab() {
       {error && <p className="tab-error">{error}</p>}
 
       <HeroBannerManager />
+      <DefaultClosetImageManager />
 
       <form onSubmit={handleSave} className="settings-form">
         {FIELDS.map(({ key, label, multiline }) => (
