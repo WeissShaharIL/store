@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { api } from "../api.js";
 import { useForceLightTheme } from "../contexts/ThemeContext.jsx";
 import Section from "../components/Section.jsx";
 import {
-  ArrowRight, Check, Mail, Maximize, Minimize, Package,
+  Check, Mail, Maximize, Minimize, Package,
   Send, Image as ImageIcon,
 } from "../components/Icons.jsx";
 
@@ -118,11 +117,7 @@ export default function GuestPage() {
           <div className="app-header__mark" aria-label="Simple">SIMPLE</div>
           <div className="app-header__title">קטלוג לקוחות</div>
         </div>
-        <div className="app-header__right">
-          <Link to="/login" className="btn btn--ghost">
-            <ArrowRight /> כניסה לחשבון
-          </Link>
-        </div>
+        <div className="app-header__right"></div>
       </header>
 
       <main className="page__main">

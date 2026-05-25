@@ -1,20 +1,21 @@
 .landing-gallery {
-  background: var(--surface);
+  background: #0d0d0f;
   margin: 0;
   max-width: none;
-  padding: var(--space-12) var(--space-5);
+  padding: var(--space-16) var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .landing-gallery > * { max-width: 1200px; margin-inline: auto; }
 
 .landing-gallery__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .landing-gallery__grid:has(.landing-gallery__card:hover) .landing-gallery__card {
-  opacity: 0.55;
-  filter: saturate(0.65);
+  opacity: 0.4;
+  filter: saturate(0.3);
 }
 .landing-gallery__grid:has(.landing-gallery__card:hover) .landing-gallery__card:hover {
   opacity: 1;
@@ -23,8 +24,8 @@
 
 .landing-gallery__card {
   margin: 0;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
@@ -38,32 +39,31 @@
 }
 .landing-gallery__card:hover {
   transform: translateY(-8px);
-  border-color: var(--brand-violet);
-  box-shadow: 0 30px 60px -22px rgba(91, 33, 182, 0.45),
-              0 8px 24px -8px rgba(91, 33, 182, 0.25);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
 }
 .landing-gallery__card img {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: var(--surface-3);
+  background: #111113;
   transform-origin: 35% 40%;
   transition: transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.landing-gallery__card:hover img { transform: scale(1.18) translate(-2.5%, -2.5%); }
+.landing-gallery__card:hover img { transform: scale(1.12) translate(-1.5%, -1.5%); }
 .landing-gallery__card figcaption {
   padding: var(--space-3) var(--space-4);
-  font-size: var(--text-md);
-  font-weight: 600;
-  color: var(--text);
-  background: var(--surface-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: rgba(242, 242, 244, 0.6);
+  background: #161618;
   position: relative;
-  transition: background-color 360ms ease, color 360ms ease;
+  transition: color 280ms ease;
+  letter-spacing: 0.02em;
 }
 .landing-gallery__card:hover figcaption {
-  background: linear-gradient(180deg, var(--surface) 0%, #f5efff 100%);
-  color: var(--brand-violet-deep);
+  color: #f2f2f4;
 }
 .landing-gallery__card figcaption::after {
   content: "\2190";
@@ -71,8 +71,8 @@
   margin-inline-start: var(--space-2);
   opacity: 0;
   transform: translateX(6px);
-  transition: opacity 300ms ease, transform 300ms ease;
-  color: var(--brand-violet);
+  transition: opacity 280ms ease, transform 280ms ease;
+  color: rgba(255, 255, 255, 0.4);
 }
 .landing-gallery__card:hover figcaption::after { opacity: 1; transform: translateX(0); }
 
@@ -80,11 +80,24 @@
   text-align: center;
   padding: var(--space-10) var(--space-4);
   font-size: var(--text-md);
+  color: rgba(242, 242, 244, 0.4);
 }
 .landing-gallery__cta-row {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-8);
+  margin-top: var(--space-10);
+}
+.landing-gallery__cta-row .btn--primary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+.landing-gallery__cta-row .btn--primary:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: transparent;
 }
 
 @media (max-width: 900px) { .landing-gallery__grid { grid-template-columns: repeat(2, 1fr); } }

@@ -6,7 +6,7 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   if (user === undefined) return null; // still loading
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
 
   if (adminOnly && !user.is_admin) return <Navigate to="/" replace />;
 

@@ -1,10 +1,14 @@
-# deploy-remote.ps1 — SSH into the home server and deploy the latest release.
+# deploy-remote.ps1 — SSH into the home server, pull latest tag from main, and deploy.
 #
 # Usage:
 #   .\deploy-remote.ps1 <user> <host>
 #
-# The server runs deploy.sh which finds the latest git tag and deploys from it.
-# Run release.ps1 first to cut a new release before deploying.
+# What it does on the remote (one SSH round-trip):
+#   1. cd ~/code/store
+#   2. git fetch --tags --prune --force origin
+#   3. git checkout main && git reset --hard origin/main
+#   4. chmod +x deploy.sh
+#   5. ./deploy.sh   (no args — picks the latest version tag automatically)
 
 param(
     [Parameter(Mandatory = $true, Position = 0,
@@ -12,11 +16,11 @@ param(
     [string]$Username,
 
     [Parameter(Mandatory = $true, Position = 1,
-        HelpMessage = "Remote host or IP, e.g. '10.10.10.1' or 'ubuntu.local'")]
+        HelpMessage = "Remote host or IP, e.g. '89.139.33.201'")]
     [string]$Hostname
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 $SshTarget = "$Username@$Hostname"
 
 Write-Host "=> Connecting to $SshTarget ..."
@@ -25,8 +29,9 @@ Write-Host ""
 $RemoteScript = @'
 set -e
 cd code/store
-git fetch --tags origin
-git checkout -- deploy.sh 2>/dev/null || true
+git fetch --tags --prune --force origin
+git checkout main
+git reset --hard origin/main
 sed -i 's/\r$//' deploy.sh
 chmod +x deploy.sh
 ./deploy.sh

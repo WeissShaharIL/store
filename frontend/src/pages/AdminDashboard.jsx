@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import FormaLogo from "../components/FormaLogo.jsx";
 import ClosetTemplatesTab from "./admin/ClosetTemplatesTab.jsx";
 import LeadsTab from "./admin/LeadsTab.jsx";
 import ColorsTab from "./admin/ColorsTab.jsx";
@@ -25,13 +26,16 @@ export default function AdminDashboard() {
 
   async function handleLogout() {
     await logout();
-    navigate("/login");
+    navigate("/admin");
   }
 
   return (
     <div className="admin">
       <header className="admin-header">
-        <span className="admin-title">ניהול | Store</span>
+        <div className="admin-header__brand">
+          <FormaLogo />
+          <span className="admin-title">ניהול</span>
+        </div>
         <button onClick={handleLogout} className="admin-logout-btn">יציאה</button>
       </header>
 

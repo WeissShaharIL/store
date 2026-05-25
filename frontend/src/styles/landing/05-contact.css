@@ -1,45 +1,76 @@
 .landing-about__inner {
-  max-width: 760px;
+  max-width: 680px;
   margin: 0 auto;
   text-align: center;
 }
 .landing-about__inner p {
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
-  color: var(--text-soft);
+  color: rgba(242, 242, 244, 0.5);
   margin: 0 0 var(--space-4);
+  font-weight: 400;
 }
 .landing-about__inner p:last-child { margin-bottom: 0; }
 
 .landing-contact {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-  border-top: 1px solid var(--border);
+  background: #0d0d0f;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .landing-contact__inner {
-  max-width: 560px;
+  max-width: 520px;
   margin: 0 auto;
 }
 .landing-contact__form {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-6);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  padding: var(--space-8);
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 40px -20px rgba(91, 33, 182, 0.18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
+
+/* Field overrides inside landing contact form */
+.landing-contact__form .field span {
+  color: rgba(242, 242, 244, 0.55);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+}
+.landing-contact__form input,
 .landing-contact__form textarea {
   font: inherit;
-  padding: 10px 12px;
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
+  padding: 10px 14px;
+  background: #111113;
+  color: #f2f2f4;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-sm);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 150ms ease;
+}
+.landing-contact__form textarea {
   resize: vertical;
   min-height: 110px;
 }
+.landing-contact__form input:focus,
 .landing-contact__form textarea:focus {
-  outline: 2px solid var(--primary-soft-strong);
-  border-color: var(--primary);
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.landing-contact__form input::placeholder,
+.landing-contact__form textarea::placeholder {
+  color: rgba(242, 242, 244, 0.2);
+}
+.landing-contact__form .btn--primary {
+  background: #ffffff;
+  color: #0d0d0f;
+  border: none;
+  font-weight: 600;
+}
+.landing-contact__form .btn--primary:hover {
+  background: rgba(255, 255, 255, 0.88);
+}
+.landing-contact__form .btn--primary:disabled {
+  opacity: 0.5;
 }

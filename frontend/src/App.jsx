@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import SplashScreen from "./components/SplashScreen.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import ShowroomPage from "./pages/ShowroomPage.jsx";
 import DisplaySalePage from "./pages/DisplaySalePage.jsx";
 import CartPage from "./pages/CartPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
 import GuestPage from "./pages/GuestPage.jsx";
 import CatalogPage from "./pages/CatalogPage.jsx";
 import MyOrdersPage from "./pages/MyOrdersPage.jsx";
@@ -16,13 +16,13 @@ import AnnouncementGate from "./components/AnnouncementGate.jsx";
 export default function App() {
   return (
     <>
+      <SplashScreen />
       <AnnouncementGate />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/showroom" element={<ShowroomPage />} />
         <Route path="/display-sale" element={<DisplaySalePage />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/guest" element={<GuestPage />} />
         <Route
           path="/catalog"

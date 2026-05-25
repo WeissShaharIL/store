@@ -2,59 +2,88 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
+  background: #0d0d0f;
+  color: #f2f2f4;
 }
 
 .admin-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.25rem;
-  background: var(--color-primary);
-  color: white;
+  padding: 0.875rem 1.5rem;
+  background: rgba(13, 13, 15, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   position: sticky;
   top: 0;
   z-index: 100;
 }
-.admin-title { font-weight: 700; font-size: 1rem; }
+
+.admin-header__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-title {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
 .admin-logout-btn {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  border-radius: var(--radius);
-  padding: 0.3rem 0.75rem;
-  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  padding: 0.3rem 0.9rem;
+  font-size: 11px;
   font-family: inherit;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.admin-logout-btn:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .admin-tabs {
   display: flex;
-  gap: 0;
-  background: white;
-  border-bottom: 1px solid var(--color-border);
+  background: #111113;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   overflow-x: auto;
-  padding: 0 0.5rem;
+  padding: 0 1rem;
+  scrollbar-width: none;
 }
+.admin-tabs::-webkit-scrollbar { display: none; }
+
 .admin-tab {
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+  border-bottom: 1px solid transparent;
+  padding: 0.85rem 1.1rem;
+  font-size: 12px;
   font-family: inherit;
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.32);
   white-space: nowrap;
   font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
 }
+.admin-tab:hover:not(.active) { color: rgba(255, 255, 255, 0.6); }
 .admin-tab.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
-  font-weight: 700;
+  color: #ffffff;
+  border-bottom-color: rgba(255, 255, 255, 0.55);
 }
 
 .admin-content {
   flex: 1;
-  padding: 1.25rem;
+  padding: 2rem 1.5rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;

@@ -29,6 +29,7 @@ from routers import assets as assets_router
 from routers import leads as leads_router
 from routers import settings as settings_router
 from routers import logos as logos_router
+from routers import hero_banners as hero_banners_router
 from routers import public as public_router
 from routers import landing as landing_router
 from routers import version as version_router
@@ -85,6 +86,7 @@ app.include_router(handles_router.router, prefix="/api/admin/handles", tags=["ad
 app.include_router(door_type_covers_router.router, prefix="/api/admin/door-type-covers", tags=["admin-door-type-covers"])
 app.include_router(assets_router.router, prefix="/api/admin/assets", tags=["admin-assets"])
 app.include_router(logos_router.router, prefix="/api/admin/logos", tags=["admin-logos"])
+app.include_router(hero_banners_router.router, prefix="/api/admin/hero-banners", tags=["admin-hero-banners"])
 app.include_router(settings_router.router, prefix="/api/settings", tags=["settings"])
 app.include_router(landing_router.router, prefix="/api/admin/landing", tags=["admin-landing"])
 app.include_router(leads_router.public_router, prefix="/api/public/leads", tags=["public-leads"])
