@@ -4,7 +4,7 @@
  * active at a time). Inactive sections fade from black at the top to grey
  * at the bottom, creating a seamless gradient at the boundary. */
 .landing-scroll-section {
-  background: linear-gradient(to bottom, #0d0d0f 0%, #252530 100%) !important;
+  background: linear-gradient(to bottom, #0d0d0f 0%, #18181f 100%) !important;
   transition: background 600ms ease;
 }
 .landing-scroll-section--active {
