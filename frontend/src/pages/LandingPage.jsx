@@ -119,8 +119,8 @@ export default function LandingPage() {
 
           <div className="landing-nav__right">
             <CartIcon />
-            <Link to="/login" className="btn btn--ghost btn--sm landing-nav__supplier">
-              כניסת ספקים
+            <Link to="/admin" className="btn btn--ghost btn--sm landing-nav__supplier">
+              כניסת מנהל
             </Link>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function LandingPage() {
           <p className="landing-footer__copy">
             © {new Date().getFullYear()} {brandName} ארונות. כל הזכויות שמורות.
           </p>
-          <Link to="/login" className="landing-footer__supplier">כניסת ספקים</Link>
+          <Link to="/admin" className="landing-footer__supplier">כניסת מנהל</Link>
         </div>
       </footer>
 

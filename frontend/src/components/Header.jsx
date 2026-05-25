@@ -1,26 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
-import { useTheme } from "../contexts/ThemeContext.jsx";
 import InstallAppButton from "./InstallAppButton.jsx";
-import { BookOpen, LogOut, Moon, Sun } from "./Icons.jsx";
-
-const THEME_META = {
-  light:  { icon: <Sun />,      label: "מצב בהיר",   next: "מצב כהה" },
-  dark:   { icon: <Moon />,     label: "מצב כהה",    next: "מצב ספיה" },
-  sepia:  { icon: <BookOpen />, label: "מצב ספיה",  next: "מצב בהיר" },
-};
+import { LogOut } from "./Icons.jsx";
 
 export default function Header({ title }) {
   const { user, logout } = useAuth();
-  const { theme, cycleTheme } = useTheme();
   const navigate = useNavigate();
 
   function handleLogout() {
     logout();
     navigate("/login", { replace: true });
   }
-
-  const meta = THEME_META[theme] || THEME_META.light;
 
   return (
     <header className="app-header">
@@ -29,13 +19,6 @@ export default function Header({ title }) {
         <div className="app-header__title">{title}</div>
       </div>
       <div className="app-header__right">
-        <button
-          className="icon-btn"
-          title={`${meta.label} (החלף ל${meta.next})`}
-          onClick={cycleTheme}
-        >
-          {meta.icon}
-        </button>
         {user && (
           <>
             <InstallAppButton variant="header" />

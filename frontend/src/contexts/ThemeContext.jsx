@@ -1,38 +1,14 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 const ThemeContext = createContext(null);
-const STORAGE_KEY = "demo_theme";
-
-export const THEMES = ["light", "dark", "sepia"];
-
-function initial() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (THEMES.includes(stored)) return stored;
-  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) return "dark";
-  return "light";
-}
 
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState(initial);
-
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
-
-  function setTheme(next) {
-    if (THEMES.includes(next)) setThemeState(next);
-  }
-
-  function cycleTheme() {
-    setThemeState((t) => {
-      const i = THEMES.indexOf(t);
-      return THEMES[(i + 1) % THEMES.length];
-    });
-  }
+    document.documentElement.setAttribute("data-theme", "light");
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, toggle: cycleTheme }}>
+    <ThemeContext.Provider value={{ theme: "light", setTheme: () => {}, cycleTheme: () => {}, toggle: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -45,8 +21,5 @@ export function useTheme() {
 }
 
 export function useForceLightTheme() {
-  const { setTheme } = useTheme();
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
+  // No-op — app is always light.
 }
