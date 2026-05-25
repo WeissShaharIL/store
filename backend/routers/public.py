@@ -112,6 +112,7 @@ def get_public_settings(db: Session = Depends(get_db)):
         "hero_tagline",
         "about_text",
         "default_closet_image",
+        "trust_items",
     }
     rows = db.query(Setting).filter(Setting.key.in_(PUBLIC_KEYS)).all()
     return {r.key: r.value for r in rows}

@@ -16,6 +16,60 @@ const FIELDS = [
   { key: "contact_whatsapp", label: "מספר WhatsApp" },
 ];
 
+const TRUST_DEFAULTS = [
+  { title: "ייצור עצמי",    body: "שליטה מלאה על האיכות" },
+  { title: "אחריות 5 שנים", body: "על כל המוצרים שלנו" },
+  { title: "התקנה מקצועית", body: "צוות מנוסה בשטח" },
+  { title: "התאמה אישית",   body: "לכל גודל ועיצוב" },
+];
+
+function parseTrust(raw) {
+  try { const parsed = JSON.parse(raw || "[]"); return Array.isArray(parsed) ? parsed : []; }
+  catch { return []; }
+}
+
+function TrustBarEditor({ value, onChange }) {
+  const items = parseTrust(value).length ? parseTrust(value) : TRUST_DEFAULTS;
+
+  function update(idx, field, val) {
+    const next = items.map((it, i) => i === idx ? { ...it, [field]: val } : it);
+    onChange(JSON.stringify(next));
+  }
+  function remove(idx) {
+    onChange(JSON.stringify(items.filter((_, i) => i !== idx)));
+  }
+  function add() {
+    onChange(JSON.stringify([...items, { title: "", body: "" }]));
+  }
+
+  return (
+    <div className="trust-editor">
+      {items.map((item, idx) => (
+        <div key={idx} className="trust-editor__row">
+          <input
+            type="text"
+            placeholder="כותרת"
+            value={item.title}
+            onChange={(e) => update(idx, "title", e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="תיאור"
+            value={item.body}
+            onChange={(e) => update(idx, "body", e.target.value)}
+          />
+          <button type="button" className="trust-editor__del" onClick={() => remove(idx)} title="הסר">✕</button>
+        </div>
+      ))}
+      {items.length < 8 && (
+        <button type="button" className="btn btn--ghost btn--sm trust-editor__add" onClick={add}>
+          + הוסף שורה
+        </button>
+      )}
+    </div>
+  );
+}
+
 function HeroBannerManager() {
   const [banners, setBanners] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -240,6 +294,14 @@ export default function LandingSettingsTab() {
             )}
           </div>
         ))}
+        <div className="settings-field settings-field--full">
+          <label>יתרונות (Trust Bar)</label>
+          <TrustBarEditor
+            value={values.trust_items || ""}
+            onChange={(v) => setValues((prev) => ({ ...prev, trust_items: v }))}
+          />
+        </div>
+
         <button type="submit" className="settings-save-btn" disabled={saving}>
           {saved ? "✓ נשמר" : saving ? "שומר..." : "שמור"}
         </button>
