@@ -74,6 +74,8 @@ export const adminDeleteHandle = (id) => api.delete(`/api/admin/handles/${id}`);
 export const adminGetDoorTypeCovers = () => api.get("/api/admin/door-type-covers");
 export const adminUploadDoorTypeCover = (kind, formData) =>
   api.postForm(`/api/admin/door-type-covers/${kind}/image`, formData);
+export const adminDeleteDoorTypeCover = (kind) =>
+  api.delete(`/api/admin/door-type-covers/${kind}/image`);
 
 // ── Admin — Assets ────────────────────────────────────────────────────────────
 export const adminGetAssets = () => api.get("/api/admin/assets");

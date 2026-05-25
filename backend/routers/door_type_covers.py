@@ -42,3 +42,16 @@ def upload_cover(
         db.commit()
         db.refresh(row)
     return DoorTypeCoverOut.model_validate(row)
+
+
+@router.delete("/{kind}/image", status_code=204)
+def delete_cover(kind: str, db: Session = Depends(get_db)):
+    if kind not in VALID_KINDS:
+        raise HTTPException(status_code=422, detail=f"kind חייב להיות: {', '.join(sorted(VALID_KINDS))}")
+    row = db.get(DoorTypeCover, kind)
+    if row is None:
+        return
+    old_path = row.image_path
+    db.delete(row)
+    db.commit()
+    delete_upload(old_path)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getActiveLogo, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
@@ -170,7 +170,7 @@ export default function LandingPage() {
 
           <div className="landing-hero__copy">
             <p className="landing-hero__eyebrow">ייצור ישראלי מקצועי</p>
-            <h1 className="landing-hero__title">{settings.welcome_title}</h1>
+            <RippleTitle text={settings.welcome_title} className="landing-hero__title" />
             <p className="landing-hero__sub">{settings.hero_tagline || settings.welcome_subtitle}</p>
             <div className="landing-hero__cta-row">
               <Link to="/showroom" className="btn btn--primary btn--lg">
@@ -320,6 +320,35 @@ export default function LandingPage() {
         </a>
       )}
     </div>
+  );
+}
+
+function RippleTitle({ text, className }) {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const letters = useMemo(() => [...(text || "")], [text]);
+
+  const colorAt = useCallback((i) => {
+    if (hoveredIdx === null) return "#ffffff";
+    const d = Math.abs(i - hoveredIdx);
+    if (d === 0) return "#6b7280";
+    if (d === 1) return "#9ca3af";
+    if (d === 2) return "#d1d5db";
+    return "#ffffff";
+  }, [hoveredIdx]);
+
+  return (
+    <h1 className={className}>
+      {letters.map((ch, i) => (
+        <span
+          key={i}
+          style={{ color: colorAt(i), transition: "color 120ms ease", display: "inline" }}
+          onMouseEnter={() => setHoveredIdx(i)}
+          onMouseLeave={() => setHoveredIdx(null)}
+        >
+          {ch === " " ? " " : ch}
+        </span>
+      ))}
+    </h1>
   );
 }
 
