@@ -1,0 +1,280 @@
+/* ============================================================
+   Cards, panels, sections
+   ============================================================ */
+.card,
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+/* Lift slightly on hover for clickable cards — kept opt-in via the
+   .card--interactive modifier so non-clickable panels don't move. */
+.card--interactive {
+  cursor: pointer;
+}
+.card--interactive:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.panel__header { margin-bottom: var(--space-4); }
+.panel__header--row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.panel__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: var(--letter-snug);
+}
+.panel__subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  max-width: 64ch;
+}
+
+/* ============================================================
+   Collapsible section
+   ============================================================ */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+.section--open {
+  box-shadow: var(--shadow);
+  border-color: var(--border-strong);
+}
+.section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: start;
+  transition: background-color var(--duration) var(--ease);
+}
+.section__header:hover { background: var(--surface-2); }
+.section__title-wrap { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.section__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color var(--duration) var(--ease),
+              color var(--duration) var(--ease),
+              box-shadow var(--duration) var(--ease);
+}
+.section--open .section__icon {
+  background: var(--primary);
+  color: var(--primary-fg);
+  box-shadow: var(--shadow-primary);
+}
+.section__titles { display: flex; flex-direction: column; min-width: 0; }
+.section__title {
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: var(--letter-snug);
+}
+.section__subtitle {
+  color: var(--text-soft);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+.section__meta { display: flex; align-items: center; gap: var(--space-3); color: var(--text-soft); flex-shrink: 0; }
+.section__badge {
+  background: var(--surface-3);
+  color: var(--text-soft);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  min-width: 24px;
+  text-align: center;
+  transition: background-color var(--duration) var(--ease),
+              color var(--duration) var(--ease);
+}
+.section--open .section__badge { background: var(--primary-soft-strong); color: var(--primary); }
+.section__chevron { transition: transform var(--duration-slow) var(--ease); }
+.section--open .section__chevron { transform: rotate(180deg); }
+.section__body { animation: section-in var(--duration-slow) var(--ease-out); }
+.section__inner {
+  padding: 0 var(--space-6) var(--space-6);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-5);
+}
+
+@keyframes section-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Row utilities
+   ============================================================ */
+.row-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--space-2);
+}
+.row-actions--spread { justify-content: space-between; }
+.row-spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+
+@media (max-width: 600px) {
+  .panel { padding: var(--space-5); }
+  .card { padding: var(--space-5); }
+  .section__header { padding: var(--space-4) var(--space-5); }
+  .section__inner { padding: var(--space-5); padding-top: var(--space-5); }
+  .section__icon { width: 34px; height: 34px; border-radius: 9px; }
+  .section__subtitle { display: none; }
+}
+
+/* ============================================================
+   Theme picker (Settings → "מראה האפליקציה")
+   ============================================================ */
+.theme-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+}
+.theme-picker__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: start;
+  color: inherit;
+  font: inherit;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--duration) var(--ease),
+              box-shadow var(--duration) var(--ease),
+              transform var(--duration) var(--ease);
+}
+.theme-picker__card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.theme-picker__card:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--ring);
+}
+.theme-picker__card--active {
+  border-color: var(--primary);
+  box-shadow: var(--shadow), var(--ring);
+}
+
+/* Preview is a miniature mockup of the theme: page bg → surface card →
+   primary action line + dot. Renders with fixed hex values so the user
+   sees the destination theme, not the current one. */
+.theme-picker__preview {
+  aspect-ratio: 16 / 9;
+}
+.theme-picker__preview-bg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+}
+.theme-picker__preview-card {
+  width: 100%;
+  height: 76%;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+.theme-picker__preview-line {
+  height: 6px;
+  width: 50%;
+  border-radius: 999px;
+}
+.theme-picker__preview-dot {
+  height: 14px;
+  width: 14px;
+  border-radius: 999px;
+  align-self: flex-end;
+}
+
+.theme-picker__body {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-top: 1px solid var(--border);
+}
+.theme-picker__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.theme-picker__icon {
+  color: var(--text-soft);
+  display: inline-flex;
+}
+.theme-picker__card--active .theme-picker__icon { color: var(--primary); }
+.theme-picker__label {
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: var(--letter-snug);
+}
+.theme-picker__badge {
+  margin-inline-start: auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-primary);
+}
+.theme-picker__badge svg { width: 14px; height: 14px; }
+.theme-picker__desc {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  margin: 0;
+}

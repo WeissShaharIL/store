@@ -1,3 +1,6 @@
+/* ============================================================
+   Reset & base
+   ============================================================ */
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
 body {
@@ -26,8 +29,150 @@ input, textarea, select { font: inherit; color: inherit; }
 a { color: inherit; }
 img { max-width: 100%; display: block; }
 
+.page__main {
+  animation: page-in var(--duration-slow) var(--ease-out);
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.page { min-height: 100%; display: flex; flex-direction: column; }
+.page__main {
+  padding: var(--space-8) var(--space-4) var(--space-12);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-header__brand { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.app-header__mark {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #4a1c75 0%, #6a2f96 60%, #7c3aed 100%);
+  color: white;
+  font-weight: 600;
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  font-family: "Manrope", "Inter", "Rubik", system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -10px rgba(106, 47, 150, 0.55),
+              inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+.app-header__logo {
+  height: 36px;
+  max-width: 140px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+.app-header__title {
+  font-weight: 600;
+  font-size: var(--text-md);
+  letter-spacing: var(--letter-snug);
+}
+.app-header__right { display: flex; align-items: center; gap: var(--space-2); }
+.app-header__user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 12px 4px 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  transition: background-color var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+.app-header__user-chip:hover {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+.app-header__user { font-weight: 500; }
+
 .muted { color: var(--muted); }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+  text-align: center;
+  color: var(--text-soft);
+  gap: var(--space-3);
+}
+.empty-state svg { width: 40px; height: 40px; color: var(--muted); }
+.empty-state p { margin: 0; font-size: var(--text-md); font-weight: 500; }
+.empty-state span { font-size: var(--text-sm); }
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fade-in 0.18s var(--ease);
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: pop-in 0.2s var(--ease);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal--lg { max-width: 640px; }
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.modal__header h3 { margin: 0; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================================
+   Cart icon (public pages)
+   ============================================================ */
 .cart-icon {
   position: relative;
   display: inline-flex;
@@ -57,4 +202,11 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .app-header { padding: 10px 14px; }
+  .app-header__title { font-size: var(--text-base); }
+  .app-header__user { display: none; }
+  .page__main { padding: var(--space-5) var(--space-3) var(--space-10); }
 }

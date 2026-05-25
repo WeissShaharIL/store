@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -16,6 +17,106 @@ class LoginResponse(BaseModel):
     customer_id: str
     display_name: str
     is_admin: bool
+
+
+class MeResponse(BaseModel):
+    id: int
+    customer_id: str
+    display_name: str
+    is_admin: bool
+    phone: Optional[str] = None
+
+
+class PasswordChange(BaseModel):
+    old_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=1)
+
+
+class ProfileUpdate(BaseModel):
+    display_name: Optional[str] = Field(default=None, max_length=128)
+    phone: Optional[str] = Field(default=None, max_length=32)
+
+
+# ── Customer catalog ──────────────────────────────────────────────────────────
+
+class CatalogItem(BaseModel):
+    id: int
+    product_code: str
+    name: str
+    description: Optional[str] = None
+    category: str
+    base_price: Decimal
+    price: Decimal
+    image_path: Optional[str] = None
+    hidden: bool = False
+
+    cash_discount_percent: Optional[Decimal] = None
+    cash_discount_price: Optional[Decimal] = None
+    buy_now_discount_percent: Optional[Decimal] = None
+    buy_now_discount_price: Optional[Decimal] = None
+
+
+# ── Messages ──────────────────────────────────────────────────────────────────
+
+class MessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    sender_id: int
+    recipient_id: int
+    body: str
+    read_at: Optional[datetime] = None
+    created_at: datetime
+
+
+class MessageCreate(BaseModel):
+    body: str = Field(min_length=1, max_length=4000)
+
+
+# ── Orders ────────────────────────────────────────────────────────────────────
+
+class OrderLineCreate(BaseModel):
+    item_id: int
+    quantity: int = Field(ge=1, le=10_000)
+
+
+class OrderCreate(BaseModel):
+    notes: Optional[str] = Field(default=None, max_length=2000)
+    lines: List[OrderLineCreate] = Field(min_length=1, max_length=200)
+
+
+class OrderLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    item_id: Optional[int] = None
+    product_code: str
+    name: str
+    unit_price: Decimal
+    quantity: int
+
+
+class OrderOut(BaseModel):
+    id: int
+    user_id: int
+    customer_id: str
+    display_name: str
+    created_at: datetime
+    delivered_at: Optional[datetime] = None
+    notes: Optional[str] = None
+    total_amount: Decimal
+    lines: List[OrderLineOut]
+
+
+# ── Announcements ─────────────────────────────────────────────────────────────
+
+class AnnouncementOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    body: str
+    is_active: bool
+    created_at: datetime
 
 
 # ── Closet Templates ──────────────────────────────────────────────────────────

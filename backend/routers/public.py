@@ -1,15 +1,31 @@
 """Public read-only API — no authentication required.
 
-Serves data the public pages (showroom, display sale, designer) need.
+Serves data the public pages (showroom, display sale, guest catalog, designer) need.
 """
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from db import get_db
-from models import ClosetTemplate, DoorTypeCover, Handle, Logo, PaletteColor, Setting
+from helpers import active_catalog_id
+from models import (
+    GUEST_CUSTOMER_ID,
+    Catalog,
+    ClosetTemplate,
+    DoorTypeCover,
+    Handle,
+    Item,
+    Logo,
+    Message,
+    PaletteColor,
+    Setting,
+    User,
+    catalog_items_membership,
+)
 from schemas import (
+    CatalogItem,
     ClosetTemplateOut,
     DoorTypeCoverOut,
     HandleOut,
@@ -96,3 +112,77 @@ def get_public_settings(db: Session = Depends(get_db)):
     }
     rows = db.query(Setting).filter(Setting.key.in_(PUBLIC_KEYS)).all()
     return {r.key: r.value for r in rows}
+
+
+# ── Guest / customer portal public endpoints ──────────────────────────────────
+
+@router.get("/catalog", response_model=List[CatalogItem])
+def public_catalog(db: Session = Depends(get_db)):
+    """Anonymous catalog: every item in the active catalog at its base price."""
+    active_cid = active_catalog_id(db)
+    if not active_cid:
+        return []
+    items = (
+        db.query(Item)
+        .join(catalog_items_membership, Item.id == catalog_items_membership.c.item_id)
+        .filter(catalog_items_membership.c.catalog_id == active_cid)
+        .order_by(Item.category, Item.name)
+        .all()
+    )
+    return [
+        CatalogItem(
+            id=i.id,
+            product_code=i.product_code,
+            name=i.name,
+            description=i.description,
+            category=i.category,
+            base_price=i.base_price,
+            price=i.base_price,
+            image_path=i.image_path,
+            hidden=False,
+        )
+        for i in items
+    ]
+
+
+class GuestContact(BaseModel):
+    name: str = Field(min_length=1, max_length=128)
+    contact: str = Field(min_length=1, max_length=128)
+    body: str = Field(min_length=1, max_length=2000)
+
+
+def _first_admin(db: Session) -> User:
+    user = (
+        db.query(User)
+        .filter(User.is_admin.is_(True), User.deleted_at.is_(None))
+        .order_by(User.id)
+        .first()
+    )
+    if not user:
+        raise HTTPException(status_code=500, detail="לא נמצא מנהל לשליחת ההודעה")
+    return user
+
+
+def _guest_user(db: Session) -> User:
+    user = (
+        db.query(User)
+        .filter(User.customer_id == GUEST_CUSTOMER_ID, User.deleted_at.is_(None))
+        .first()
+    )
+    if not user:
+        raise HTTPException(status_code=500, detail="חשבון האורח לא הוגדר")
+    return user
+
+
+@router.post("/contact", status_code=201)
+def public_contact(payload: GuestContact, db: Session = Depends(get_db)):
+    admin = _first_admin(db)
+    guest = _guest_user(db)
+    composed = (
+        f"שם: {payload.name.strip()}\n"
+        f"דרך יצירת קשר: {payload.contact.strip()}\n"
+        f"\n{payload.body.strip()}"
+    )
+    db.add(Message(sender_id=guest.id, recipient_id=admin.id, body=composed))
+    db.commit()
+    return {"ok": True}

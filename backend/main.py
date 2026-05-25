@@ -7,7 +7,11 @@ from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from bootstrap import seed_admin, seed_handles, seed_palette_colors, seed_settings
+from bootstrap import (
+    run_migrations,
+    seed_admin, seed_guest_user, seed_default_catalog,
+    seed_handles, seed_palette_colors, seed_settings,
+)
 from db import Base, SessionLocal, engine
 from limiter import limiter
 from logging_config import setup_logging
@@ -60,7 +64,10 @@ def on_startup():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
+        run_migrations(db)
         seed_admin(db)
+        seed_guest_user(db)
+        seed_default_catalog(db)
         seed_settings(db)
         seed_palette_colors(db)
         seed_handles(db)

@@ -1,9 +1,13 @@
 import os
 
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from auth import hash_password
-from models import Handle, PaletteColor, Setting, User
+from models import (
+    Catalog, Handle, PaletteColor, Setting, User,
+    GUEST_CUSTOMER_ID,
+)
 
 
 DEFAULT_SETTINGS = {
@@ -33,6 +37,43 @@ DEFAULT_HANDLES = [
 ]
 
 
+def run_migrations(db: Session) -> None:
+    """Idempotent ALTER TABLE migrations for columns added after initial deploy.
+
+    Uses SQLAlchemy introspection to check column existence — works on both
+    PostgreSQL (production) and SQLite (dev/test).
+    """
+    insp = inspect(db.get_bind())
+    is_pg = db.get_bind().dialect.name == "postgresql"
+
+    def _has_col(table: str, col: str) -> bool:
+        try:
+            return any(c["name"] == col for c in insp.get_columns(table))
+        except Exception:
+            return False
+
+    def _add_col(table: str, col: str, col_type: str, default: str) -> None:
+        if _has_col(table, col):
+            return
+        if is_pg:
+            db.execute(text(
+                f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {col_type} DEFAULT {default}"
+            ))
+        else:
+            db.execute(text(
+                f"ALTER TABLE {table} ADD COLUMN {col} {col_type} DEFAULT {default}"
+            ))
+        db.commit()
+
+    # New User columns
+    _add_col("users", "phone", "VARCHAR(32)", "NULL")
+    _add_col("users", "deleted_at", "TIMESTAMP WITH TIME ZONE" if is_pg else "DATETIME", "NULL")
+    _add_col("users", "cash_discount_enabled", "BOOLEAN", "FALSE")
+    _add_col("users", "cash_discount_percent", "NUMERIC(5,2)", "4")
+    _add_col("users", "buy_now_discount_enabled", "BOOLEAN", "FALSE")
+    _add_col("users", "buy_now_discount_percent", "NUMERIC(5,2)", "6")
+
+
 def seed_admin(db: Session) -> None:
     customer_id = os.environ.get("ADMIN_CUSTOMER_ID", "admin").strip()
     password = os.environ.get("ADMIN_PASSWORD", "").strip()
@@ -59,6 +100,31 @@ def seed_admin(db: Session) -> None:
         password_hash=new_hash,
         is_admin=True,
     ))
+    db.commit()
+
+
+def seed_guest_user(db: Session) -> None:
+    """Ensure the sentinel guest account exists. Used by the public contact form."""
+    existing = db.query(User).filter(User.customer_id == GUEST_CUSTOMER_ID).one_or_none()
+    if existing:
+        return
+    import secrets
+    db.add(User(
+        customer_id=GUEST_CUSTOMER_ID,
+        display_name="אורח",
+        password_hash=hash_password(secrets.token_hex(32)),
+        is_admin=False,
+    ))
+    db.commit()
+
+
+def seed_default_catalog(db: Session) -> None:
+    """Ensure at least one active catalog exists for customer portal use."""
+    if db.query(Catalog).filter(Catalog.is_active.is_(True)).first():
+        return
+    if db.query(Catalog).first():
+        return
+    db.add(Catalog(name="קטלוג ראשי", is_active=True))
     db.commit()
 
 

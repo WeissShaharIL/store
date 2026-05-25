@@ -102,3 +102,61 @@ export const adminRestoreLead = (id) => api.post(`/api/admin/leads/${id}/restore
 export const adminDeleteLeadPermanent = (id) => api.delete(`/api/admin/leads/${id}/permanent`);
 export const adminGetTrashedLeads = () => api.get("/api/admin/leads/trash");
 export const adminGetLeadsUnreadCount = () => api.get("/api/admin/leads/unread-count");
+
+// ── Namespaced API (used by portal pages) ─────────────────────────────────────
+// The flat exports above are used by existing admin components.
+// Portal pages (CatalogPage, MessagesPage, etc.) use the namespaced form below,
+// matching simple/'s api.js shape so pages can be ported without changes.
+
+Object.assign(api, {
+  me: {
+    get: () => api.get("/api/me"),
+    catalog: () => api.get("/api/me/catalog"),
+    pendingAnnouncement: () => api.get("/api/me/pending_announcement"),
+    ackAnnouncement: (id) => api.post(`/api/me/announcements/${id}/ack`),
+    messages: {
+      list: () => api.get("/api/me/messages"),
+      send: (body) => api.post("/api/me/messages", { body }),
+      markRead: () => api.post("/api/me/messages/mark_read"),
+      unreadCount: () => api.get("/api/me/messages/unread_count"),
+    },
+    orders: {
+      list: () => api.get("/api/me/orders"),
+      create: (payload) => api.post("/api/me/orders", payload),
+    },
+  },
+
+  public: {
+    catalog: () => api.get("/api/public/catalog"),
+    contact: (payload) => api.post("/api/public/contact", payload),
+  },
+
+  admin: {
+    messages: {
+      threads: () => api.get("/api/admin/messages/threads"),
+    },
+  },
+
+  async downloadFile(path, filename) {
+    const BASE = import.meta.env.VITE_API_URL || "";
+    const res = await fetch(`${BASE}${path}`, { credentials: "include" });
+    if (!res.ok) {
+      let detail = "שגיאה בהורדה";
+      try { const d = await res.json(); if (d?.detail) detail = d.detail; } catch {}
+      throw new Error(detail);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
+
+  downloadPdf(path, filename) {
+    return api.downloadFile(path, filename);
+  },
+});

@@ -1,0 +1,172 @@
+/* ============================================================
+   Chat (customer messages + admin thread)
+   ============================================================ */
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+}
+.chat--embedded {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: 8px;
+  min-height: 420px;
+  max-height: 70vh;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+}
+.chat__thread {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.chat__composer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.chat__composer textarea {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  max-height: 140px;
+  min-height: 42px;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.chat__composer textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--ring);
+}
+.chat__composer .btn { flex-shrink: 0; }
+.chat--embedded .chat__thread { background: transparent; }
+
+.bubble {
+  max-width: 85%;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-shadow: var(--shadow-xs);
+  animation: bubble-in 0.18s var(--ease);
+}
+.bubble__body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.bubble--mine {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  color: white;
+  border-bottom-left-radius: 4px;
+}
+[dir="rtl"] .bubble--mine { border-bottom-left-radius: 16px; border-bottom-right-radius: 4px; }
+.bubble--theirs {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-right-radius: 4px;
+}
+[dir="rtl"] .bubble--theirs { border-bottom-right-radius: 16px; border-bottom-left-radius: 4px; }
+.bubble__sender {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.bubble__body { font-size: 14px; }
+.bubble__meta {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Unread badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.badge--inline { margin-inline-start: 8px; }
+.badge--corner {
+  position: absolute;
+  top: -5px;
+  inset-inline-end: -5px;
+  box-shadow: 0 0 0 2px var(--surface);
+  z-index: 1;
+}
+[data-theme="dark"] .badge--corner { box-shadow: 0 0 0 2px var(--surface); }
+
+/* Admin thread picker */
+.picker__btn--unread { border-color: var(--primary); }
+.picker__btn--unread .picker__name { color: var(--primary); font-weight: 700; }
+.thread-preview {
+  min-width: 0;
+  flex: 1;
+}
+.thread-preview .picker__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.thread-preview .picker__id {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+.thread-when {
+  font-size: 11px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: var(--text-soft);
+}
+.thread-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+
+@media (max-width: 600px) {
+  .thread-when { font-size: 10px; }
+  .avatar { width: 36px; height: 36px; }
+}

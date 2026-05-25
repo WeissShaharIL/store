@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
-from sqlalchemy import Boolean, Column, DateTime, Integer, Numeric, String, Text
+from sqlalchemy import (
+    Boolean, Column, DateTime, ForeignKey, Integer, Numeric,
+    String, Table, Text, UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 from db import Base
@@ -9,6 +12,11 @@ def utcnow():
     return datetime.now(timezone.utc)
 
 
+# Sentinel customer_id for the shared guest account used by the public
+# contact form.
+GUEST_CUSTOMER_ID = "__guest__"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -16,21 +24,190 @@ class User(Base):
     customer_id = Column(String(64), unique=True, nullable=False, index=True)
     display_name = Column(String(128), nullable=False, default="")
     password_hash = Column(String(255), nullable=False)
+    phone = Column(String(32), nullable=True)
     is_admin = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
+
+    # Per-customer discount toggles + percentages
+    cash_discount_enabled = Column(Boolean, nullable=False, default=False)
+    cash_discount_percent = Column(Numeric(5, 2), nullable=False, default=4)
+    buy_now_discount_enabled = Column(Boolean, nullable=False, default=False)
+    buy_now_discount_percent = Column(Numeric(5, 2), nullable=False, default=6)
+
+    customer_items = relationship(
+        "CustomerItem", back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+# Many-to-many: a product (Item) can belong to multiple catalogs.
+catalog_items_membership = Table(
+    "catalog_items_membership",
+    Base.metadata,
+    Column(
+        "catalog_id",
+        Integer,
+        ForeignKey("catalogs.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "item_id",
+        Integer,
+        ForeignKey("items.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
+
+class Catalog(Base):
+    __tablename__ = "catalogs"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=False, index=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+    items = relationship(
+        "Item",
+        secondary=catalog_items_membership,
+        back_populates="catalogs",
+    )
+
+
+class Item(Base):
+    __tablename__ = "items"
+
+    id = Column(Integer, primary_key=True)
+    product_code = Column(String(64), nullable=False, index=True)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    category = Column(String(64), nullable=False, default="כללי")
+    base_price = Column(Numeric(10, 2), nullable=False, default=0)
+    image_path = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+    catalogs = relationship(
+        "Catalog",
+        secondary=catalog_items_membership,
+        back_populates="items",
+    )
+    customer_items = relationship(
+        "CustomerItem", back_populates="item", cascade="all, delete-orphan"
+    )
+
+
+class CustomerItem(Base):
+    """Per-customer price override and hidden flag for a catalog item."""
+    __tablename__ = "customer_items"
+    __table_args__ = (UniqueConstraint("user_id", "item_id", name="uq_customer_item"),)
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    item_id = Column(Integer, ForeignKey("items.id", ondelete="CASCADE"), nullable=False, index=True)
+    price_override = Column(Numeric(10, 2), nullable=True)
+    hidden = Column(Boolean, nullable=False, default=False)
+
+    user = relationship("User", back_populates="customer_items")
+    item = relationship("Item", back_populates="customer_items")
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False, index=True,
+    )
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, default=utcnow, index=True
+    )
+    delivered_at = Column(DateTime(timezone=True), nullable=True, index=True)
+    notes = Column(Text, nullable=True)
+    total_amount = Column(Numeric(10, 2), nullable=False, default=0)
+
+    user = relationship("User")
+    lines = relationship(
+        "OrderLine", back_populates="order", cascade="all, delete-orphan"
+    )
+
+
+class OrderLine(Base):
+    __tablename__ = "order_lines"
+
+    id = Column(Integer, primary_key=True)
+    order_id = Column(
+        Integer, ForeignKey("orders.id", ondelete="CASCADE"),
+        nullable=False, index=True,
+    )
+    item_id = Column(
+        Integer, ForeignKey("items.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    product_code = Column(String(64), nullable=False)  # snapshot
+    name = Column(String(255), nullable=False)          # snapshot
+    unit_price = Column(Numeric(10, 2), nullable=False)
+    quantity = Column(Integer, nullable=False, default=1)
+
+    order = relationship("Order", back_populates="lines")
+    item = relationship("Item")
+
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    recipient_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    body = Column(Text, nullable=False)
+    read_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, default=utcnow, index=True
+    )
+
+
+class Announcement(Base):
+    """Broadcast message the admin sends to all customers. Blocks the app
+    until each customer clicks Accept (recorded in AnnouncementAck)."""
+    __tablename__ = "announcements"
+
+    id = Column(Integer, primary_key=True)
+    body = Column(Text, nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True, index=True)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, default=utcnow, index=True
+    )
+
+    acks = relationship(
+        "AnnouncementAck",
+        back_populates="announcement",
+        cascade="all, delete-orphan",
+    )
+
+
+class AnnouncementAck(Base):
+    __tablename__ = "announcement_acks"
+
+    announcement_id = Column(
+        Integer,
+        ForeignKey("announcements.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    acked_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+    announcement = relationship("Announcement", back_populates="acks")
 
 
 class ClosetTemplate(Base):
-    """A 3D closet model authored in the admin builder.
-
-    config_json holds the full ClosetConfig blob (validated by the
-    frontend renderer). Stored as TEXT for SQLite test compatibility.
-
-    is_ready toggles a model from draft to published. The showroom
-    only surfaces ready models. is_display_sale marks ready models
-    as one-off floor units offered at a fixed price.
-    """
-
     __tablename__ = "closet_templates"
 
     id = Column(Integer, primary_key=True)
@@ -47,8 +224,6 @@ class ClosetTemplate(Base):
 
 
 class PaletteColor(Base):
-    """One admin-managed color in the closet builder's palette."""
-
     __tablename__ = "palette_colors"
 
     id = Column(Integer, primary_key=True)
@@ -67,12 +242,6 @@ class PaletteColor(Base):
 
 
 class Handle(Base):
-    """One admin-managed door handle option.
-
-    finish: "metallic" or "matte"
-    door_kind: "hinged", "sliding", or "both"
-    """
-
     __tablename__ = "handles"
 
     id = Column(Integer, primary_key=True)
@@ -89,10 +258,6 @@ class Handle(Base):
 
 
 class DoorTypeCover(Base):
-    """Cover photo for each closet door type in the gallery picker.
-    Two rows ever: kind="sliding" and kind="hinged".
-    """
-
     __tablename__ = "door_type_covers"
 
     kind = Column(String(16), primary_key=True)
@@ -103,8 +268,6 @@ class DoorTypeCover(Base):
 
 
 class Asset(Base):
-    """A named image stored in the upload directory; reusable in closet templates."""
-
     __tablename__ = "assets"
 
     id = Column(Integer, primary_key=True)
@@ -114,8 +277,6 @@ class Asset(Base):
 
 
 class Logo(Base):
-    """Admin-uploaded brand logos. Exactly one is active at a time."""
-
     __tablename__ = "logos"
 
     id = Column(Integer, primary_key=True)
@@ -133,12 +294,6 @@ class Setting(Base):
 
 
 class Lead(Base):
-    """Cart-checkout lead. A visitor designs closets, adds to cart,
-    then submits their contact info. Admin calls back to quote.
-
-    status: "new" | "contacted" | "closed"
-    """
-
     __tablename__ = "leads"
 
     id = Column(Integer, primary_key=True)
