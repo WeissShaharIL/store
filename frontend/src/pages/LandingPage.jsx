@@ -114,7 +114,7 @@ export default function LandingPage() {
             {logo ? (
               <img src={`/uploads/${logo.image_path}`} alt={brandName} className="landing-nav__brand-logo" />
             ) : (
-              <FormaLogo height={13} style={{ color: "#ffffff" }} />
+              <FormaLogo />
             )}
           </Link>
 
@@ -297,7 +297,7 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <div className="landing-footer__inner">
           <div className="landing-footer__brand">
-            <FormaLogo height={11} style={{ color: "rgba(255,255,255,0.4)" }} />
+            <FormaLogo style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px" }} />
           </div>
           <p className="landing-footer__copy">
             © {new Date().getFullYear()} {brandName} ארונות. כל הזכויות שמורות.
