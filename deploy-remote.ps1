@@ -30,8 +30,9 @@ Write-Host ""
 $RemoteScript = @'
 set -e
 cd code/store
-git checkout -- deploy.sh 2>/dev/null || true
-git pull
+git fetch origin
+git checkout dev
+git reset --hard origin/dev
 sed -i 's/\r$//' deploy.sh
 chmod +x deploy.sh
 ./deploy.sh
