@@ -113,6 +113,27 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
+/* Category card photo slideshow */
+.category-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.category-slides__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+.category-slides__img--active {
+  opacity: 1;
+}
+
 @media (max-width: 900px) {
   .landing-category-grid { grid-template-columns: 1fr; gap: var(--space-4); }
   .landing-category-card__art { height: 200px; }
