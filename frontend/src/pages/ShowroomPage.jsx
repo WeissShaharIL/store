@@ -5,6 +5,7 @@ import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
 import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+import InquiryModal from "./InquiryModal.jsx";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import { migrateConfig } from "./admin/closet-builder/defaults.js";
 import "../styles/landing/01-shell-nav.css";
@@ -27,6 +28,7 @@ export default function ShowroomPage() {
     new Set(getCart().map((i) => i.templateId))
   );
   const [selectedCloset, setSelectedCloset] = useState(null);
+  const [inquiryCloset, setInquiryCloset] = useState(null);
 
   const kind = params.get("kind") || "all";
 
@@ -64,6 +66,9 @@ export default function ShowroomPage() {
 
   return (
     <div className="showroom">
+      {inquiryCloset && (
+        <InquiryModal item={inquiryCloset} onClose={() => setInquiryCloset(null)} />
+      )}
       {selectedCloset && (
         <ShowroomClosetDetails
           item={selectedCloset}
@@ -132,6 +137,7 @@ export default function ShowroomPage() {
                 added={addedIds.has(c.id)}
                 onAddToCart={() => handleAddToCart(c)}
                 onCardClick={() => handleCardClick(c)}
+                onInquiry={() => setInquiryCloset(c)}
                 defaultImage={defaultImage}
               />
             ))}
@@ -142,7 +148,7 @@ export default function ShowroomPage() {
   );
 }
 
-function ShowroomCard({ closet, added, onAddToCart, onCardClick, defaultImage }) {
+function ShowroomCard({ closet, added, onAddToCart, onCardClick, onInquiry, defaultImage }) {
   const cfg = (() => { try { return migrateConfig(JSON.parse(closet.config_json || "{}")); } catch { return {}; } })();
   const widthCm = cfg && Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
   const doorCount = cfg.doors?.length ?? null;
@@ -184,9 +190,9 @@ function ShowroomCard({ closet, added, onAddToCart, onCardClick, defaultImage })
             <span className="showroom-card__meta">{metaParts.join(" · ")}</span>
           ) : null}
           <div className="showroom-card__foot-actions">
-            <a href="/#contact" className="showroom-card__icon-btn" aria-label="יצירת קשר" title="יצירת קשר">
+            <button type="button" className="showroom-card__icon-btn" onClick={onInquiry} aria-label="שלח פנייה" title="שלח פנייה">
               <Mail />
-            </a>
+            </button>
             <button
               className={"showroom-card__add-btn" + (added ? " showroom-card__add-btn--added" : "")}
               onClick={onAddToCart}

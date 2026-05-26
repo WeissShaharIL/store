@@ -5,6 +5,7 @@ import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
 import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+import InquiryModal from "./InquiryModal.jsx";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import { migrateConfig } from "./admin/closet-builder/defaults.js";
 import "../styles/landing/01-shell-nav.css";
@@ -19,6 +20,7 @@ export default function DisplaySalePage() {
     new Set(getCart().filter((i) => i.displaySaleId).map((i) => i.templateId))
   );
   const [selectedCloset, setSelectedCloset] = useState(null);
+  const [inquiryCloset, setInquiryCloset] = useState(null);
 
   useEffect(() => {
     getDisplaySale()
@@ -42,6 +44,9 @@ export default function DisplaySalePage() {
 
   return (
     <div className="showroom">
+      {inquiryCloset && (
+        <InquiryModal item={inquiryCloset} onClose={() => setInquiryCloset(null)} />
+      )}
       {selectedCloset && (
         <ShowroomClosetDetails
           item={selectedCloset}
@@ -125,9 +130,9 @@ export default function DisplaySalePage() {
                         <span className="showroom-card__meta">{metaParts.join(" · ")}</span>
                       ) : null}
                       <div className="showroom-card__foot-actions">
-                        <a href="/#contact" className="showroom-card__icon-btn" aria-label="יצירת קשר" title="יצירת קשר">
+                        <button type="button" className="showroom-card__icon-btn" onClick={() => setInquiryCloset(c)} aria-label="שלח פנייה" title="שלח פנייה">
                           <Mail />
-                        </a>
+                        </button>
                         <button
                           className={"showroom-card__add-btn" + (addedIds.has(c.id) ? " showroom-card__add-btn--added" : "")}
                           onClick={() => handleAddToCart(c)}
