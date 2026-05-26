@@ -111,33 +111,7 @@ export default function LandingPage() {
     [closets],
   );
 
-  // Scroll-driven section focus: the section whose center is closest to the
-  // viewport center is active (black); all others are inactive (white).
-  // Fully bidirectional — scrolling back up reverses the effect.
-  useEffect(() => {
-    const getSections = () => [...document.querySelectorAll("[data-scroll-section]")];
-
-    function activate() {
-      const sections = getSections();
-      if (!sections.length) return;
-      const mid = window.scrollY + window.innerHeight / 2;
-      let bestIdx = 0;
-      let bestDist = Infinity;
-      sections.forEach((s, i) => {
-        const rect = s.getBoundingClientRect();
-        const center = window.scrollY + rect.top + rect.height / 2;
-        const d = Math.abs(center - mid);
-        if (d < bestDist) { bestDist = d; bestIdx = i; }
-      });
-      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i === bestIdx));
-    }
-
-    window.addEventListener("scroll", activate, { passive: true });
-    activate();
-    return () => window.removeEventListener("scroll", activate);
-  }, []);
-
-  const contactRef = useRef(null);
+const contactRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [body, setBody] = useState("");
