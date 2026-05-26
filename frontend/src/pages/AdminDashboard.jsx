@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
@@ -6,6 +6,9 @@ import LeadsTab from "./admin/LeadsTab.jsx";
 import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
 import PituchTab from "./admin/PituchTab.jsx";
+import { usePolling } from "../hooks/usePolling.js";
+import { adminGetLeadsUnreadCount } from "../api.js";
+import "../styles/chat.css";
 import "./AdminDashboard.css";
 
 const TABS = [
@@ -19,6 +22,14 @@ export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("pituch");
+  const [leadsUnread, setLeadsUnread] = useState(0);
+
+  const fetchLeadsUnread = useCallback(async () => {
+    const r = await adminGetLeadsUnreadCount();
+    setLeadsUnread(r.count || 0);
+  }, []);
+
+  usePolling(fetchLeadsUnread, { intervalMs: 30_000, onVisible: true, deps: [fetchLeadsUnread] });
 
   async function handleLogout() {
     await logout();
@@ -43,6 +54,9 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
+            {tab.id === "leads" && leadsUnread > 0 && (
+              <span className="badge badge--inline">{leadsUnread}</span>
+            )}
           </button>
         ))}
       </nav>
