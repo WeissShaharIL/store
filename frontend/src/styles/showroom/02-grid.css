@@ -36,6 +36,17 @@
   background: #111113;
   overflow: hidden;
 }
+.showroom-card__image-wrap--clickable {
+  display: block;
+  width: 100%;
+  border: none;
+  padding: 0;
+  cursor: zoom-in;
+}
+.showroom-card__image-wrap--clickable:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.4);
+  outline-offset: -2px;
+}
 .showroom-card__photo {
   display: block;
   width: 100%;
