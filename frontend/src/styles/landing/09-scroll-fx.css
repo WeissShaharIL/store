@@ -1,16 +1,48 @@
 /* Scroll-driven section focus effect.
  * The section whose center is closest to the viewport center gets --active
- * (handled by a scroll listener in LandingPage.jsx). Inactive sections show
- * a visible dark-grey; active sections animate to near-black over 800ms.
+ * (handled by a scroll listener in LandingPage.jsx). Inactive sections are
+ * white; active sections animate to near-black over 800ms.
  *
  * NOTE: background-color is used (not background) — CSS cannot
- * transition between a gradient and a solid color. */
+ * transition between a gradient and a solid color.
+ *
+ * The ::before/::after on the active section extend 120px into the adjacent
+ * white sections via absolute positioning, creating a dark→white gradient
+ * at each boundary. z-index:2 ensures these paint above sibling backgrounds. */
 
 .landing-scroll-section {
+  position: relative;
   background-color: #ffffff;
   transition: background-color 800ms ease;
 }
 
 .landing-scroll-section--active {
   background-color: #0d0d0f;
+  z-index: 2;
+}
+
+.landing-scroll-section--active::before,
+.landing-scroll-section--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+}
+
+.landing-scroll-section--active::before {
+  bottom: 100%;
+  background: linear-gradient(to bottom, transparent, #0d0d0f);
+}
+
+.landing-scroll-section--active::after {
+  top: 100%;
+  background: linear-gradient(to top, transparent, #0d0d0f);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-scroll-section { transition: none; }
+  .landing-scroll-section--active::before,
+  .landing-scroll-section--active::after { display: none; }
 }
