@@ -41,7 +41,7 @@
   width: 100%;
   border: none;
   padding: 0;
-  cursor: zoom-in;
+  cursor: pointer;
 }
 .showroom-card__image-wrap--clickable:focus-visible {
   outline: 2px solid rgba(255,255,255,0.4);
