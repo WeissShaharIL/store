@@ -4,7 +4,10 @@ import { getActiveLogo, getDoorTypeCovers, getPublicClosets, getPublicHeroBanner
 import CartIcon from "../components/CartIcon.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
+import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+import { addToCart, getCart } from "../lib/cart.js";
 import "../styles/landing/01-shell-nav.css";
+import "../styles/showroom/03-details.css";
 import "../styles/landing/02-hero.css";
 import "../styles/landing/03-categories.css";
 import "../styles/landing/04-gallery.css";
@@ -39,6 +42,16 @@ export default function LandingPage() {
   const [banners, setBanners] = useState([]);
   const [bannerIdx, setBannerIdx] = useState(0);
   const [doorCovers, setDoorCovers] = useState({});
+  const [selectedCloset, setSelectedCloset] = useState(null);
+  const [addedIds, setAddedIds] = useState(() =>
+    new Set(getCart().map((i) => i.templateId))
+  );
+
+  function handleAddToCart(closet) {
+    const id = "closet-" + closet.id + "-" + Date.now();
+    addToCart({ id, templateId: closet.id, name: closet.name, image_path: closet.image_path });
+    setAddedIds((prev) => new Set([...prev, closet.id]));
+  }
 
   useEffect(() => {
     let alive = true;
@@ -155,6 +168,14 @@ const contactRef = useRef(null);
 
   return (
     <div className="landing">
+      {selectedCloset && (
+        <ShowroomClosetDetails
+          item={selectedCloset}
+          onClose={() => setSelectedCloset(null)}
+          onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
+          added={addedIds.has(selectedCloset.id)}
+        />
+      )}
       <header className="landing-nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand" aria-label={brandName}>
@@ -277,7 +298,12 @@ const contactRef = useRef(null);
             </header>
             <div className="landing-gallery__grid">
               {galleryItems.map((c) => (
-                <figure key={c.id} className="landing-gallery__card">
+                <figure
+                  key={c.id}
+                  className="landing-gallery__card"
+                  onClick={() => setSelectedCloset(c)}
+                  style={{ cursor: "pointer" }}
+                >
                   <img src={`/uploads/${c.image_path || defaultClosetImage}`} alt={c.name} loading="lazy" />
                   <figcaption>{c.name}</figcaption>
                 </figure>
