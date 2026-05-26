@@ -110,7 +110,11 @@
   width: 30px;
   height: 30px;
   border-radius: 6px;
+  background: none;
+  border: none;
+  padding: 0;
   color: rgba(242, 242, 244, 0.45);
+  cursor: pointer;
   transition: color 150ms, background 150ms;
   flex-shrink: 0;
 }
