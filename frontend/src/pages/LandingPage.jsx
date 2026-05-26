@@ -111,12 +111,11 @@ export default function LandingPage() {
     [closets],
   );
 
-  // Scroll-driven section focus: once a section turns black it never goes grey
-  // again — maxReached only increases, so scrolling back up keeps prior
-  // sections black.
+  // Scroll-driven section focus: the section whose center is closest to the
+  // viewport center is active (black); all others are inactive (white).
+  // Fully bidirectional — scrolling back up reverses the effect.
   useEffect(() => {
     const getSections = () => [...document.querySelectorAll("[data-scroll-section]")];
-    let maxReached = 0;
 
     function activate() {
       const sections = getSections();
@@ -130,8 +129,7 @@ export default function LandingPage() {
         const d = Math.abs(center - mid);
         if (d < bestDist) { bestDist = d; bestIdx = i; }
       });
-      maxReached = Math.max(maxReached, bestIdx);
-      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i <= maxReached));
+      sections.forEach((s, i) => s.classList.toggle("landing-scroll-section--active", i === bestIdx));
     }
 
     window.addEventListener("scroll", activate, { passive: true });

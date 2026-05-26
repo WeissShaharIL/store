@@ -7,7 +7,7 @@
  * transition between a gradient and a solid color. */
 
 .landing-scroll-section {
-  background-color: #252535;
+  background-color: #ffffff;
   transition: background-color 800ms ease;
 }
 
