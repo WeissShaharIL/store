@@ -81,14 +81,40 @@
 
 .showroom-card__foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  flex-direction: column;
+  gap: 0.35rem;
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   background: #111113;
   margin-top: auto;
 }
+.showroom-card__foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.showroom-card__foot-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.showroom-card__meta {
+  font-size: var(--text-xs);
+  color: rgba(242, 242, 244, 0.45);
+}
+.showroom-card__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: rgba(242, 242, 244, 0.45);
+  transition: color 150ms, background 150ms;
+  flex-shrink: 0;
+}
+.showroom-card__icon-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
 .showroom-card__price {
   font-size: var(--text-md);
   font-weight: 700;

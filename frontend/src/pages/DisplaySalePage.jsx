@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { getDisplaySale } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
-import { ArrowRight } from "../components/Icons.jsx";
+import { ArrowRight, Mail } from "../components/Icons.jsx";
 import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+import { totalWidth } from "./admin/closet3d/schema.js";
+import { migrateConfig } from "./admin/closet-builder/defaults.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/01-shell.css";
 import "../styles/showroom/02-grid.css";
@@ -85,45 +87,63 @@ export default function DisplaySalePage() {
           </div>
         ) : (
           <div className="showroom-grid">
-            {closets.map((c) => (
-              <div key={c.id} className="showroom-card">
-                <div className="showroom-card__head">
-                  <h3 className="showroom-card__name">{c.name}</h3>
-                </div>
-                <button
-                  type="button"
-                  className="showroom-card__image-wrap showroom-card__image-wrap--clickable"
-                  onClick={() => setSelectedCloset(c)}
-                  aria-label={`פרטים על ${c.name}`}
-                >
-                  {c.image_path ? (
-                    <img
-                      className="showroom-card__photo"
-                      src={`/uploads/${c.image_path}`}
-                      alt={c.name}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="showroom-card__placeholder">🪟</div>
-                  )}
-                  <span className="showroom-card__badge">מתצוגה</span>
-                </button>
-                <div className="showroom-card__foot">
-                  {c.display_sale_price && (
-                    <span className="showroom-card__price">
-                      ₪{Number(c.display_sale_price).toLocaleString()}
-                    </span>
-                  )}
+            {closets.map((c) => {
+              const cfg = (() => { try { return migrateConfig(JSON.parse(c.config_json || "{}")); } catch { return {}; } })();
+              const widthCm = cfg && Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
+              const doorCount = cfg.doors?.length ?? null;
+              const metaParts = [];
+              if (doorCount) metaParts.push(`${doorCount} דלתות`);
+              if (widthCm) metaParts.push(`רוחב ${widthCm} ס״מ`);
+              return (
+                <div key={c.id} className="showroom-card">
+                  <div className="showroom-card__head">
+                    <h3 className="showroom-card__name">{c.name}</h3>
+                  </div>
                   <button
-                    className={"showroom-card__add-btn" + (addedIds.has(c.id) ? " showroom-card__add-btn--added" : "")}
-                    onClick={() => handleAddToCart(c)}
-                    disabled={addedIds.has(c.id)}
+                    type="button"
+                    className="showroom-card__image-wrap showroom-card__image-wrap--clickable"
+                    onClick={() => setSelectedCloset(c)}
+                    aria-label={`פרטים על ${c.name}`}
                   >
-                    {addedIds.has(c.id) ? "✓ נוסף לסל" : "הוסף לסל"}
+                    {c.image_path ? (
+                      <img
+                        className="showroom-card__photo"
+                        src={`/uploads/${c.image_path}`}
+                        alt={c.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="showroom-card__placeholder">🪟</div>
+                    )}
+                    <span className="showroom-card__badge">מתצוגה</span>
                   </button>
+                  <div className="showroom-card__foot">
+                    <div className="showroom-card__foot-row">
+                      {c.display_sale_price ? (
+                        <span className="showroom-card__price">₪{Number(c.display_sale_price).toLocaleString()}</span>
+                      ) : metaParts.length > 0 ? (
+                        <span className="showroom-card__meta">{metaParts.join(" · ")}</span>
+                      ) : null}
+                      <div className="showroom-card__foot-actions">
+                        <a href="/#contact" className="showroom-card__icon-btn" aria-label="יצירת קשר" title="יצירת קשר">
+                          <Mail />
+                        </a>
+                        <button
+                          className={"showroom-card__add-btn" + (addedIds.has(c.id) ? " showroom-card__add-btn--added" : "")}
+                          onClick={() => handleAddToCart(c)}
+                          disabled={addedIds.has(c.id)}
+                        >
+                          {addedIds.has(c.id) ? "✓ נוסף לסל" : "הוסף לסל"}
+                        </button>
+                      </div>
+                    </div>
+                    {c.display_sale_price && metaParts.length > 0 && (
+                      <span className="showroom-card__meta">{metaParts.join(" · ")}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
