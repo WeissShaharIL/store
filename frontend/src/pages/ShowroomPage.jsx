@@ -4,9 +4,11 @@ import { getPublicClosets, getPublicSettings } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight } from "../components/Icons.jsx";
+import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/01-shell.css";
 import "../styles/showroom/02-grid.css";
+import "../styles/showroom/03-details.css";
 
 const KIND_LABELS = {
   all: "כל הדגמים",
@@ -22,6 +24,7 @@ export default function ShowroomPage() {
   const [addedIds, setAddedIds] = useState(() =>
     new Set(getCart().map((i) => i.templateId))
   );
+  const [selectedCloset, setSelectedCloset] = useState(null);
 
   const kind = params.get("kind") || "all";
 
@@ -42,6 +45,10 @@ export default function ShowroomPage() {
     setAddedIds((prev) => new Set([...prev, closet.id]));
   }
 
+  function handleCardClick(closet) {
+    setSelectedCloset(closet);
+  }
+
   const filtered = kind === "all"
     ? closets
     : closets.filter((c) => {
@@ -55,6 +62,14 @@ export default function ShowroomPage() {
 
   return (
     <div className="showroom">
+      {selectedCloset && (
+        <ShowroomClosetDetails
+          item={selectedCloset}
+          onClose={() => setSelectedCloset(null)}
+          onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
+          added={addedIds.has(selectedCloset.id)}
+        />
+      )}
       <header className="landing-nav showroom__nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand">
@@ -114,6 +129,7 @@ export default function ShowroomPage() {
                 closet={c}
                 added={addedIds.has(c.id)}
                 onAddToCart={() => handleAddToCart(c)}
+                onCardClick={() => handleCardClick(c)}
                 defaultImage={defaultImage}
               />
             ))}
@@ -124,13 +140,18 @@ export default function ShowroomPage() {
   );
 }
 
-function ShowroomCard({ closet, added, onAddToCart, defaultImage }) {
+function ShowroomCard({ closet, added, onAddToCart, onCardClick, defaultImage }) {
   return (
     <div className="showroom-card">
       <div className="showroom-card__head">
         <h3 className="showroom-card__name">{closet.name}</h3>
       </div>
-      <div className="showroom-card__image-wrap">
+      <button
+        type="button"
+        className="showroom-card__image-wrap showroom-card__image-wrap--clickable"
+        onClick={onCardClick}
+        aria-label={`פרטים על ${closet.name}`}
+      >
         {closet.image_path || defaultImage ? (
           <img
             className="showroom-card__photo"
@@ -144,7 +165,7 @@ function ShowroomCard({ closet, added, onAddToCart, defaultImage }) {
         {closet.is_display_sale && (
           <span className="showroom-card__badge">מתצוגה</span>
         )}
-      </div>
+      </button>
       <div className="showroom-card__foot">
         {closet.display_sale_price && (
           <span className="showroom-card__price">
