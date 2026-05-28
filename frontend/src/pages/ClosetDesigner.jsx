@@ -161,7 +161,11 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   }
 
   function toggleDoor(id) {
-    setOpenDoorIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
+    const isClosing = openDoorIds.includes(id);
+    setOpenDoorIds((p) => isClosing ? p.filter((x) => x !== id) : [...p, id]);
+    if (isClosing) {
+      setOpenDrawerIds((d) => d.filter((drawerId) => !drawerId.startsWith(`item-${id}-`)));
+    }
   }
   function toggleDrawer(id) {
     setOpenDrawerIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);

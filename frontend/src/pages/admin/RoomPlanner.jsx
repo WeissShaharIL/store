@@ -24,8 +24,10 @@ export default function RoomPlanner({ room, onChange, closetWidthCm, closetDepth
   const closet = closetSaved ?? {
     id: "closet",
     type: "closet",
-    x: Math.max(20, (room.widthCm - closetWidthCm) / 2),
-    y: 20,
+    // x/y are the CENTER of the item in room-cm coords.
+    // Clamp so all four edges stay inside the room.
+    x: Math.max(closetWidthCm / 2, Math.min(room.widthCm - closetWidthCm / 2, room.widthCm / 2)),
+    y: Math.max(closetDepthCm / 2 + 10, closetDepthCm / 2),
     rotation: 0,
     widthCm: closetWidthCm,
     depthCm: closetDepthCm,
