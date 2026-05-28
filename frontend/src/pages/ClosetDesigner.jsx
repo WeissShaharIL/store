@@ -5,6 +5,8 @@ import { addToCart } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
+import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
+import RoomPlanner from "./admin/RoomPlanner.jsx";
 import { WIZARD_STEPS } from "./admin/designer/wizardSteps.js";
 import StepNav from "./admin/designer/StepNav.jsx";
 import DimensionSlider from "./admin/designer/DimensionSlider.jsx";
@@ -23,7 +25,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
 
   const availableSteps = useMemo(
-    () => mode === "quick" ? WIZARD_STEPS.filter((s) => s.id === 2 || s.id === 4) : WIZARD_STEPS,
+    () => mode === "quick" ? WIZARD_STEPS.filter((s) => s.id === 3 || s.id === 6) : WIZARD_STEPS,
     [mode],
   );
 
@@ -51,6 +53,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   const [customDivider, setCustomDivider] = useState(
     saved?.customDivider ?? cfg.hasInternalDivider ?? false,
+  );
+
+  const [customItems, setCustomItems] = useState(saved?.customItems ?? {});
+
+  const [customRoom, setCustomRoom] = useState(
+    saved?.customRoom ?? { widthCm: 400, depthCm: 400, items: [] },
   );
 
   const [step, setStep] = useState(() => {
@@ -104,9 +112,11 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   useEffect(() => {
     saveDesignerState(item.id, {
-      customDims, customColor, customDivider, customDoorHandles, customDoorMaterials, step,
+      customDims, customColor, customDivider, customDoorHandles,
+      customDoorMaterials, customItems, customRoom, step,
     });
-  }, [item.id, customDims, customColor, customDivider, customDoorHandles, customDoorMaterials, step]);
+  }, [item.id, customDims, customColor, customDivider, customDoorHandles,
+    customDoorMaterials, customItems, customRoom, step]);
 
   useEffect(() => {
     function onKey(e) { if (e.key === "Escape") onClose(); }
@@ -130,7 +140,11 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       templateId: item.id,
       name: item.name,
       image_path: item.image_path,
-      snapshot: { customDims, customColor, customDivider, customDoorHandles, customDoorMaterials },
+      snapshot: {
+        customDims, customColor, customDivider,
+        customDoorHandles, customDoorMaterials,
+        customItems, customRoom,
+      },
     });
     clearDesignerState(item.id);
     onClose?.();
@@ -257,6 +271,16 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         )}
 
         {step === 2 && (
+          <div className="closet-designer__body closet-designer__body--step2">
+            <ClosetInteriorPlan
+              cfg={customConfig}
+              items={customItems}
+              onChange={setCustomItems}
+            />
+          </div>
+        )}
+
+        {step === 3 && (
           <div className="closet-designer__body">
             <div className="closet-designer__controls">
               <h4 className="closet-designer__step-title">צבע וידיות</h4>
@@ -278,7 +302,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="closet-designer__body">
             <div className="closet-designer__controls">
               <h4 className="closet-designer__step-title">תוספות</h4>
@@ -298,7 +322,18 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           </div>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
+          <div className="closet-designer__body closet-designer__body--room">
+            <RoomPlanner
+              room={customRoom}
+              onChange={setCustomRoom}
+              closetWidthCm={totalW}
+              closetDepthCm={customDims.D}
+            />
+          </div>
+        )}
+
+        {step === 6 && (
           <div className="closet-designer__body">
             <div className="closet-designer__controls">
               <h4 className="closet-designer__step-title">אישור הזמנה</h4>
@@ -332,7 +367,6 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
             type="button"
             className="closet-designer__mobile-nav__btn closet-designer__mobile-nav__btn--primary"
             onClick={() => nextId != null ? setStep(nextId) : handleAddToCart()}
-            disabled={nextId == null && false}
           >
             {nextId != null ? "הבא" : "הוסף לסל"} <ArrowLeft />
           </button>
