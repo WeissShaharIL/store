@@ -9,14 +9,14 @@ function emit() {
 
 export function getCart() {
   try {
-    return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    return JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
   } catch {
     return [];
   }
 }
 
 function writeCart(items) {
-  localStorage.setItem(CART_KEY, JSON.stringify(items));
+  sessionStorage.setItem(CART_KEY, JSON.stringify(items));
   emit();
 }
 
@@ -43,8 +43,3 @@ export function subscribeToCart(fn) {
   return () => listeners.delete(fn);
 }
 
-if (typeof window !== "undefined") {
-  window.addEventListener("storage", (e) => {
-    if (e.key === CART_KEY) emit();
-  });
-}
