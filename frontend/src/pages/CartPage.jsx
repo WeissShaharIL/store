@@ -55,6 +55,22 @@ export default function CartPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+
+    if (!form.name.trim()) { setError("נא להזין שם מלא."); return; }
+
+    const rawPhone = form.phone.trim();
+    if (!rawPhone) { setError("נא להזין מספר טלפון."); return; }
+    if (!/^[\d\s\-+()]{7,15}$/.test(rawPhone)) {
+      setError("מספר הטלפון אינו תקין — יש להזין ספרות בלבד.");
+      return;
+    }
+
+    const rawEmail = form.email.trim();
+    if (rawEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+      setError("כתובת האימייל אינה תקינה.");
+      return;
+    }
+
     setLoading(true);
     try {
       await submitLead({
