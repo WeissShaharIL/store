@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import SplashScreen from "./components/SplashScreen.jsx";
+import CookieConsent from "./components/CookieConsent.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import ShowroomPage from "./pages/ShowroomPage.jsx";
 import DisplaySalePage from "./pages/DisplaySalePage.jsx";
@@ -18,6 +19,7 @@ export default function App() {
     <>
       <SplashScreen />
       <AnnouncementGate />
+      <CookieConsent />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/showroom" element={<ShowroomPage />} />

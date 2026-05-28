@@ -17,6 +17,7 @@ import "./styles/orders.css";
 import "./styles/splash.css";
 import "./styles/announcements.css";
 import "./styles/install.css";
+import "./styles/showroom/05-designer.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
