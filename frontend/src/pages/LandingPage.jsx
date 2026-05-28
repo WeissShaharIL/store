@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getActiveLogo, getDoorTypeCovers, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
@@ -452,6 +452,15 @@ function CategorySlideshow({ slides }) {
 }
 
 function CategoryCard({ variant, title, body, image, slides = [], ctaLabel, to }) {
+  const navigate = useNavigate();
+  const arrowRef = useRef(null);
+
+  function handleCtaClick(e) {
+    e.preventDefault();
+    arrowRef.current?.classList.add("cta-arrow--shot");
+    setTimeout(() => navigate(to), 270);
+  }
+
   const hasMedia = image || slides.length > 0;
   const className =
     "landing-category-card landing-category-card--" + variant +
@@ -467,8 +476,8 @@ function CategoryCard({ variant, title, body, image, slides = [], ctaLabel, to }
       </div>
       <h3>{title}</h3>
       <p>{body}</p>
-      <Link to={to} className="landing-category-card__cta">
-        {ctaLabel} <ArrowRight />
+      <Link to={to} className="landing-category-card__cta" onClick={handleCtaClick}>
+        {ctaLabel} <span ref={arrowRef} className="cta-arrow"><ArrowRight /></span>
       </Link>
     </article>
   );

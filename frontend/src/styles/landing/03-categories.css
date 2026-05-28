@@ -126,16 +126,28 @@
   letter-spacing: 0.04em;
   transition: color 150ms ease;
 }
-.landing-category-card__cta svg {
+.cta-arrow {
+  display: inline-flex;
+  align-items: center;
+}
+.cta-arrow svg {
   transition: transform 150ms ease;
 }
 .landing-category-card__cta:hover { color: #ffffff; }
-.landing-category-card__cta:hover svg {
+.landing-category-card__cta:hover .cta-arrow svg {
   animation: cta-arrow-nudge 550ms ease-in-out infinite;
 }
 @keyframes cta-arrow-nudge {
   0%, 100% { transform: translateX(0); }
   50%       { transform: translateX(5px); }
+}
+.cta-arrow--shot svg {
+  animation: cta-arrow-shoot 270ms ease-in forwards !important;
+}
+@keyframes cta-arrow-shoot {
+  0%   { transform: translateX(0);    opacity: 1; }
+  70%  { transform: translateX(52px); opacity: 0; }
+  100% { transform: translateX(52px); opacity: 0; }
 }
 
 .landing-category-card__art {
