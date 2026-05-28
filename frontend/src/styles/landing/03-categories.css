@@ -94,7 +94,10 @@
 }
 .landing-category-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.55),
+    0 20px 60px -10px rgba(37, 99, 235, 0.35),
+    inset 0 -1px 0 rgba(37, 99, 235, 0.25);
   border-color: rgba(255, 255, 255, 0.18);
 }
 .landing-category-card h3 {

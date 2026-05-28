@@ -20,11 +20,20 @@ export default function CookieConsent() {
 
   return (
     <div className="cookie-consent" role="region" aria-label="הסכמה לשימוש בנתונים">
-      <p className="cookie-consent__text">
-        אתר זה משתמש בעוגיות לשיפור חוויית הגלישה שלך.
-      </p>
+      <img
+        className="cookie-consent__monster"
+        src="/cookie-monster.png"
+        alt="Cookie Monster"
+        aria-hidden="true"
+      />
+      <div className="cookie-consent__body">
+        <p className="cookie-consent__title">מי אוהב עוגיות?! 🍪</p>
+        <p className="cookie-consent__text">
+          C is for Cookie — גם הדיגיטליות! אתר זה משתמש בעוגיות לשיפור חוויית הגלישה ושמירת ההעדפות שלך.
+        </p>
+      </div>
       <button type="button" className="cookie-consent__btn" onClick={accept}>
-        הבנתי
+        הבנתי, גם אני אוהב עוגיות
       </button>
     </div>
   );

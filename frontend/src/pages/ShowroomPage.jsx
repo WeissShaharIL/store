@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPublicClosets, getPublicSettings } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
@@ -7,8 +7,7 @@ import { ArrowRight, Mail } from "../components/Icons.jsx";
 import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
 import InquiryModal from "./InquiryModal.jsx";
 import ClosetDesigner from "./ClosetDesigner.jsx";
-import { totalWidth } from "./admin/closet3d/schema.js";
-import { migrateConfig } from "./admin/closet-builder/defaults.js";
+import { parseConfig } from "../lib/parseConfig.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/01-shell.css";
 import "../styles/showroom/02-grid.css";
@@ -24,6 +23,7 @@ export default function ShowroomPage() {
   const [params, setParams] = useSearchParams();
   const [closets, setClosets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [defaultImage, setDefaultImage] = useState(null);
   const [addedIds, setAddedIds] = useState(() =>
     new Set(getCart().map((i) => i.templateId))
@@ -38,7 +38,7 @@ export default function ShowroomPage() {
     setLoading(true);
     getPublicClosets()
       .then((rows) => setClosets(rows || []))
-      .catch(() => setClosets([]))
+      .catch(() => { setClosets([]); setLoadError(true); })
       .finally(() => setLoading(false));
     getPublicSettings()
       .then((s) => setDefaultImage(s.default_closet_image || null))
@@ -55,20 +55,18 @@ export default function ShowroomPage() {
     setSelectedCloset(closet);
   }
 
-  const filtered = kind === "all"
-    ? closets
-    : closets.filter((c) => {
-        try {
-          const cfg = JSON.parse(c.config_json || "{}");
-          const closetKind = cfg.kind || cfg.doors?.[0]?.kind;
-          return closetKind === kind;
-        }
-        catch { return false; }
-      });
+  const filtered = useMemo(() => {
+    if (kind === "all") return closets;
+    return closets.filter((c) => {
+      try {
+        const cfg = JSON.parse(c.config_json || "{}");
+        return (cfg.kind || cfg.doors?.[0]?.kind) === kind;
+      } catch { return false; }
+    });
+  }, [closets, kind]);
 
   function handleDesign(closet) {
-    const cfg = (() => { try { return migrateConfig(JSON.parse(closet.config_json || "{}")); } catch { return {}; } })();
-    setDesigningCloset({ ...closet, config: cfg });
+    setDesigningCloset({ ...closet, config: parseConfig(closet.config_json) });
     setSelectedCloset(null);
   }
 
@@ -139,6 +137,10 @@ export default function ShowroomPage() {
       <main className="showroom__main">
         {loading ? (
           <div className="showroom-grid__empty muted">טוען דגמים…</div>
+        ) : loadError ? (
+          <div className="showroom-grid__empty">
+            <p>לא ניתן לטעון את הארונות. אנא רענן את הדף.</p>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="showroom-grid__empty">
             <p>אין דגמים להצגה כרגע.</p>
@@ -192,9 +194,6 @@ function ShowroomCard({ closet, added, onAddToCart, onCardClick, onInquiry, defa
           />
         ) : (
           <div className="showroom-card__placeholder">🪟</div>
-        )}
-        {closet.is_display_sale && (
-          <span className="showroom-card__badge">מתצוגה</span>
         )}
       </button>
       <div className="showroom-card__foot">

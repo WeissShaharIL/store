@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api.js";
 import { useForceLightTheme } from "../contexts/ThemeContext.jsx";
 import Section from "../components/Section.jsx";
@@ -64,6 +64,8 @@ export default function GuestPage() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [contactErr, setContactErr] = useState("");
+  const sentTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(sentTimerRef.current), []);
 
   useEffect(() => {
     api.public.catalog()
@@ -100,7 +102,7 @@ export default function GuestPage() {
       setName("");
       setContact("");
       setBody("");
-      setTimeout(() => setSent(false), 4000);
+      sentTimerRef.current = setTimeout(() => setSent(false), 4000);
     } catch (e) {
       setContactErr(e.message || "שגיאה");
     } finally {

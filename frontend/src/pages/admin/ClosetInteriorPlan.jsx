@@ -163,6 +163,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
 
   const [notice, setNotice] = useState(null);
   const noticeTimerRef = useRef(null);
+  useEffect(() => () => { clearTimeout(noticeTimerRef.current); }, []);
   function showNotice(message) {
     setNotice(message);
     if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);

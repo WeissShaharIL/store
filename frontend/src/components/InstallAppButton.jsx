@@ -12,6 +12,7 @@ export default function InstallAppButton({ variant = "primary" }) {
   const [deferred, setDeferred] = useState(null);
   const [installed, setInstalled] = useState(isStandalone());
   const [stage, setStage] = useState("idle");
+  const timerRef = useRef(null);
 
   useEffect(() => {
     function onPrompt(e) {
@@ -22,13 +23,14 @@ export default function InstallAppButton({ variant = "primary" }) {
       setInstalled(true);
       setDeferred(null);
       setStage("success");
-      setTimeout(() => setStage("idle"), 1800);
+      timerRef.current = setTimeout(() => setStage("idle"), 1800);
     }
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
+      clearTimeout(timerRef.current);
     };
   }, []);
 

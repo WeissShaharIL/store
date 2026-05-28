@@ -125,12 +125,14 @@ export default function LandingPage() {
   );
 
 const contactRef = useRef(null);
+  const sentTimerRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [contactErr, setContactErr] = useState("");
+  useEffect(() => () => clearTimeout(sentTimerRef.current), []);
 
   function scrollToContact(e) {
     e.preventDefault();
@@ -150,7 +152,7 @@ const contactRef = useRef(null);
       });
       setSent(true);
       setName(""); setPhone(""); setBody("");
-      setTimeout(() => setSent(false), 5000);
+      sentTimerRef.current = setTimeout(() => setSent(false), 5000);
     } catch (err) {
       setContactErr(err.message || "שגיאה");
     } finally {
