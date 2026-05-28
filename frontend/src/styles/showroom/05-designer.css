@@ -799,9 +799,8 @@
   z-index: 9999;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3) var(--space-5, 2rem);
+  padding: var(--space-2) var(--space-5, 2rem);
   background: #111113;
   border-top: 1px solid rgba(255, 255, 255, 0.10);
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
@@ -811,13 +810,34 @@
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
-.cookie-consent__text {
-  font-size: var(--text-sm);
-  color: rgba(242, 242, 244, 0.65);
-  line-height: 1.5;
-  max-width: 600px;
+.cookie-consent__monster {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(37, 99, 235, 0.5));
+  animation: monster-bounce 1.8s ease-in-out infinite;
 }
-.cookie-consent__text strong { color: rgba(242, 242, 244, 0.9); }
+@keyframes monster-bounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%       { transform: translateY(-5px) rotate(3deg); }
+}
+.cookie-consent__body {
+  flex: 1;
+  min-width: 0;
+}
+.cookie-consent__title {
+  margin: 0 0 2px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: #f2f2f4;
+}
+.cookie-consent__text {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: rgba(242, 242, 244, 0.55);
+  line-height: 1.5;
+}
 .cookie-consent__btn {
   flex-shrink: 0;
   display: inline-flex;
@@ -833,6 +853,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 140ms, border-color 140ms;
+  white-space: nowrap;
 }
 .cookie-consent__btn:hover {
   background: rgba(96, 165, 250, 0.22);
@@ -841,10 +862,9 @@
 
 @media (max-width: 600px) {
   .cookie-consent {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-4);
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-4);
   }
-  .cookie-consent__btn { align-self: stretch; justify-content: center; }
+  .cookie-consent__monster { width: 48px; height: 48px; }
+  .cookie-consent__btn { flex: 1 0 100%; justify-content: center; }
 }
