@@ -6,7 +6,7 @@ import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import { migrateConfig } from "./admin/closet-builder/defaults.js";
 
-export default function ShowroomClosetDetails({ item, onClose, onAddToCart, added }) {
+export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDesign, added }) {
   const cfg = useMemo(() => {
     try { return migrateConfig(JSON.parse(item.config_json || "{}")); }
     catch { return {}; }
@@ -106,14 +106,21 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, adde
 
             <div className="sr-details__footer">
               <button type="button" className="sr-details__back-btn" onClick={onClose}>חזור</button>
-              <button
-                type="button"
-                className={"sr-details__cta-btn" + (added ? " sr-details__cta-btn--added" : "")}
-                onClick={() => !added && onAddToCart(item)}
-                disabled={added}
-              >
-                {added ? "✓ נוסף לסל" : "הוסף לסל"}
-              </button>
+              <div className="sr-details__footer-actions">
+                <button
+                  type="button"
+                  className={"sr-details__cta-btn sr-details__cta-btn--quick" + (added ? " sr-details__cta-btn--added" : "")}
+                  onClick={() => !added && onAddToCart(item)}
+                  disabled={added}
+                >
+                  {added ? "✓ נוסף לסל" : "הזמן"}
+                </button>
+                {onDesign && (
+                  <button type="button" className="sr-details__cta-btn sr-details__cta-btn--design" onClick={() => onDesign(item)}>
+                    התחל לעצב
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

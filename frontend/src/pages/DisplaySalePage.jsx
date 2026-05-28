@@ -6,6 +6,7 @@ import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
 import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
 import InquiryModal from "./InquiryModal.jsx";
+import ClosetDesigner from "./ClosetDesigner.jsx";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import { migrateConfig } from "./admin/closet-builder/defaults.js";
 import "../styles/landing/01-shell-nav.css";
@@ -21,6 +22,7 @@ export default function DisplaySalePage() {
   );
   const [selectedCloset, setSelectedCloset] = useState(null);
   const [inquiryCloset, setInquiryCloset] = useState(null);
+  const [designingCloset, setDesigningCloset] = useState(null);
 
   useEffect(() => {
     getDisplaySale()
@@ -42,16 +44,29 @@ export default function DisplaySalePage() {
     setAddedIds((prev) => new Set([...prev, closet.id]));
   }
 
+  function handleDesign(closet) {
+    const cfg = (() => { try { return migrateConfig(JSON.parse(closet.config_json || "{}")); } catch { return {}; } })();
+    setDesigningCloset({ ...closet, config: cfg });
+    setSelectedCloset(null);
+  }
+
   return (
     <div className="showroom">
       {inquiryCloset && (
         <InquiryModal item={inquiryCloset} onClose={() => setInquiryCloset(null)} />
       )}
-      {selectedCloset && (
+      {designingCloset && (
+        <ClosetDesigner
+          item={designingCloset}
+          onClose={() => setDesigningCloset(null)}
+        />
+      )}
+      {selectedCloset && !designingCloset && (
         <ShowroomClosetDetails
           item={selectedCloset}
           onClose={() => setSelectedCloset(null)}
           onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
+          onDesign={handleDesign}
           added={addedIds.has(selectedCloset.id)}
         />
       )}

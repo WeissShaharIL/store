@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { PaletteColorsProvider } from "./pages/admin/PaletteContext.jsx";
+import { HandlesProvider } from "./pages/admin/HandlesContext.jsx";
 import App from "./App.jsx";
 import "./styles/tokens.css";
 import "./styles/base.css";
@@ -21,7 +23,11 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <App />
+          <PaletteColorsProvider>
+            <HandlesProvider>
+              <App />
+            </HandlesProvider>
+          </PaletteColorsProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
