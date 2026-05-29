@@ -151,8 +151,6 @@ export default function ShowroomPage() {
               <ShowroomCard
                 key={c.id}
                 closet={c}
-                added={addedIds.has(c.id)}
-                onAddToCart={() => handleAddToCart(c)}
                 onCardClick={() => handleCardClick(c)}
                 onInquiry={() => setInquiryCloset(c)}
                 defaultImage={defaultImage}
@@ -165,7 +163,7 @@ export default function ShowroomPage() {
   );
 }
 
-function ShowroomCard({ closet, added, onAddToCart, onCardClick, onInquiry, defaultImage }) {
+function ShowroomCard({ closet, onCardClick, onInquiry, defaultImage }) {
   const cfg = (() => { try { return migrateConfig(JSON.parse(closet.config_json || "{}")); } catch { return {}; } })();
   const widthCm = cfg && Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
   const doorCount = cfg.doors?.length ?? null;
@@ -207,12 +205,8 @@ function ShowroomCard({ closet, added, onAddToCart, onCardClick, onInquiry, defa
             <button type="button" className="showroom-card__icon-btn" onClick={onInquiry} aria-label="שלח פנייה" title="שלח פנייה">
               <Mail />
             </button>
-            <button
-              className={"showroom-card__add-btn" + (added ? " showroom-card__add-btn--added" : "")}
-              onClick={onAddToCart}
-              disabled={added}
-            >
-              {added ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
+            <button className="showroom-card__add-btn" onClick={onCardClick}>
+              הצג
             </button>
           </div>
         </div>
