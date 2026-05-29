@@ -47,7 +47,7 @@ export default function ShowroomPage() {
 
   function handleAddToCart(closet) {
     const id = "closet-" + closet.id + "-" + Date.now();
-    addToCart({ id, templateId: closet.id, name: closet.name, image_path: closet.image_path });
+    addToCart({ id, templateId: closet.id, name: closet.name, image_path: closet.image_path, config_json: closet.config_json });
     setAddedIds((prev) => new Set([...prev, closet.id]));
   }
 
@@ -115,10 +115,10 @@ export default function ShowroomPage() {
         <h1 className="showroom__title">{KIND_LABELS[kind] || "התצוגה"}</h1>
         <p className="showroom__sub">
           {kind === "sliding"
-            ? "דגמי ארונות עם דלתות מסילה. בחרו דגם והוסיפו לסל ההצעות."
+            ? "דגמי ארונות עם דלתות מסילה. בחרו דגם והוסיפו לעגלה."
             : kind === "hinged"
-            ? "דגמי ארונות עם דלתות צירים. בחרו דגם והוסיפו לסל ההצעות."
-            : "כל דגמי הארונות שלנו. בחרו דגם והוסיפו לסל ההצעות."}
+            ? "דגמי ארונות עם דלתות צירים. בחרו דגם והוסיפו לעגלה."
+            : "כל דגמי הארונות שלנו. בחרו דגם והוסיפו לעגלה."}
         </p>
       </header>
 
@@ -212,7 +212,7 @@ function ShowroomCard({ closet, added, onAddToCart, onCardClick, onInquiry, defa
               onClick={onAddToCart}
               disabled={added}
             >
-              {added ? "✓ נוסף לסל" : "הוסף לסל"}
+              {added ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
             </button>
           </div>
         </div>

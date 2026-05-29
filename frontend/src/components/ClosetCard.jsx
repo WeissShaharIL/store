@@ -24,7 +24,7 @@ export default function ClosetCard({ closet, onAddToCart, added, showPrice = fal
             onClick={onAddToCart}
             disabled={added}
           >
-            {added ? "✓ נוסף לסל" : "הוסף לסל הצעות"}
+            {added ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
           </button>
         )}
       </div>
