@@ -162,10 +162,17 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   function toggleDoor(id) {
     const isClosing = openDoorIds.includes(id);
-    setOpenDoorIds((p) => isClosing ? p.filter((x) => x !== id) : [...p, id]);
-    if (isClosing) {
-      setOpenDrawerIds((d) => d.filter((drawerId) => !drawerId.startsWith(`item-${id}-`)));
+    if (!isClosing) {
+      setOpenDoorIds((p) => [...p, id]);
+      return;
     }
+    // Close drawers first, then close the door after they retract
+    setOpenDrawerIds((d) =>
+      d.filter((drawerId) =>
+        !drawerId.startsWith(`item-${id}-`) && !drawerId.startsWith(`stack-${id}-`)
+      )
+    );
+    setTimeout(() => setOpenDoorIds((p) => p.filter((x) => x !== id)), 300);
   }
   function toggleDrawer(id) {
     setOpenDrawerIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
