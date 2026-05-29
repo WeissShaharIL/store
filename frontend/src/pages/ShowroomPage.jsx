@@ -8,6 +8,7 @@ import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
 import InquiryModal from "./InquiryModal.jsx";
 import ClosetDesigner from "./ClosetDesigner.jsx";
 import { parseConfig } from "../lib/parseConfig.js";
+import { totalWidth } from "./admin/closet3d/schema.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/01-shell.css";
 import "../styles/showroom/02-grid.css";
@@ -164,8 +165,8 @@ export default function ShowroomPage() {
 }
 
 function ShowroomCard({ closet, onCardClick, onInquiry, defaultImage }) {
-  const cfg = (() => { try { return migrateConfig(JSON.parse(closet.config_json || "{}")); } catch { return {}; } })();
-  const widthCm = cfg && Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
+  const cfg = parseConfig(closet.config_json);
+  const widthCm = Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
   const doorCount = cfg.doors?.length ?? null;
 
   const metaParts = [];

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDisplaySale } from "../api.js";
+import { parseConfig } from "../lib/parseConfig.js";
+import { totalWidth } from "./admin/closet3d/schema.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
@@ -91,8 +93,8 @@ export default function DisplaySalePage() {
         ) : (
           <div className="showroom-grid">
             {closets.map((c) => {
-              const cfg = (() => { try { return migrateConfig(JSON.parse(c.config_json || "{}")); } catch { return {}; } })();
-              const widthCm = cfg && Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
+              const cfg = parseConfig(c.config_json);
+              const widthCm = Object.keys(cfg).length ? Math.round(totalWidth(cfg)) : null;
               const doorCount = cfg.doors?.length ?? null;
               const metaParts = [];
               if (doorCount) metaParts.push(`${doorCount} דלתות`);
