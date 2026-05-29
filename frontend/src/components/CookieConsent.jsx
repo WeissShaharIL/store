@@ -1,40 +1,35 @@
 import { useState } from "react";
+import { X } from "./Icons.jsx";
 
 const CONSENT_KEY = "forma_consent";
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(() => {
-    try {
-      return !localStorage.getItem(CONSENT_KEY);
-    } catch {
-      return false;
-    }
+    try { return !localStorage.getItem(CONSENT_KEY); } catch { return false; }
   });
 
   if (!visible) return null;
 
-  function accept() {
+  function dismiss() {
     try { localStorage.setItem(CONSENT_KEY, "1"); } catch { /* ignore */ }
     setVisible(false);
   }
 
   return (
-    <div className="cookie-consent" role="region" aria-label="הסכמה לשימוש בנתונים">
-      <img
-        className="cookie-consent__monster"
-        src="/cookie-monster.png"
-        alt="Cookie Monster"
-        aria-hidden="true"
-      />
-      <div className="cookie-consent__body">
-        <p className="cookie-consent__title">מי אוהב עוגיות?! 🍪</p>
-        <p className="cookie-consent__text">
-          C is for Cookie — גם הדיגיטליות! אתר זה משתמש בעוגיות לשיפור חוויית הגלישה ושמירת ההעדפות שלך.
-        </p>
+    <div className="cookie-bar" role="region" aria-label="הסכמה לשימוש בנתונים">
+      <div className="cookie-bar__inner">
+        <div className="cookie-bar__content">
+          <button type="button" className="cookie-bar__close" onClick={dismiss} aria-label="סגור">
+            <X />
+          </button>
+          <p className="cookie-bar__text">
+            אתר זה משתמש בעוגיות לשיפור חוויית הגלישה שלך.
+          </p>
+        </div>
+        <button type="button" className="cookie-bar__accept" onClick={dismiss}>
+          אישור
+        </button>
       </div>
-      <button type="button" className="cookie-consent__btn" onClick={accept}>
-        הבנתי, גם אני אוהב עוגיות
-      </button>
     </div>
   );
 }
