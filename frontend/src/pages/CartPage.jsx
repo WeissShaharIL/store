@@ -172,33 +172,44 @@ export default function CartPage() {
           <>
             <ul className="cart-list">
               {cart.map((item) => {
+                const snap = item.snapshot;
                 const cfg = parseConfig(item.config_json);
-                const dims = cfg.dimensions;
+                const dims = snap?.customDims ?? cfg.dimensions;
                 const doors = cfg.doors ?? [];
                 const doorKind = doors.length && doors.every((d) => d.kind === doors[0]?.kind)
                   ? (doors[0].kind === "sliding" ? "הזזה" : "ציר")
                   : doors.length ? "מעורב" : null;
                 const widthCm = dims
-                  ? Math.round((cfg.dimensions.compartmentWidth ?? 80) * Math.max(1, doors.length))
+                  ? Math.round((dims.compartmentWidth ?? 80) * Math.max(1, doors.length))
                   : null;
-                const details = [
-                  dims && `${widthCm} × ${dims.H} × ${dims.D} ס״מ`,
-                  doors.length && `${doors.length} דלתות${doorKind ? " · " + doorKind : ""}`,
-                  cfg.basePrice && !item.displaySalePrice && `₪${Number(cfg.basePrice).toLocaleString()}`,
-                ].filter(Boolean);
+                const color = snap?.customColor;
+                const isCustom = !!snap;
+                const price = item.displaySalePrice
+                  ? `₪${Number(item.displaySalePrice).toLocaleString()}`
+                  : cfg.basePrice
+                  ? `₪${Number(cfg.basePrice).toLocaleString()}`
+                  : null;
                 return (
                   <li key={item.id} className="cart-item">
                     {item.image_path && (
                       <img src={`/uploads/${item.image_path}`} alt={item.name} className="cart-item__image" />
                     )}
                     <div className="cart-item__info">
-                      <span className="cart-item__name">{item.name}</span>
-                      {details.length > 0 && (
-                        <span className="cart-item__details">{details.join(" · ")}</span>
+                      <div className="cart-item__name-row">
+                        <span className="cart-item__name">{item.name}</span>
+                        {isCustom && <span className="cart-item__badge">מותאם אישית</span>}
+                        {item.displaySalePrice && <span className="cart-item__badge cart-item__badge--sale">מתצוגה</span>}
+                      </div>
+                      {dims && widthCm && (
+                        <span className="cart-item__detail">📐 {widthCm} × {dims.H} × {dims.D} ס״מ</span>
                       )}
-                      {item.displaySalePrice && (
-                        <span className="cart-item__price">₪{Number(item.displaySalePrice).toLocaleString()}</span>
+                      {doors.length > 0 && (
+                        <span className="cart-item__detail">🚪 {doors.length} דלתות{doorKind ? ` · ${doorKind}` : ""}</span>
                       )}
+                      {color && (
+                        <span className="cart-item__detail">🎨 {color}</span>
+                      )}
+                      {price && <span className="cart-item__price">{price}</span>}
                     </div>
                     <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
                   </li>
