@@ -131,15 +131,11 @@
   align-items: center;
 }
 .cta-arrow svg {
-  transition: transform 150ms ease;
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .landing-category-card__cta:hover { color: #ffffff; }
 .landing-category-card__cta:hover .cta-arrow svg {
-  animation: cta-arrow-nudge 550ms ease-in-out infinite;
-}
-@keyframes cta-arrow-nudge {
-  0%, 100% { transform: translateX(0); }
-  50%       { transform: translateX(5px); }
+  transform: translateX(6px);
 }
 .cta-arrow--shot svg {
   animation: cta-arrow-shoot 270ms ease-in forwards !important;
