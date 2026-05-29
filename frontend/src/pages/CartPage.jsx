@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { submitLead } from "../api.js";
 import { clearCart, getCart, removeFromCart, subscribeToCart } from "../lib/cart.js";
+import { parseConfig } from "../lib/parseConfig.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight } from "../components/Icons.jsx";
 import "../styles/landing/01-shell-nav.css";
@@ -117,7 +118,7 @@ export default function CartPage() {
         <CartNav />
         <div className="cart-page__inner">
           <button onClick={() => setStep("cart")} className="cart-back-btn">
-            <ArrowRight style={{ transform: "rotate(180deg)" }} /> חזרה לסל
+            <ArrowRight style={{ transform: "rotate(180deg)" }} /> חזרה לעגלה
           </button>
           <h1 className="cart-page__title">פרטי קשר</h1>
           <form onSubmit={handleSubmit} className="cart-contact-form">
@@ -158,7 +159,7 @@ export default function CartPage() {
         <Link to="/showroom" className="cart-back-btn">
           <ArrowRight style={{ transform: "rotate(180deg)" }} /> חזרה לתצוגה
         </Link>
-        <h1 className="cart-page__title">סל הצעות <span className="cart-page__count">({cart.length})</span></h1>
+        <h1 className="cart-page__title">העגלה שלי <span className="cart-page__count">({cart.length})</span></h1>
 
         {cart.length === 0 ? (
           <div className="cart-empty">
@@ -170,20 +171,39 @@ export default function CartPage() {
         ) : (
           <>
             <ul className="cart-list">
-              {cart.map((item) => (
-                <li key={item.id} className="cart-item">
-                  {item.image_path && (
-                    <img src={`/uploads/${item.image_path}`} alt={item.name} className="cart-item__image" />
-                  )}
-                  <div className="cart-item__info">
-                    <span className="cart-item__name">{item.name}</span>
-                    {item.displaySalePrice && (
-                      <span className="cart-item__price">₪{item.displaySalePrice.toLocaleString()}</span>
+              {cart.map((item) => {
+                const cfg = parseConfig(item.config_json);
+                const dims = cfg.dimensions;
+                const doors = cfg.doors ?? [];
+                const doorKind = doors.length && doors.every((d) => d.kind === doors[0]?.kind)
+                  ? (doors[0].kind === "sliding" ? "הזזה" : "ציר")
+                  : doors.length ? "מעורב" : null;
+                const widthCm = dims
+                  ? Math.round((cfg.dimensions.compartmentWidth ?? 80) * Math.max(1, doors.length))
+                  : null;
+                const details = [
+                  dims && `${widthCm} × ${dims.H} × ${dims.D} ס״מ`,
+                  doors.length && `${doors.length} דלתות${doorKind ? " · " + doorKind : ""}`,
+                  cfg.basePrice && !item.displaySalePrice && `₪${Number(cfg.basePrice).toLocaleString()}`,
+                ].filter(Boolean);
+                return (
+                  <li key={item.id} className="cart-item">
+                    {item.image_path && (
+                      <img src={`/uploads/${item.image_path}`} alt={item.name} className="cart-item__image" />
                     )}
-                  </div>
-                  <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
-                </li>
-              ))}
+                    <div className="cart-item__info">
+                      <span className="cart-item__name">{item.name}</span>
+                      {details.length > 0 && (
+                        <span className="cart-item__details">{details.join(" · ")}</span>
+                      )}
+                      {item.displaySalePrice && (
+                        <span className="cart-item__price">₪{Number(item.displaySalePrice).toLocaleString()}</span>
+                      )}
+                    </div>
+                    <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
+                  </li>
+                );
+              })}
             </ul>
             <div className="cart-footer">
               <button className="cart-btn cart-btn--primary cart-btn--full" onClick={() => setStep("contact")}>

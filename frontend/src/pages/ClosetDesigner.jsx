@@ -341,7 +341,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           <div className="closet-designer__body">
             <div className="closet-designer__controls">
               <h4 className="closet-designer__step-title">אישור הזמנה</h4>
-              <p className="closet-designer__step-hint">בדוק את הפרטים שבחרת. אם הכל מתאים, הוסף לסל.</p>
+              <p className="closet-designer__step-hint">בדוק את הפרטים שבחרת. אם הכל מתאים, הוסף לעגלה.</p>
               <dl className="closet-designer__summary">
                 <dt>דגם</dt><dd>{item.name}</dd>
                 <dt>גובה</dt><dd>{Math.round(customDims.H)} ס״מ</dd>
@@ -372,7 +372,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
             className="closet-designer__mobile-nav__btn closet-designer__mobile-nav__btn--primary"
             onClick={() => nextId != null ? setStep(nextId) : handleAddToCart()}
           >
-            {nextId != null ? "הבא" : "הוסף לסל"} <ArrowLeft />
+            {nextId != null ? "הבא" : "הוסף לעגלה"} <ArrowLeft />
           </button>
         </div>
 
@@ -380,7 +380,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           <button type="button" className="closet-designer__cancel-btn" onClick={onClose}>ביטול</button>
           {isLastStep && (
             <button type="button" className="closet-designer__add-btn" onClick={handleContinue}>
-              הוסף לסל <ArrowLeft />
+              הוסף לעגלה <ArrowLeft />
             </button>
           )}
         </div>

@@ -101,9 +101,14 @@
   font-size: 0.95rem;
   color: #f2f2f4;
 }
+.cart-item__details {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+}
 .cart-item__price {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #60a5fa;
+  font-weight: 600;
 }
 .cart-item__remove {
   background: none;

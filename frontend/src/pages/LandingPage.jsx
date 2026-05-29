@@ -49,7 +49,7 @@ export default function LandingPage() {
 
   function handleAddToCart(closet) {
     const id = "closet-" + closet.id + "-" + Date.now();
-    addToCart({ id, templateId: closet.id, name: closet.name, image_path: closet.image_path });
+    addToCart({ id, templateId: closet.id, name: closet.name, image_path: closet.image_path, config_json: closet.config_json });
     setAddedIds((prev) => new Set([...prev, closet.id]));
   }
 

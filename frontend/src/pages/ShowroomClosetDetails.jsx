@@ -117,7 +117,7 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
                   onClick={() => !added && onAddToCart(item)}
                   disabled={added}
                 >
-                  {added ? "✓ נוסף לסל" : "הזמן"}
+                  {added ? "✓ נוסף לעגלה" : "הזמן"}
                 </button>
                 {onDesign && (
                   <button type="button" className="sr-details__cta-btn sr-details__cta-btn--design" onClick={() => onDesign(item)}>

@@ -136,7 +136,7 @@ export default function DisplaySalePage() {
                           onClick={() => handleAddToCart(c)}
                           disabled={addedIds.has(c.id)}
                         >
-                          {addedIds.has(c.id) ? "✓ נוסף לסל" : "הוסף לסל"}
+                          {addedIds.has(c.id) ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
                         </button>
                       </div>
                     </div>
