@@ -16,7 +16,7 @@ export default function CookieConsent() {
     setTimeout(() => {
       try { localStorage.setItem(CONSENT_KEY, "1"); } catch { /* ignore */ }
       setVisible(false);
-    }, 320);
+    }, 650);
   }
 
   return (

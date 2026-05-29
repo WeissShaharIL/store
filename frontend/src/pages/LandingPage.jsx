@@ -457,8 +457,8 @@ function CategoryCard({ variant, title, body, image, slides = [], ctaLabel, to }
 
   function handleCtaClick(e) {
     e.preventDefault();
-    arrowRef.current?.classList.add("cta-arrow--shot");
-    setTimeout(() => navigate(to), 270);
+    arrowRef.current?.classList.add("cta-arrow--extending");
+    setTimeout(() => navigate(to), 980);
   }
 
   const hasMedia = image || slides.length > 0;

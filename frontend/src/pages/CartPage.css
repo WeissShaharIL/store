@@ -96,10 +96,34 @@
   flex-direction: column;
   gap: 0.2rem;
 }
+.cart-item__name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
 .cart-item__name {
   font-weight: 600;
   font-size: 0.95rem;
   color: #f2f2f4;
+}
+.cart-item__badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cart-item__badge--sale {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+.cart-item__detail {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
 }
 .cart-item__details {
   font-size: 0.8rem;
