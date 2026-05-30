@@ -322,3 +322,21 @@ class Lead(Base):
     )
     contacted_at = Column(DateTime(timezone=True), nullable=True)
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
+
+
+class MediaFolder(Base):
+    __tablename__ = "media_folders"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+class MediaFile(Base):
+    __tablename__ = "media_files"
+
+    id = Column(Integer, primary_key=True)
+    folder_id = Column(Integer, ForeignKey("media_folders.id"), nullable=True, index=True)
+    image_path = Column(String(255), nullable=False)
+    original_name = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)

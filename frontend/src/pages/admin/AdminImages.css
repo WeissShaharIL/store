@@ -1,0 +1,200 @@
+.images-tab {
+  display: flex;
+  height: calc(100vh - 120px);
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.images-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.images-sidebar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.images-sidebar__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+.images-sidebar__new-folder {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem 0.75rem;
+}
+.images-sidebar__new-folder input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  background: #111113;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.82rem;
+  outline: none;
+}
+.images-sidebar__new-folder input:focus { border-color: rgba(255, 255, 255, 0.35); }
+
+.images-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.images-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+  border-radius: 6px;
+  margin: 0 0.35rem;
+  transition: background 120ms ease, color 120ms ease;
+  position: relative;
+}
+.images-sidebar__item:hover { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.85); }
+.images-sidebar__item--active { background: rgba(255, 255, 255, 0.1); color: #f2f2f4; }
+
+.images-sidebar__folder-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.images-sidebar__count {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-right: auto;
+}
+.images-sidebar__del {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  transition: color 120ms ease;
+}
+.images-sidebar__del:hover { color: #f87171; }
+.images-sidebar__item:hover .images-sidebar__del { display: inline; }
+
+/* ── Main area ────────────────────────────────────────────────────────────── */
+.images-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.images-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+.images-toolbar__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f2f2f4;
+}
+
+.images-empty {
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  padding: 4rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ── Image grid ───────────────────────────────────────────────────────────── */
+.images-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.images-grid__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  position: relative;
+}
+
+.images-grid__thumb-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.images-grid__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 150ms ease;
+}
+
+.images-grid__del {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  color: #f87171;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.images-grid__del:hover { background: rgba(248, 113, 113, 0.25); }
+.images-grid__thumb-wrap:hover .images-grid__del { display: flex; }
+
+.images-grid__name {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.images-grid__copy {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+  opacity: 0.4;
+  transition: opacity 120ms ease;
+  align-self: flex-start;
+}
+.images-grid__copy:hover { opacity: 1; }

@@ -115,6 +115,26 @@ export const adminDeleteLeadPermanent = (id) => api.delete(`/api/admin/leads/${i
 export const adminGetTrashedLeads = () => api.get("/api/admin/leads/trash");
 export const adminGetLeadsUnreadCount = () => api.get("/api/admin/leads/unread-count");
 
+// ── Admin — Media library ─────────────────────────────────────────────────────
+export const adminGetMediaFolders = () => api.get("/api/admin/media/folders");
+export const adminCreateMediaFolder = (name) => {
+  const fd = new FormData(); fd.append("name", name);
+  return api.postForm("/api/admin/media/folders", fd);
+};
+export const adminDeleteMediaFolder = (id) => api.delete(`/api/admin/media/folders/${id}`);
+export const adminGetMediaFiles = (params = {}) => {
+  const qs = new URLSearchParams();
+  if (params.folderId != null) qs.set("folder_id", params.folderId);
+  if (params.noFolder) qs.set("no_folder", "true");
+  return api.get(`/api/admin/media/files${qs.toString() ? "?" + qs : ""}`);
+};
+export const adminUploadMediaFile = (formData) => api.postForm("/api/admin/media/files", formData);
+export const adminDeleteMediaFile = (id) => api.delete(`/api/admin/media/files/${id}`);
+
+// ── Admin — Auth ──────────────────────────────────────────────────────────────
+export const adminChangePassword = (currentPassword, newPassword) =>
+  api.post("/api/auth/change-password", { current_password: currentPassword, new_password: newPassword });
+
 // ── Namespaced API (used by portal pages) ─────────────────────────────────────
 // The flat exports above are used by existing admin components.
 // Portal pages (CatalogPage, MessagesPage, etc.) use the namespaced form below,
