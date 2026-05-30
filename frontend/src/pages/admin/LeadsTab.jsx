@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   adminDeleteLead,
   adminGetLeads,
@@ -10,6 +10,14 @@ import {
 } from "../../api.js";
 import { parseConfig } from "../../lib/parseConfig.js";
 import "./AdminTab.css";
+
+// Lazy so three.js loads only when an admin opens a 3D preview.
+const LeadClosetPreview = lazy(() => import("./LeadClosetPreview.jsx"));
+
+function hasRenderableConfig(item) {
+  const cfg = parseConfig(item.config_json);
+  return (cfg.doors?.length ?? 0) > 0;
+}
 
 const INTERIOR_LABELS = { shelf: "מדף", rod: "מוט תלייה", drawer: "מגירה" };
 
@@ -66,6 +74,7 @@ export default function LeadsTab() {
   const [error, setError] = useState("");
   const [counts, setCounts] = useState(null);
   const [exporting, setExporting] = useState(false);
+  const [preview, setPreview] = useState(null); // cart item being shown in 3D
 
   useEffect(() => {
     load();
@@ -194,6 +203,15 @@ export default function LeadsTab() {
                           {interior && (
                             <span className="lead-cart__interior">🗄️ פנים הארון: {interior}</span>
                           )}
+                          {hasRenderableConfig(item) && (
+                            <button
+                              type="button"
+                              className="lead-action-btn"
+                              onClick={() => setPreview(item)}
+                            >
+                              צפה בתלת-מימד
+                            </button>
+                          )}
                         </li>
                       );
                     })}
@@ -232,6 +250,12 @@ export default function LeadsTab() {
             </div>
           ))}
         </div>
+      )}
+
+      {preview && (
+        <Suspense fallback={null}>
+          <LeadClosetPreview item={preview} onClose={() => setPreview(null)} />
+        </Suspense>
       )}
     </div>
   );

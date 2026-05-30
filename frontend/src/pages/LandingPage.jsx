@@ -248,11 +248,14 @@ const contactRef = useRef(null);
             <p className="landing-hero__eyebrow">ייצור ישראלי מקצועי</p>
             <RippleTitle text={settings.welcome_title} className="landing-hero__title" />
             <p className="landing-hero__sub">{settings.hero_tagline || settings.welcome_subtitle}</p>
-            <button type="button" className="landing-hero__cta" onClick={() => setScratchOpen(true)}>
-              עצבו ארון משלכם
-            </button>
           </div>
         </section>
+
+        <div className="landing-hero__cta-band">
+          <button type="button" className="landing-hero__cta" onClick={() => setScratchOpen(true)}>
+            עצבו ארון משלכם
+          </button>
+        </div>
 
         <section id="categories" data-scroll-section className="landing-scroll-section landing-section landing-categories">
           <header className="landing-section__head">

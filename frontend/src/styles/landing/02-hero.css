@@ -164,11 +164,19 @@
   .landing-hero--placeholder .landing-hero__panel { width: 68%; height: 52%; }
 }
 
-/* "Design your own" CTA in the hero — frosted-glass pill with blue aurora,
-   matching the site primary button (v0.74.0). */
+/* CTA band directly beneath the hero image — full-bleed strip, same width
+   as the hero, holding the "design your own" button centered (v0.79.0). */
+.landing-hero__cta-band {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-6);
+  background: #0d0d0f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* "Design your own" CTA — frosted-glass pill with blue aurora, matching the
+   site primary button (v0.74.0). */
 .landing-hero__cta {
-  align-self: flex-start;
-  margin-top: var(--space-8);
   padding: 0.7rem 1.75rem;
   background: rgba(255, 255, 255, 0.09);
   border: 1px solid rgba(255, 255, 255, 0.16);

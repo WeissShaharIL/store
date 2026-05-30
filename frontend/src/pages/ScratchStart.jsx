@@ -9,7 +9,7 @@ const KIND_OPTIONS = [
   { id: "hinged", label: "דלתות פתיחה", hint: "דלתות על צירים" },
   { id: "sliding", label: "דלתות הזזה", hint: "דלתות על מסילה" },
 ];
-const DOOR_OPTIONS = [1, 2, 3, 4];
+const DOOR_OPTIONS = [1, 2, 3, 4, 5, 6];
 
 /**
  * v0.74.0 — "design from scratch" entry flow (doron-home style).

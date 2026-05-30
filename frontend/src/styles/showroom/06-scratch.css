@@ -92,9 +92,10 @@
 .scratch-start__option-label { font-size: 1rem; font-weight: 600; color: #f2f2f4; }
 .scratch-start__option-hint { font-size: 0.78rem; color: rgba(255, 255, 255, 0.4); }
 
-.scratch-start__options--doors { gap: 0.6rem; }
+.scratch-start__options--doors { gap: 0.6rem; flex-wrap: wrap; }
 .scratch-start__door {
-  flex: 1;
+  flex: 1 1 60px;
+  min-width: 56px;
   padding: 0.9rem 0;
   background: #111113;
   border: 1px solid rgba(255, 255, 255, 0.1);
