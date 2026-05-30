@@ -140,10 +140,10 @@ export default function ShowroomPage() {
           </button>
         ))}
         <button
-          className="showroom__scratch-btn"
+          className="showroom__filter-btn"
           onClick={() => setScratchOpen(true)}
         >
-          ✏️ עצב ארון משלך
+          עצב ארון משלך
         </button>
       </div>
 

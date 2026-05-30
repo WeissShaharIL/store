@@ -249,7 +249,7 @@ const contactRef = useRef(null);
             <RippleTitle text={settings.welcome_title} className="landing-hero__title" />
             <p className="landing-hero__sub">{settings.hero_tagline || settings.welcome_subtitle}</p>
             <button type="button" className="landing-hero__cta" onClick={() => setScratchOpen(true)}>
-              ✏️ עצבו ארון משלכם
+              עצבו ארון משלכם
             </button>
           </div>
         </section>
