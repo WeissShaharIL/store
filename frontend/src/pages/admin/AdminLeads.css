@@ -36,6 +36,8 @@
   padding: 0.5rem 0.65rem;
   color: rgba(255,255,255,0.7);
   line-height: 1.5;
+  white-space: pre-wrap;   /* preserve the line breaks the customer typed */
+  word-break: break-word;
 }
 
 /* Cart items (the actual request contents) */
@@ -80,5 +82,6 @@
   border: 1px solid rgba(37,99,235,0.25);
 }
 .lead-cart__summary { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+.lead-cart__interior { font-size: 0.78rem; color: rgba(147,197,253,0.85); }
 
 .lead-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }

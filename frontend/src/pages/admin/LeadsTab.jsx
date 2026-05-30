@@ -9,6 +9,8 @@ import {
 import { parseConfig } from "../../lib/parseConfig.js";
 import "./AdminTab.css";
 
+const INTERIOR_LABELS = { shelf: "מדף", rod: "מוט תלייה", drawer: "מגירה" };
+
 function cartItemSummary(item) {
   const snap = item.snapshot;
   const cfg = parseConfig(item.config_json);
@@ -24,6 +26,26 @@ function cartItemSummary(item) {
   if (color) parts.push(color);
   if (item.displaySalePrice) parts.push(`₪${Number(item.displaySalePrice).toLocaleString()}`);
   return parts.join(" · ");
+}
+
+// Stage-2 interior plan: snapshot.customItems is { doorId: [{ type, y }, ...] }.
+// Returns e.g. "3 מדפים · 1 מוט תלייה · 2 מגירות" or "" if nothing was placed.
+function interiorSummary(item) {
+  const byDoor = item.snapshot?.customItems;
+  if (!byDoor || typeof byDoor !== "object") return "";
+  const counts = {};
+  for (const list of Object.values(byDoor)) {
+    if (!Array.isArray(list)) continue;
+    for (const it of list) {
+      if (!it?.type) continue;
+      counts[it.type] = (counts[it.type] || 0) + 1;
+    }
+  }
+  const order = ["shelf", "rod", "drawer"];
+  return order
+    .filter((t) => counts[t])
+    .map((t) => `${counts[t]} ${INTERIOR_LABELS[t] || t}`)
+    .join(" · ");
 }
 
 const STATUS_LABELS = { new: "חדש", contacted: "נוצר קשר", closed: "סגור" };
@@ -129,6 +151,7 @@ export default function LeadsTab() {
                   <ul className="lead-cart__list">
                     {l.cart.map((item, i) => {
                       const summary = cartItemSummary(item);
+                      const interior = interiorSummary(item);
                       return (
                         <li key={item.id || i} className="lead-cart__item">
                           <span className="lead-cart__name">
@@ -136,6 +159,9 @@ export default function LeadsTab() {
                             {item.name || "ארון"}
                           </span>
                           {summary && <span className="lead-cart__summary">{summary}</span>}
+                          {interior && (
+                            <span className="lead-cart__interior">🗄️ פנים הארון: {interior}</span>
+                          )}
                         </li>
                       );
                     })}
