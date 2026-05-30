@@ -18,6 +18,7 @@ import "./styles/splash.css";
 import "./styles/announcements.css";
 import "./styles/install.css";
 import "./styles/showroom/05-designer.css";
+import "./styles/buttons.css"; // canonical storefront button styles — must be last
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
