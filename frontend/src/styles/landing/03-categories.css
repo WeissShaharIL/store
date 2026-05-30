@@ -113,24 +113,42 @@
   line-height: var(--leading-relaxed);
   font-size: var(--text-sm);
 }
+/* Category card CTA: small frosted-glass pill with subtle blue aurora.
+   This is the original reference design (restored from the pre-refactor
+   10-landing-buttons.css). */
 .landing-category-card__cta {
   margin: auto var(--space-6) var(--space-6);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-  text-decoration: none;
   align-self: flex-start;
-  letter-spacing: 0.04em;
-  transition: color 150ms ease;
+  padding: 0.4rem 1.1rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow:
+    0 4px 12px rgba(37, 99, 235, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 .cta-arrow {
   display: inline-flex;
   align-items: center;
 }
-.landing-category-card__cta:hover { color: #ffffff; }
+.landing-category-card__cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 18px rgba(37, 99, 235, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
 
 .landing-category-card__art {
   display: flex;
