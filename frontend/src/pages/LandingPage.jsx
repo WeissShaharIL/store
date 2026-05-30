@@ -174,7 +174,7 @@ const contactRef = useRef(null);
         <ShowroomClosetDetails
           item={selectedCloset}
           onClose={() => setSelectedCloset(null)}
-          onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
+          onAddToCart={(closet) => { handleAddToCart(closet); }}
           added={addedIds.has(selectedCloset.id)}
         />
       )}

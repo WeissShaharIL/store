@@ -51,6 +51,11 @@ r = get("/api/public/closets")
 check("GET /api/public/closets → 200", r.status_code == 200)
 check("closets response is list", isinstance(r.json(), list))
 
+# Lead submission — the critical customer-facing path
+r = post("/api/public/leads", json={"name": "smoke-test", "phone": "0500000000", "cart": []})
+check("POST /api/public/leads → 201", r.status_code == 201)
+check("lead has id", isinstance(r.json().get("id"), int))
+
 r = get("/api/public/settings")
 check("GET /api/public/settings → 200", r.status_code == 200)
 

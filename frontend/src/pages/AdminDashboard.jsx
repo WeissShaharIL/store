@@ -13,8 +13,8 @@ import "../styles/chat.css";
 import "./AdminDashboard.css";
 
 const TABS = [
-  { id: "images",   label: "תמונות" },
   { id: "settings", label: "הגדרות" },
+  { id: "images",   label: "תמונות" },
   { id: "landing",  label: "דף הבית" },
   { id: "leads",    label: "פניות" },
   { id: "pituch",   label: "פיתוח" },
