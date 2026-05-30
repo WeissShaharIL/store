@@ -35,20 +35,21 @@
 }
 
 .admin-logout-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.45);
-  border-radius: 6px;
-  padding: 0.3rem 0.9rem;
-  font-size: 11px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   font-family: inherit;
-  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: color 150ms ease, border-color 150ms ease;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 .admin-logout-btn:hover {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .admin-tabs {

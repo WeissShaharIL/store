@@ -46,19 +46,33 @@
 }
 .create-form input:focus { border-color: rgba(255,255,255,0.3); }
 .create-form button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 150ms ease;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  white-space: nowrap;
 }
-.create-form button[type="submit"] { background: #ffffff; color: #0d0d0f; }
-.create-form button[type="submit"]:hover { background: rgba(255,255,255,0.85); }
-.create-form button[type="button"] { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); }
-.create-form button[type="button"]:hover { background: rgba(255,255,255,0.12); }
+.create-form button[type="submit"] {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.create-form button[type="submit"]:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32), inset 0 1px 0 rgba(255,255,255,0.14);
+}
+.create-form button[type="button"] {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.create-form button[type="button"]:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.14); }
 
 .templates-grid {
   display: grid;

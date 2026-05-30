@@ -592,20 +592,23 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-sm);
+  padding: 0.4rem 1rem;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
   font: inherit;
   font-size: var(--text-sm);
   font-weight: 600;
-  color: rgba(242, 242, 244, 0.85);
+  color: #ffffff;
   cursor: pointer;
-  transition: background 160ms, border-color 160ms;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 .closet-plan__add-btn:hover {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: #60a5fa;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32), inset 0 1px 0 rgba(255,255,255,0.14);
 }
 
 .closet-plan__hint {
