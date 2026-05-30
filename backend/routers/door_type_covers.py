@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from auth import require_admin
 from db import get_db
 from helpers import delete_upload, save_upload
-from models import DoorTypeCover
+from models import DoorTypeCover, MediaFile
 from schemas import DoorTypeCoverOut
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -29,6 +29,7 @@ def upload_cover(
     if kind not in VALID_KINDS:
         raise HTTPException(status_code=422, detail=f"kind חייב להיות: {', '.join(sorted(VALID_KINDS))}")
     filename = save_upload(file)
+    db.add(MediaFile(folder_id=None, image_path=filename, original_name=file.filename))
     row = db.get(DoorTypeCover, kind)
     if row:
         old_path = row.image_path
