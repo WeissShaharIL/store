@@ -6,6 +6,7 @@ import {
   adminGetMediaFiles,
   adminUploadMediaFile,
   adminDeleteMediaFile,
+  adminMoveMediaFile,
 } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
@@ -14,10 +15,13 @@ import "./AdminImages.css";
 const VIEW_ALL = "all";
 const VIEW_NONE = "none";
 
+// Sentinel: distinguishes "no drag-over target" from "drag-over unassigned (null)"
+const NO_DRAG = Symbol("NO_DRAG");
+
 export default function ImagesTab() {
   const { confirm, dialog } = useConfirm();
   const [folders, setFolders] = useState([]);
-  const [view, setView] = useState(VIEW_ALL); // VIEW_ALL | VIEW_NONE | folder.id (number)
+  const [view, setView] = useState(VIEW_ALL);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,6 +32,14 @@ export default function ImagesTab() {
 
   const [uploading, setUploading] = useState(false);
   const uploadRef = useRef(null);
+
+  // Drag state (moving files between folders)
+  const [dragFileId, setDragFileId] = useState(null);
+  const [dragOverTarget, setDragOverTarget] = useState(NO_DRAG); // NO_DRAG | null (unassigned) | folder.id
+
+  // Drag-from-OS state (uploading by dropping a file from the desktop)
+  const [dropZoneActive, setDropZoneActive] = useState(false);
+  const dropZoneCounter = useRef(0); // tracks enter/leave pairs to avoid flicker
 
   // Load folders on mount
   useEffect(() => {
@@ -88,7 +100,6 @@ export default function ImagesTab() {
       if (typeof view === "number") fd.append("folder_id", view);
       const newFile = await adminUploadMediaFile(fd);
       setFiles((prev) => [newFile, ...prev]);
-      // Refresh folder count if inside a folder
       if (typeof view === "number") {
         setFolders((prev) =>
           prev.map((f) => f.id === view ? { ...f, file_count: f.file_count + 1 } : f)
@@ -107,7 +118,6 @@ export default function ImagesTab() {
       await adminDeleteMediaFile(id);
       const removed = files.find((f) => f.id === id);
       setFiles((prev) => prev.filter((f) => f.id !== id));
-      // Update folder count
       if (removed?.folder_id != null) {
         setFolders((prev) =>
           prev.map((f) => f.id === removed.folder_id ? { ...f, file_count: Math.max(0, f.file_count - 1) } : f)
@@ -123,15 +133,64 @@ export default function ImagesTab() {
     handleDeleteFile(id);
   }
 
+  async function handleMoveFile(fileId, targetFolderId) {
+    const movedFile = files.find((f) => f.id === fileId);
+    if (!movedFile) return;
+    const oldFolderId = movedFile.folder_id ?? null;
+    // No-op if dropping onto the same folder it's already in
+    if (oldFolderId === targetFolderId) return;
+
+    try {
+      await adminMoveMediaFile(fileId, targetFolderId);
+
+      if (view === VIEW_ALL) {
+        // In "all" view: update the file's folder_id in place
+        setFiles((prev) =>
+          prev.map((f) => f.id === fileId ? { ...f, folder_id: targetFolderId } : f)
+        );
+      } else {
+        // In a specific folder/unassigned view: file leaves the current view
+        setFiles((prev) => prev.filter((f) => f.id !== fileId));
+      }
+
+      // Update folder counts
+      setFolders((prev) =>
+        prev.map((f) => {
+          if (f.id === oldFolderId) return { ...f, file_count: Math.max(0, f.file_count - 1) };
+          if (f.id === targetFolderId) return { ...f, file_count: f.file_count + 1 };
+          return f;
+        })
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  // Drag handlers for sidebar drop targets
+  function makeSidebarDropProps(targetFolderId) {
+    return {
+      onDragOver: (e) => { e.preventDefault(); setDragOverTarget(targetFolderId); },
+      onDragLeave: () => setDragOverTarget(NO_DRAG),
+      onDrop: (e) => {
+        e.preventDefault();
+        setDragOverTarget(NO_DRAG);
+        const fileId = parseInt(e.dataTransfer.getData("fileId"), 10);
+        if (fileId) handleMoveFile(fileId, targetFolderId);
+      },
+    };
+  }
+
   const currentFolderName =
     view === VIEW_ALL ? "כל התמונות" :
     view === VIEW_NONE ? "ללא תיקייה" :
     folders.find((f) => f.id === view)?.name ?? "";
 
+  const isDragging = dragFileId !== null;
+
   return (
     <div className="images-tab">
       {/* Sidebar */}
-      <aside className="images-sidebar">
+      <aside className={"images-sidebar" + (isDragging ? " images-sidebar--dragging" : "")}>
         <div className="images-sidebar__head">
           <span className="images-sidebar__title">תיקיות</span>
           <button
@@ -165,31 +224,86 @@ export default function ImagesTab() {
             <span className="images-sidebar__count">{files.length > 0 && view === VIEW_ALL ? files.length : ""}</span>
           </li>
           <li
-            className={"images-sidebar__item" + (view === VIEW_NONE ? " images-sidebar__item--active" : "")}
+            className={
+              "images-sidebar__item" +
+              (view === VIEW_NONE ? " images-sidebar__item--active" : "") +
+              (dragOverTarget === null ? " images-sidebar__item--drop-target" : "")
+            }
             onClick={() => setView(VIEW_NONE)}
+            {...makeSidebarDropProps(null)}
           >
             <span>ללא תיקייה</span>
+            {isDragging && <span className="images-sidebar__drop-hint">שחרר כאן</span>}
           </li>
           {folders.map((f) => (
             <li
               key={f.id}
-              className={"images-sidebar__item" + (view === f.id ? " images-sidebar__item--active" : "")}
+              className={
+                "images-sidebar__item" +
+                (view === f.id ? " images-sidebar__item--active" : "") +
+                (dragOverTarget === f.id ? " images-sidebar__item--drop-target" : "")
+              }
               onClick={() => setView(f.id)}
+              {...makeSidebarDropProps(f.id)}
             >
               <span className="images-sidebar__folder-name">{f.name}</span>
               <span className="images-sidebar__count">{f.file_count || ""}</span>
-              <button
-                className="images-sidebar__del"
-                onClick={(e) => { e.stopPropagation(); handleDeleteFolder(f.id); }}
-                title="מחק תיקייה"
-              >×</button>
+              {isDragging
+                ? <span className="images-sidebar__drop-hint">שחרר כאן</span>
+                : <button
+                    className="images-sidebar__del"
+                    onClick={(e) => { e.stopPropagation(); handleDeleteFolder(f.id); }}
+                    title="מחק תיקייה"
+                  >×</button>
+              }
             </li>
           ))}
         </ul>
       </aside>
 
       {/* Main area */}
-      <div className="images-main">
+      <div
+        className={"images-main" + (dropZoneActive ? " images-main--drop-zone" : "")}
+        onDragEnter={(e) => {
+          if (e.dataTransfer.types.includes("Files")) {
+            dropZoneCounter.current++;
+            setDropZoneActive(true);
+          }
+        }}
+        onDragLeave={() => {
+          dropZoneCounter.current--;
+          if (dropZoneCounter.current <= 0) {
+            dropZoneCounter.current = 0;
+            setDropZoneActive(false);
+          }
+        }}
+        onDragOver={(e) => { if (e.dataTransfer.types.includes("Files")) e.preventDefault(); }}
+        onDrop={async (e) => {
+          e.preventDefault();
+          dropZoneCounter.current = 0;
+          setDropZoneActive(false);
+          const file = e.dataTransfer.files?.[0];
+          if (!file) return;
+          setUploading(true);
+          setError("");
+          try {
+            const fd = new FormData();
+            fd.append("file", file);
+            if (typeof view === "number") fd.append("folder_id", view);
+            const newFile = await adminUploadMediaFile(fd);
+            setFiles((prev) => [newFile, ...prev]);
+            if (typeof view === "number") {
+              setFolders((prev) =>
+                prev.map((f) => f.id === view ? { ...f, file_count: f.file_count + 1 } : f)
+              );
+            }
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setUploading(false);
+          }
+        }}
+      >
         <div className="images-toolbar">
           <h2 className="images-toolbar__title">{currentFolderName}</h2>
           <label className={"btn btn--primary btn--sm" + (uploading ? " btn--loading" : "")}>
@@ -214,13 +328,24 @@ export default function ImagesTab() {
         ) : (
           <div className="images-grid">
             {files.map((file) => (
-              <div key={file.id} className="images-grid__item">
+              <div
+                key={file.id}
+                className={"images-grid__item" + (dragFileId === file.id ? " images-grid__item--dragging" : "")}
+                draggable
+                onDragStart={(e) => {
+                  setDragFileId(file.id);
+                  e.dataTransfer.setData("fileId", String(file.id));
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragEnd={() => { setDragFileId(null); setDragOverTarget(NO_DRAG); }}
+              >
                 <div className="images-grid__thumb-wrap">
                   <img
                     src={`/uploads/${file.image_path}`}
                     alt={file.original_name || file.image_path}
                     className="images-grid__thumb"
                     loading="lazy"
+                    draggable={false}
                   />
                   <button
                     className="images-grid__del"
@@ -233,9 +358,7 @@ export default function ImagesTab() {
                 </div>
                 <button
                   className="images-grid__copy"
-                  onClick={() => {
-                    navigator.clipboard.writeText(file.image_path);
-                  }}
+                  onClick={() => navigator.clipboard.writeText(file.image_path)}
                   title="העתק שם קובץ"
                 >
                   📋

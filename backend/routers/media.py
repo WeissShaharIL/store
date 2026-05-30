@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict  # noqa: F401 (ConfigDict used in schemas below)
 from sqlalchemy.orm import Session
 
 from auth import require_admin
@@ -110,14 +110,18 @@ def upload_file(
     return row
 
 
+class MoveFilePayload(BaseModel):
+    folder_id: Optional[int] = None
+
+
 @router.patch("/files/{file_id}", response_model=FileOut)
-def move_file(file_id: int, folder_id: Optional[int] = Form(default=None), db: Session = Depends(get_db)):
+def move_file(file_id: int, payload: MoveFilePayload, db: Session = Depends(get_db)):
     row = db.get(MediaFile, file_id)
     if not row:
         raise HTTPException(status_code=404, detail="קובץ לא נמצא")
-    if folder_id is not None and not db.get(MediaFolder, folder_id):
+    if payload.folder_id is not None and not db.get(MediaFolder, payload.folder_id):
         raise HTTPException(status_code=404, detail="תיקייה לא נמצאה")
-    row.folder_id = folder_id
+    row.folder_id = payload.folder_id
     db.commit()
     db.refresh(row)
     return row
