@@ -7,6 +7,7 @@ import {
   adminUploadMediaFile,
   adminDeleteMediaFile,
   adminMoveMediaFile,
+  adminUpdateMediaFileDetails,
 } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
@@ -32,6 +33,36 @@ export default function ImagesTab() {
 
   const [uploading, setUploading] = useState(false);
   const uploadRef = useRef(null);
+
+  // Edit panel state
+  const [editingFile, setEditingFile] = useState(null); // file object being edited
+  const [editName, setEditName] = useState("");
+  const [editTags, setEditTags] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+
+  function openEdit(file) {
+    setEditingFile(file);
+    setEditName(file.display_name || file.original_name || "");
+    setEditTags(file.tags || "");
+  }
+
+  async function handleSaveDetails(e) {
+    e.preventDefault();
+    if (!editingFile) return;
+    setEditSaving(true);
+    try {
+      const updated = await adminUpdateMediaFileDetails(editingFile.id, {
+        displayName: editName,
+        tags: editTags,
+      });
+      setFiles((prev) => prev.map((f) => f.id === updated.id ? updated : f));
+      setEditingFile(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setEditSaving(false);
+    }
+  }
 
   // Drag state (moving files between folders)
   const [dragFileId, setDragFileId] = useState(null);
@@ -342,32 +373,84 @@ export default function ImagesTab() {
                 <div className="images-grid__thumb-wrap">
                   <img
                     src={`/uploads/${file.image_path}`}
-                    alt={file.original_name || file.image_path}
+                    alt={file.display_name || file.original_name || file.image_path}
                     className="images-grid__thumb"
                     loading="lazy"
                     draggable={false}
                   />
-                  <button
-                    className="images-grid__del"
-                    onClick={() => handleDeleteFileConfirm(file.id)}
-                    title="מחק"
-                  >×</button>
+                  <div className="images-grid__overlay">
+                    <button
+                      className="images-grid__edit-btn"
+                      onClick={() => openEdit(file)}
+                      title="ערוך פרטים"
+                    >✏️</button>
+                    <button
+                      className="images-grid__del"
+                      onClick={() => handleDeleteFileConfirm(file.id)}
+                      title="מחק"
+                    >×</button>
+                  </div>
                 </div>
-                <div className="images-grid__name" title={file.original_name || file.image_path}>
-                  {file.original_name || file.image_path}
+                <div className="images-grid__name" title={file.display_name || file.original_name || file.image_path}>
+                  {file.display_name || file.original_name || file.image_path}
                 </div>
+                {file.tags && (
+                  <div className="images-grid__tags">
+                    {file.tags.split(",").map((t) => (
+                      <span key={t} className="images-grid__tag">{t.trim()}</span>
+                    ))}
+                  </div>
+                )}
                 <button
                   className="images-grid__copy"
                   onClick={() => navigator.clipboard.writeText(file.image_path)}
                   title="העתק שם קובץ"
-                >
-                  📋
-                </button>
+                >📋</button>
               </div>
             ))}
           </div>
         )}
       </div>
+      {/* Edit details panel */}
+      {editingFile && (
+        <div className="images-edit-overlay" onClick={() => setEditingFile(null)}>
+          <div className="images-edit-panel" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={`/uploads/${editingFile.image_path}`}
+              alt=""
+              className="images-edit-panel__preview"
+            />
+            <form onSubmit={handleSaveDetails} className="images-edit-panel__form">
+              <h3 className="images-edit-panel__title">פרטי תמונה</h3>
+              <label className="images-edit-panel__field">
+                <span>שם</span>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder={editingFile.original_name || editingFile.image_path}
+                />
+              </label>
+              <label className="images-edit-panel__field">
+                <span>תגיות (מופרדות בפסיק)</span>
+                <input
+                  type="text"
+                  value={editTags}
+                  onChange={(e) => setEditTags(e.target.value)}
+                  placeholder="לדוגמה: ארון, לבן, הזזה"
+                />
+              </label>
+              <div className="images-edit-panel__actions">
+                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setEditingFile(null)}>ביטול</button>
+                <button type="submit" className="btn btn--primary btn--sm" disabled={editSaving}>
+                  {editSaving ? "שומר..." : "שמור"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {dialog}
     </div>
   );

@@ -132,6 +132,8 @@ export const adminUploadMediaFile = (formData) => api.postForm("/api/admin/media
 export const adminDeleteMediaFile = (id) => api.delete(`/api/admin/media/files/${id}`);
 export const adminMoveMediaFile = (id, folderId) =>
   api.patch(`/api/admin/media/files/${id}`, { folder_id: folderId ?? null });
+export const adminUpdateMediaFileDetails = (id, { displayName, tags }) =>
+  api.put(`/api/admin/media/files/${id}/details`, { display_name: displayName ?? null, tags: tags ?? null });
 
 // ── Admin — Auth ──────────────────────────────────────────────────────────────
 export const adminChangePassword = (currentPassword, newPassword) =>
