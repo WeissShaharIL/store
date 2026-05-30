@@ -117,6 +117,21 @@ export const adminGetLeadsUnreadCount = () => api.get("/api/admin/leads/unread-c
 export const adminGetLeadCounts = () => api.get("/api/admin/leads/counts");
 export const adminExportLeadsCsv = () => api.downloadFile("/api/admin/leads/export.csv", "leads.csv");
 
+// ── Admin — Orders ────────────────────────────────────────────────────────────
+export const adminGetOrders = (params = {}) => {
+  const qs = new URLSearchParams();
+  if (params.status) qs.set("status", params.status);
+  if (params.q) qs.set("q", params.q);
+  if (params.dateFrom) qs.set("date_from", params.dateFrom);
+  if (params.dateTo) qs.set("date_to", params.dateTo);
+  return api.get(`/api/admin/orders${qs.toString() ? "?" + qs : ""}`);
+};
+export const adminGetOrderCounts = () => api.get("/api/admin/orders/counts");
+export const adminCreateOrder = (leadId) => api.post("/api/admin/orders", { lead_id: leadId });
+export const adminUpdateOrder = (id, data) => api.patch(`/api/admin/orders/${id}`, data);
+export const adminDeleteOrder = (id) => api.delete(`/api/admin/orders/${id}`);
+export const adminExportOrdersCsv = () => api.downloadFile("/api/admin/orders/export.csv", "orders.csv");
+
 // ── Admin — Media library ─────────────────────────────────────────────────────
 export const adminGetMediaFolders = () => api.get("/api/admin/media/folders");
 export const adminCreateMediaFolder = (name) => {
