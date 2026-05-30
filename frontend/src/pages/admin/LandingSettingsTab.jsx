@@ -47,24 +47,29 @@ function TrustBarEditor({ value, onChange }) {
     <div className="trust-editor">
       {items.map((item, idx) => (
         <div key={idx} className="trust-editor__row">
-          <input
-            type="text"
-            placeholder="כותרת"
-            value={item.title}
-            onChange={(e) => update(idx, "title", e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="תיאור"
-            value={item.body}
-            onChange={(e) => update(idx, "body", e.target.value)}
-          />
-          <button type="button" className="trust-editor__del" onClick={() => remove(idx)} title="הסר">✕</button>
+          <div className="trust-editor__index">{idx + 1}</div>
+          <div className="trust-editor__fields">
+            <label className="trust-editor__label">כותרת</label>
+            <input
+              type="text"
+              placeholder="לדוגמה: ייצור עצמי"
+              value={item.title}
+              onChange={(e) => update(idx, "title", e.target.value)}
+            />
+            <label className="trust-editor__label">תיאור</label>
+            <input
+              type="text"
+              placeholder="לדוגמה: שליטה מלאה על האיכות"
+              value={item.body}
+              onChange={(e) => update(idx, "body", e.target.value)}
+            />
+          </div>
+          <button type="button" className="trust-editor__del" onClick={() => remove(idx)} title="הסר שורה">✕</button>
         </div>
       ))}
       {items.length < 8 && (
         <button type="button" className="btn btn--ghost btn--sm trust-editor__add" onClick={add}>
-          + הוסף שורה
+          + הוסף יתרון
         </button>
       )}
     </div>
