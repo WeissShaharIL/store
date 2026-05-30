@@ -3,16 +3,25 @@ import os
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
+from pydantic import BaseModel
+
 from auth import (
     COOKIE_NAME,
     TOKEN_TTL_DAYS,
     create_token,
     get_current_user,
+    hash_password,
+    require_admin,
     verify_password,
 )
 from db import get_db
 from models import User
 from schemas import LoginRequest, LoginResponse
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 router = APIRouter()
 
@@ -47,4 +56,19 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
 @router.post("/logout")
 def logout(response: Response, _: User = Depends(get_current_user)):
     response.delete_cookie(key=COOKIE_NAME, path="/")
+    return {"ok": True}
+
+
+@router.post("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    user: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(status_code=401, detail="הסיסמה הנוכחית שגויה")
+    if len(payload.new_password) < 6:
+        raise HTTPException(status_code=422, detail="הסיסמה החדשה חייבת להכיל לפחות 6 תווים")
+    user.password_hash = hash_password(payload.new_password)
+    db.commit()
     return {"ok": True}

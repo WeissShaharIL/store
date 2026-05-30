@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from auth import require_admin
 from db import get_db
 from helpers import delete_upload, save_upload
-from models import ClosetTemplate
+from models import ClosetTemplate, MediaFile
 from schemas import ClosetTemplateCreate, ClosetTemplateOut, ClosetTemplateUpdate
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -76,6 +76,7 @@ def upload_template_image(
         raise HTTPException(status_code=404, detail="תבנית לא נמצאה")
     old_path = row.image_path
     row.image_path = save_upload(file)
+    db.add(MediaFile(folder_id=None, image_path=row.image_path, original_name=file.filename))
     db.commit()
     db.refresh(row)
     delete_upload(old_path)

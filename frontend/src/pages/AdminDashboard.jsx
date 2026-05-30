@@ -6,12 +6,14 @@ import LeadsTab from "./admin/LeadsTab.jsx";
 import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
 import PituchTab from "./admin/PituchTab.jsx";
+import ImagesTab from "./admin/ImagesTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
-import { adminGetLeadsUnreadCount } from "../api.js";
+import { adminGetLeadsUnreadCount, adminChangePassword } from "../api.js";
 import "../styles/chat.css";
 import "./AdminDashboard.css";
 
 const TABS = [
+  { id: "images",   label: "תמונות" },
   { id: "settings", label: "הגדרות" },
   { id: "landing",  label: "דף הבית" },
   { id: "leads",    label: "פניות" },
@@ -23,6 +25,31 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("pituch");
   const [leadsUnread, setLeadsUnread] = useState(0);
+
+  // Change password state
+  const [cpCurrent, setCpCurrent] = useState("");
+  const [cpNew, setCpNew] = useState("");
+  const [cpConfirm, setCpConfirm] = useState("");
+  const [cpLoading, setCpLoading] = useState(false);
+  const [cpError, setCpError] = useState("");
+  const [cpDone, setCpDone] = useState(false);
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setCpError(""); setCpDone(false);
+    if (cpNew !== cpConfirm) { setCpError("הסיסמאות אינן תואמות"); return; }
+    if (cpNew.length < 6) { setCpError("הסיסמה החדשה חייבת להכיל לפחות 6 תווים"); return; }
+    setCpLoading(true);
+    try {
+      await adminChangePassword(cpCurrent, cpNew);
+      setCpDone(true);
+      setCpCurrent(""); setCpNew(""); setCpConfirm("");
+    } catch (err) {
+      setCpError(err.message);
+    } finally {
+      setCpLoading(false);
+    }
+  }
 
   const fetchLeadsUnread = useCallback(async () => {
     const r = await adminGetLeadsUnreadCount();
@@ -62,10 +89,46 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-content">
+        {activeTab === "images"   && <ImagesTab />}
         {activeTab === "pituch"   && <PituchTab />}
         {activeTab === "leads"    && <LeadsTab />}
         {activeTab === "landing"  && <LandingSettingsTab />}
-        {activeTab === "settings" && <SettingsTab />}
+        {activeTab === "settings" && (
+          <>
+            <SettingsTab />
+            <section className="admin-change-password">
+              <h3 className="admin-change-password__title">שינוי סיסמה</h3>
+              <form onSubmit={handleChangePassword} className="admin-change-password__form">
+                <input
+                  type="password"
+                  placeholder="סיסמה נוכחית"
+                  value={cpCurrent}
+                  onChange={(e) => setCpCurrent(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="סיסמה חדשה"
+                  value={cpNew}
+                  onChange={(e) => setCpNew(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="אימות סיסמה חדשה"
+                  value={cpConfirm}
+                  onChange={(e) => setCpConfirm(e.target.value)}
+                  required
+                />
+                {cpError && <p className="admin-change-password__error">{cpError}</p>}
+                {cpDone && <p className="admin-change-password__ok">הסיסמה שונתה בהצלחה ✓</p>}
+                <button type="submit" disabled={cpLoading} className="btn btn--primary btn--sm">
+                  {cpLoading ? "שומר..." : "שמור סיסמה"}
+                </button>
+              </form>
+            </section>
+          </>
+        )}
       </div>
     </div>
   );

@@ -88,3 +88,50 @@
   width: 100%;
   margin: 0 auto;
 }
+
+/* Images tab needs edge-to-edge layout */
+.admin-content:has(.images-tab) {
+  padding: 0;
+  max-width: none;
+}
+
+/* Change password section */
+.admin-change-password {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  max-width: 360px;
+}
+.admin-change-password__title {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+.admin-change-password__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.admin-change-password__form input {
+  padding: 0.55rem 0.8rem;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.admin-change-password__form input:focus { border-color: rgba(255, 255, 255, 0.3); }
+.admin-change-password__error {
+  margin: 0;
+  color: #f87171;
+  font-size: 0.82rem;
+}
+.admin-change-password__ok {
+  margin: 0;
+  color: #86efac;
+  font-size: 0.82rem;
+}
