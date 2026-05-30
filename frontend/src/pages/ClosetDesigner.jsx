@@ -4,7 +4,7 @@ import { X, ArrowLeft, ArrowRight, Eye, EyeOff } from "../components/Icons.jsx";
 import { addToCart } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
-import { totalPrice } from "./admin/closet3d/schema.js";
+import { totalPrice, estimatePrice } from "./admin/closet3d/schema.js";
 import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import { useHandles } from "./admin/HandlesContext.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
@@ -22,7 +22,7 @@ import {
 } from "./admin/designer/persistence.js";
 import "../styles/showroom/05-designer.css";
 
-export default function ClosetDesigner({ item, onClose, initialColor, mode = "full" }) {
+export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false }) {
   const navigate = useNavigate();
   const cfg = item.config;
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
@@ -195,9 +195,22 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     doorMaterials: customDoorMaterials, slidingDoorsHidden,
   };
 
-  // Live price estimate (base + selected add-ons). Shown in the footer and the
-  // confirmation step, and stored on the cart item so the admin sees it on the lead.
-  const priceEstimate = totalPrice(customConfig, commonState);
+  // Numeric fitting counts (shelf/rod/drawer) across all compartments —
+  // used both for the summary text and for from-scratch pricing.
+  const fittingCounts = (() => {
+    const counts = { shelf: 0, rod: 0, drawer: 0 };
+    for (const list of Object.values(customItems || {})) {
+      if (!Array.isArray(list)) continue;
+      for (const it of list) if (it?.type && counts[it.type] != null) counts[it.type] += 1;
+    }
+    return counts;
+  })();
+
+  // Live price estimate. Templates use the admin's basePrice (+ add-ons);
+  // from-scratch closets are priced by dimensions + structure + fittings.
+  const priceEstimate = fromScratch
+    ? estimatePrice(customConfig, { fittings: fittingCounts, state: commonState })
+    : totalPrice(customConfig, commonState);
   const priceLabel = priceEstimate ? `₪${Number(priceEstimate).toLocaleString()}` : null;
 
   // Per-door interior fittings count for the summary (shelf/rod/drawer).

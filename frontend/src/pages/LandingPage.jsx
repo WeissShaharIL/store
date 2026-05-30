@@ -6,6 +6,7 @@ import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
 
 const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
+const ScratchStart = lazy(() => import("./ScratchStart.jsx"));
 import { addToCart, getCart } from "../lib/cart.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/03-details.css";
@@ -43,6 +44,7 @@ export default function LandingPage() {
   const [bannerIdx, setBannerIdx] = useState(0);
   const [doorCovers, setDoorCovers] = useState({});
   const [selectedCloset, setSelectedCloset] = useState(null);
+  const [scratchOpen, setScratchOpen] = useState(false);
   const [addedIds, setAddedIds] = useState(() =>
     new Set(getCart().map((i) => i.templateId))
   );
@@ -179,6 +181,7 @@ const contactRef = useRef(null);
             added={addedIds.has(selectedCloset.id)}
           />
         )}
+        {scratchOpen && <ScratchStart onClose={() => setScratchOpen(false)} />}
       </Suspense>
       <header className="landing-nav">
         <div className="landing-nav__inner">
@@ -245,6 +248,9 @@ const contactRef = useRef(null);
             <p className="landing-hero__eyebrow">ייצור ישראלי מקצועי</p>
             <RippleTitle text={settings.welcome_title} className="landing-hero__title" />
             <p className="landing-hero__sub">{settings.hero_tagline || settings.welcome_subtitle}</p>
+            <button type="button" className="landing-hero__cta" onClick={() => setScratchOpen(true)}>
+              ✏️ עצבו ארון משלכם
+            </button>
           </div>
         </section>
 

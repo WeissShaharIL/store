@@ -306,7 +306,53 @@ export function selectedExtras(config, state) {
  */
 export function totalPrice(config, state) {
   const extras = selectedExtras(config, state);
-  return config.basePrice + extras.reduce((s, e) => s + e.price, 0);
+  return (config.basePrice || 0) + extras.reduce((s, e) => s + e.price, 0);
+}
+
+/**
+ * v0.74.0 — dimension-based price estimate for "design from scratch"
+ * closets that have no admin-set basePrice. Scales with the closet the
+ * customer actually builds: front area × rate + per-door + depth +
+ * sliding surcharge + interior fittings + selected add-ons.
+ *
+ * Rates are deliberately simple, round numbers; an admin-tunable rate
+ * table is a future enhancement. The result is rounded to ₪10.
+ *
+ * @param {ClosetConfig} config  live config (dimensions, doors, kind)
+ * @param {{ fittings?: {shelf?:number, rod?:number, drawer?:number}, state?: ClosetState }} [opts]
+ * @returns {number}
+ */
+export const PRICE_RATES = {
+  perSqMeterFront: 1400, // ₪ per m² of door-face area (width × height)
+  perDoor: 180,
+  perDepthFactor: 6,     // ₪ per (width-m × depth-cm)
+  slidingSurcharge: 600,
+  shelf: 45,
+  rod: 35,
+  drawer: 130,
+};
+
+export function estimatePrice(config, opts = {}) {
+  const dims = config.dimensions || {};
+  const nDoors = config.doors?.length || 1;
+  const widthM = ((dims.compartmentWidth ?? 80) * nDoors) / 100;
+  const heightM = (dims.H ?? 240) / 100;
+  const depthCm = dims.D ?? 56;
+
+  let price = widthM * heightM * PRICE_RATES.perSqMeterFront;
+  price += nDoors * PRICE_RATES.perDoor;
+  price += widthM * depthCm * PRICE_RATES.perDepthFactor;
+  if (config.kind === "sliding") price += PRICE_RATES.slidingSurcharge;
+
+  const f = opts.fittings || {};
+  price += (f.shelf || 0) * PRICE_RATES.shelf
+        +  (f.rod || 0) * PRICE_RATES.rod
+        +  (f.drawer || 0) * PRICE_RATES.drawer;
+
+  if (opts.state) {
+    price += selectedExtras(config, opts.state).reduce((s, e) => s + (e.price || 0), 0);
+  }
+  return Math.round(price / 10) * 10;
 }
 
 /**

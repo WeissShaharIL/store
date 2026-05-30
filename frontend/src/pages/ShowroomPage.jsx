@@ -8,6 +8,7 @@ import InquiryModal from "./InquiryModal.jsx";
 
 const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
 const ClosetDesigner = lazy(() => import("./ClosetDesigner.jsx"));
+const ScratchStart = lazy(() => import("./ScratchStart.jsx"));
 import { parseConfig } from "../lib/parseConfig.js";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import "../styles/landing/01-shell-nav.css";
@@ -33,6 +34,7 @@ export default function ShowroomPage() {
   const [selectedCloset, setSelectedCloset] = useState(null);
   const [inquiryCloset, setInquiryCloset] = useState(null);
   const [designingCloset, setDesigningCloset] = useState(null);
+  const [scratchOpen, setScratchOpen] = useState(false);
 
   const kind = params.get("kind") || "all";
 
@@ -93,6 +95,7 @@ export default function ShowroomPage() {
             added={addedIds.has(selectedCloset.id)}
           />
         )}
+        {scratchOpen && <ScratchStart onClose={() => setScratchOpen(false)} />}
       </Suspense>
       <header className="landing-nav showroom__nav">
         <div className="landing-nav__inner">
@@ -136,6 +139,12 @@ export default function ShowroomPage() {
             {KIND_LABELS[k]}
           </button>
         ))}
+        <button
+          className="showroom__scratch-btn"
+          onClick={() => setScratchOpen(true)}
+        >
+          ✏️ עצב ארון משלך
+        </button>
       </div>
 
       <main className="showroom__main">

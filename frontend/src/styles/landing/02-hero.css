@@ -163,3 +163,25 @@
   .landing-hero__copy { padding: var(--space-10) var(--space-4); }
   .landing-hero--placeholder .landing-hero__panel { width: 68%; height: 52%; }
 }
+
+/* "Design your own" CTA in the hero (v0.74.0) */
+.landing-hero__cta {
+    margin-top: var(--space-6);
+    padding: 0.85rem 2rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    color: #fff;
+    font-family: inherit;
+    font-size: clamp(15px, 1.8vw, 18px);
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+.landing-hero__cta:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
