@@ -200,10 +200,30 @@
   transition: opacity 150ms ease;
 }
 
-.images-grid__del {
+.images-grid__overlay {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  inset: 0;
+  display: none;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 4px;
+}
+.images-grid__thumb-wrap:hover .images-grid__overlay { display: flex; }
+
+.images-grid__edit-btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 3px 5px;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.images-grid__edit-btn:hover { background: rgba(0, 0, 0, 0.9); }
+
+.images-grid__del {
+  position: static;
   width: 22px;
   height: 22px;
   display: none;
@@ -240,3 +260,91 @@
   align-self: flex-start;
 }
 .images-grid__copy:hover { opacity: 1; }
+
+/* Tags */
+.images-grid__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.images-grid__tag {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
+}
+
+/* Edit details panel */
+.images-edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: confirm-fade-in 120ms ease;
+}
+.images-edit-panel {
+  display: flex;
+  gap: 1.25rem;
+  background: #1a1a1d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  animation: confirm-slide-in 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.images-edit-panel__preview {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: #111113;
+}
+.images-edit-panel__form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.images-edit-panel__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.images-edit-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.04em;
+}
+.images-edit-panel__field input {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  background: #111113;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.images-edit-panel__field input:focus { border-color: rgba(255, 255, 255, 0.28); }
+.images-edit-panel__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: auto;
+}

@@ -350,4 +350,6 @@ class MediaFile(Base):
     folder_id = Column(Integer, ForeignKey("media_folders.id"), nullable=True, index=True)
     image_path = Column(String(255), nullable=False)
     original_name = Column(String(255), nullable=True)
+    display_name = Column(String(255), nullable=True)   # admin-given name
+    tags = Column(Text, nullable=True)                  # comma-separated tags
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)

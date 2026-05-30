@@ -27,6 +27,13 @@ class FileOut(BaseModel):
     folder_id: Optional[int]
     image_path: str
     original_name: Optional[str]
+    display_name: Optional[str]
+    tags: Optional[str]
+
+
+class FileUpdatePayload(BaseModel):
+    display_name: Optional[str] = None
+    tags: Optional[str] = None
 
 
 # ── Folders ───────────────────────────────────────────────────────────────────
@@ -122,6 +129,22 @@ def move_file(file_id: int, payload: MoveFilePayload, db: Session = Depends(get_
     if payload.folder_id is not None and not db.get(MediaFolder, payload.folder_id):
         raise HTTPException(status_code=404, detail="תיקייה לא נמצאה")
     row.folder_id = payload.folder_id
+    db.commit()
+    db.refresh(row)
+    return row
+
+
+@router.put("/files/{file_id}/details", response_model=FileOut)
+def update_file_details(file_id: int, payload: FileUpdatePayload, db: Session = Depends(get_db)):
+    row = db.get(MediaFile, file_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="קובץ לא נמצא")
+    if payload.display_name is not None:
+        row.display_name = payload.display_name.strip() or None
+    if payload.tags is not None:
+        # Normalise: lowercase, strip whitespace, deduplicate, store comma-separated
+        raw = [t.strip().lower() for t in payload.tags.split(",") if t.strip()]
+        row.tags = ",".join(dict.fromkeys(raw)) or None
     db.commit()
     db.refresh(row)
     return row
