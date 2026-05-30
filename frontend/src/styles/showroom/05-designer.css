@@ -760,24 +760,23 @@
   height: auto;
 }
 
-/* Ghost btn — used by rotate/remove in room planner */
-.btn--ghost {
+/* Rotate/remove buttons in the room planner (customer designer, not .admin) */
+.room-planner__btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 5px 10px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.07);
   color: rgba(242, 242, 244, 0.85);
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: background 140ms;
 }
-.btn--ghost:hover { background: rgba(255, 255, 255, 0.12); }
-.btn--sm { padding: 5px 10px; font-size: 12px; }
+.room-planner__btn:hover { background: rgba(255, 255, 255, 0.12); }
 
 @media (max-width: 900px) {
   .closet-designer__body--room { grid-template-columns: 1fr; }

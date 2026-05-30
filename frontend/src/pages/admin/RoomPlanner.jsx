@@ -194,11 +194,11 @@ export default function RoomPlanner({ room, onChange, closetWidthCm, closetDepth
                 נבחר: <strong>{ITEM_LABELS[selected.type]}</strong>
               </div>
               <div className="room-planner__selected-actions">
-                <button type="button" className="btn--ghost btn--sm" onClick={rotateSelected}>
+                <button type="button" className="room-planner__btn" onClick={rotateSelected}>
                   <RotateCcw /> סובב 90°
                 </button>
                 {selected.id !== "closet" && (
-                  <button type="button" className="btn--ghost btn--sm" onClick={removeSelected}>
+                  <button type="button" className="room-planner__btn" onClick={removeSelected}>
                     <Trash /> הסר
                   </button>
                 )}

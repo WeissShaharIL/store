@@ -67,8 +67,7 @@
 .admin .create-form button[type="submit"] {
   color: rgba(255, 255, 255, 0.75);
 }
-.admin .btn--primary::after,
-.admin .settings-save-btn::after {
+.admin .btn--primary::after {
   content: "";
   width: 1.05em;
   height: 1.05em;
