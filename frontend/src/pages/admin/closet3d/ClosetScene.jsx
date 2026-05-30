@@ -160,6 +160,32 @@ function CameraIntro({ from, to, lookAt, durationMs, onComplete }) {
   return null;
 }
 
+/* v0.83.0 — lives inside <Canvas>. Assigns a capture function to captureRef:
+   given a camera world-position [x,y,z], it aims the camera at the cabinet,
+   renders one frame, and returns a PNG dataURL. Restores the camera after so
+   the user's orbit view is untouched. Requires the Canvas to have been created
+   with gl={{ preserveDrawingBuffer: true }}. */
+function CaptureController({ captureRef, targetY }) {
+  const { gl, scene, camera } = useThree();
+  useEffect(() => {
+    captureRef.current = (position) => {
+      const prev = camera.position.clone();
+      if (position) camera.position.set(position[0], position[1], position[2]);
+      camera.lookAt(0, targetY, 0);
+      camera.updateProjectionMatrix();
+      gl.render(scene, camera);
+      const url = gl.domElement.toDataURL("image/png");
+      camera.position.copy(prev);
+      camera.lookAt(0, targetY, 0);
+      camera.updateProjectionMatrix();
+      gl.render(scene, camera);
+      return url;
+    };
+    return () => { captureRef.current = null; };
+  }, [captureRef, gl, scene, camera, targetY]);
+  return null;
+}
+
 function sphericalOffsetFrom(pos, lookAt) {
   const offset = new Vector3(
     pos[0] - lookAt[0],
