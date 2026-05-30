@@ -1,3 +1,5 @@
+@import "./admin/admin-buttons.css";
+
 .admin {
   min-height: 100vh;
   display: flex;
@@ -34,19 +36,7 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-.admin-logout-btn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.35);
-  padding: 0.4rem 0.25rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  font-family: inherit;
-  cursor: pointer;
-  transition: color 150ms ease;
-}
-.admin-logout-btn:hover { color: rgba(255, 255, 255, 0.8); }
+/* .admin-logout-btn styled in ./admin/admin-buttons.css */
 
 .admin-tabs {
   display: flex;

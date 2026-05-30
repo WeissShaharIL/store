@@ -16,6 +16,7 @@ from models import (
     CustomerItem,
     Item,
     Logo,
+    MediaFile,
     Order,
     Setting,
     User,
@@ -62,6 +63,33 @@ def delete_upload(image_path: str | None) -> None:
         target.unlink()
     except FileNotFoundError:
         pass
+
+
+def register_media(db: Session, filename: str | None, original_name: str | None = None) -> None:
+    """Record an uploaded image in the media library (idempotent by path).
+
+    Every image that lands on disk should have a matching MediaFile row so it
+    appears in the admin תמונות tab. Callers must still commit the session.
+    """
+    if not filename:
+        return
+    exists = db.query(MediaFile).filter(MediaFile.image_path == filename).first()
+    if exists:
+        return
+    db.add(MediaFile(folder_id=None, image_path=filename, original_name=original_name))
+
+
+def unregister_media(db: Session, image_path: str | None) -> None:
+    """Delete the file from disk AND remove its MediaFile row(s).
+
+    Use this anywhere an entity's image is replaced or deleted, so the media
+    library never accumulates rows pointing at files that no longer exist.
+    Callers must still commit the session.
+    """
+    if not image_path:
+        return
+    db.query(MediaFile).filter(MediaFile.image_path == image_path).delete(synchronize_session=False)
+    delete_upload(image_path)
 
 
 def active_catalog_id(db: Session) -> int:

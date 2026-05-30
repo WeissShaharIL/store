@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
-from helpers import delete_upload, save_upload
-from models import HeroBanner, MediaFile
+from sqlalchemy import func
+
+from helpers import register_media, save_upload, unregister_media
+from models import HeroBanner
 from schemas import HeroBannerOut
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -21,9 +23,9 @@ def list_banners(db: Session = Depends(get_db)):
 @router.post("", response_model=HeroBannerOut, status_code=201)
 def upload_banner(file: UploadFile = File(...), db: Session = Depends(get_db)):
     filename = save_upload(file)
-    db.add(MediaFile(folder_id=None, image_path=filename, original_name=file.filename))
-    max_order = db.query(HeroBanner).count()
-    row = HeroBanner(image_path=filename, sort_order=max_order)
+    register_media(db, filename, file.filename)
+    next_order = (db.query(func.coalesce(func.max(HeroBanner.sort_order), -1)).scalar() or -1) + 1
+    row = HeroBanner(image_path=filename, sort_order=next_order)
     db.add(row)
     db.commit()
     db.refresh(row)
@@ -38,4 +40,5 @@ def delete_banner(banner_id: int, db: Session = Depends(get_db)):
     old_path = row.image_path
     db.delete(row)
     db.commit()
-    delete_upload(old_path)
+    unregister_media(db, old_path)
+    db.commit()
