@@ -4,6 +4,9 @@ import { X, ArrowLeft, ArrowRight, Eye, EyeOff } from "../components/Icons.jsx";
 import { addToCart } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
+import { totalPrice } from "./admin/closet3d/schema.js";
+import { usePaletteColors } from "./admin/PaletteContext.jsx";
+import { useHandles } from "./admin/HandlesContext.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
 import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
 import RoomPlanner from "./admin/RoomPlanner.jsx";
@@ -23,6 +26,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const navigate = useNavigate();
   const cfg = item.config;
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
+
+  const { colors } = usePaletteColors();
+  const { handles } = useHandles();
+  const MATERIAL_LABELS = { wood: "עץ", mirror: "מראה", glass: "זכוכית" };
+  const colorName = (key) => colors[key]?.name ?? key;
+  const handleName = (key) => handles[key]?.name ?? key;
 
   const availableSteps = useMemo(
     () => mode === "quick" ? WIZARD_STEPS.filter((s) => s.id === 3 || s.id === 6) : WIZARD_STEPS,
@@ -141,10 +150,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       name: item.name,
       image_path: item.image_path,
       config_json: item.config_json,
+      priceEstimate,
       snapshot: {
         customDims, customColor, customDivider,
         customDoorHandles, customDoorMaterials,
         customItems, customRoom,
+        priceEstimate,
       },
     });
     clearDesignerState(item.id);
@@ -183,6 +194,28 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     openDoorIds, openDrawerIds, doorHandles: customDoorHandles,
     doorMaterials: customDoorMaterials, slidingDoorsHidden,
   };
+
+  // Live price estimate (base + selected add-ons). Shown in the footer and the
+  // confirmation step, and stored on the cart item so the admin sees it on the lead.
+  const priceEstimate = totalPrice(customConfig, commonState);
+  const priceLabel = priceEstimate ? `₪${Number(priceEstimate).toLocaleString()}` : null;
+
+  // Per-door interior fittings count for the summary (shelf/rod/drawer).
+  const interiorCounts = (() => {
+    const labels = { shelf: "מדפים", rod: "מוטות", drawer: "מגירות" };
+    const counts = {};
+    for (const list of Object.values(customItems || {})) {
+      if (!Array.isArray(list)) continue;
+      for (const it of list) if (it?.type) counts[it.type] = (counts[it.type] || 0) + 1;
+    }
+    return ["shelf", "rod", "drawer"].filter((t) => counts[t]).map((t) => `${counts[t]} ${labels[t]}`).join(" · ");
+  })();
+
+  const doorList = cfg.doors ?? [];
+  const uniformMaterial = doorList.length && doorList.every((d) => customDoorMaterials[d.id] === customDoorMaterials[doorList[0].id])
+    ? customDoorMaterials[doorList[0].id] : null;
+  const uniformHandle = doorList.length && doorList.every((d) => customDoorHandles[d.id] === customDoorHandles[doorList[0].id])
+    ? customDoorHandles[doorList[0].id] : null;
 
   const Preview = (
     <div className="closet-designer__preview">
@@ -355,8 +388,15 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
                 <dt>גובה</dt><dd>{Math.round(customDims.H)} ס״מ</dd>
                 <dt>רוחב כולל</dt><dd>{Math.round(totalW)} ס״מ ({nDoors} דלתות)</dd>
                 <dt>עומק</dt><dd>{Math.round(customDims.D)} ס״מ</dd>
-                <dt>צבע</dt><dd>{customColor}</dd>
+                <dt>צבע</dt><dd>{colorName(customColor)}</dd>
+                {uniformMaterial && <><dt>חומר דלתות</dt><dd>{MATERIAL_LABELS[uniformMaterial] || uniformMaterial}</dd></>}
+                {uniformHandle && <><dt>ידיות</dt><dd>{handleName(uniformHandle)}</dd></>}
+                {interiorCounts && <><dt>פנים הארון</dt><dd>{interiorCounts}</dd></>}
+                {priceLabel && <><dt>הערכת מחיר</dt><dd className="closet-designer__summary-price">{priceLabel}</dd></>}
               </dl>
+              <p className="closet-designer__price-note">
+                * המחיר הוא הערכה בלבד. ההצעה הסופית תישלח לאחר יצירת קשר.
+              </p>
             </div>
             {Preview}
           </div>
@@ -386,6 +426,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
         <div className="closet-designer__footer">
           <button type="button" className="closet-designer__cancel-btn" onClick={onClose}>ביטול</button>
+          {priceLabel && (
+            <div className="closet-designer__footer-price">
+              <span className="closet-designer__footer-price-label">הערכת מחיר</span>
+              <span className="closet-designer__footer-price-value">{priceLabel}</span>
+            </div>
+          )}
           {isLastStep && (
             <button type="button" className="closet-designer__add-btn" onClick={handleContinue}>
               הוסף לעגלה <ArrowLeft />

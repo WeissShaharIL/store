@@ -1,7 +1,10 @@
+import csv
+import io
 import json
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from auth import require_admin
@@ -9,6 +12,7 @@ from db import get_db
 from models import Lead, utcnow
 from schemas import LeadCreate, LeadOut, LeadUpdate
 import activity as act
+import notify
 
 public_router = APIRouter()
 admin_router = APIRouter(dependencies=[Depends(require_admin)])
@@ -60,6 +64,7 @@ def submit_lead(payload: LeadCreate, request: Request, db: Session = Depends(get
     act.record(db, "lead_submitted", request=request, actor=payload.name.strip(),
                details={"phone": payload.phone.strip(), "lead_id": row.id,
                         "items": len(payload.cart)})
+    notify.notify_new_lead(row)
     return _to_out(row)
 
 
@@ -72,6 +77,50 @@ def unread_leads_count(db: Session = Depends(get_db)):
         .count()
     )
     return {"count": count}
+
+
+@admin_router.get("/counts")
+def lead_counts(db: Session = Depends(get_db)):
+    """Per-status counts of active (non-deleted) leads, for the admin header."""
+    base = db.query(Lead).filter(Lead.deleted_at.is_(None))
+    return {
+        "all": base.count(),
+        "new": base.filter(Lead.status == "new").count(),
+        "contacted": base.filter(Lead.status == "contacted").count(),
+        "closed": base.filter(Lead.status == "closed").count(),
+    }
+
+
+@admin_router.get("/export.csv")
+def export_leads_csv(db: Session = Depends(get_db)):
+    """Download all active leads as a CSV (UTF-8 with BOM for Excel/Hebrew)."""
+    rows = (
+        db.query(Lead)
+        .filter(Lead.deleted_at.is_(None))
+        .order_by(Lead.created_at.desc())
+        .all()
+    )
+    buf = io.StringIO()
+    buf.write("﻿")  # BOM so Excel reads Hebrew correctly
+    writer = csv.writer(buf)
+    writer.writerow(["תאריך", "שם", "טלפון", "אימייל", "כתובת", "סטטוס", "פריטים", "הערות"])
+    for r in rows:
+        try:
+            cart = json.loads(r.cart_snapshot or "[]")
+            n_items = len(cart) if isinstance(cart, list) else 0
+        except (TypeError, ValueError):
+            n_items = 0
+        writer.writerow([
+            r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "",
+            r.name or "", r.phone or "", r.email or "", r.address or "",
+            r.status or "", n_items, (r.notes or "").replace("\n", " "),
+        ])
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="leads.csv"'},
+    )
 
 
 @admin_router.get("/trash", response_model=List[LeadOut])

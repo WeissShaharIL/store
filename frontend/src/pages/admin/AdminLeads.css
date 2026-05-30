@@ -1,5 +1,18 @@
 /* .leads-filter-btn and .lead-action-btn styled in ./admin-buttons.css */
 .leads-filters { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+.leads-counts {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+.leads-counts__item {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+}
+.leads-counts__item strong { color: rgba(255,255,255,0.9); font-size: 0.95rem; }
+.leads-counts__item--new strong { color: #f0a050; }
 .leads-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .lead-card {
   background: #161618;

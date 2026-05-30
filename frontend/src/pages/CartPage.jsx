@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { submitLead } from "../api.js";
 import { clearCart, getCart, removeFromCart, subscribeToCart } from "../lib/cart.js";
 import { parseConfig } from "../lib/parseConfig.js";
+import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight } from "../components/Icons.jsx";
 import "../styles/landing/01-shell-nav.css";
@@ -30,6 +31,8 @@ function CartNav() {
 }
 
 export default function CartPage() {
+  const { colors } = usePaletteColors();
+  const colorName = (key) => colors[key]?.name ?? key;
   const [cart, setCart] = useState(getCart());
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", notes: "" });
   const [step, setStep] = useState("cart"); // "cart" | "contact" | "done"
@@ -183,13 +186,13 @@ export default function CartPage() {
                 const widthCm = dims
                   ? Math.round((dims.compartmentWidth ?? 80) * Math.max(1, doors.length))
                   : null;
-                const color = snap?.customColor;
+                const color = snap?.customColor ?? cfg.color;
                 const isCustom = !!snap;
-                const price = item.displaySalePrice
-                  ? `₪${Number(item.displaySalePrice).toLocaleString()}`
-                  : cfg.basePrice
-                  ? `₪${Number(cfg.basePrice).toLocaleString()}`
-                  : null;
+                const priceNum = item.displaySalePrice
+                  ?? snap?.priceEstimate
+                  ?? item.priceEstimate
+                  ?? cfg.basePrice;
+                const price = priceNum ? `₪${Number(priceNum).toLocaleString()}` : null;
                 return (
                   <li key={item.id} className="cart-item">
                     {item.image_path && (
@@ -208,7 +211,7 @@ export default function CartPage() {
                         <span className="cart-item__detail">🚪 {doors.length} דלתות{doorKind ? ` · ${doorKind}` : ""}</span>
                       )}
                       {color && (
-                        <span className="cart-item__detail">🎨 {color}</span>
+                        <span className="cart-item__detail">🎨 {colorName(color)}</span>
                       )}
                       {price && <span className="cart-item__price">{price}</span>}
                     </div>

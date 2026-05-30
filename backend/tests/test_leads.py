@@ -123,3 +123,43 @@ def test_admin_unread_count(client, auth_headers):
     r = client.get("/api/admin/leads/unread-count", headers=auth_headers)
     assert r.status_code == 200
     assert "count" in r.json()
+
+
+def test_admin_lead_counts(client, auth_headers):
+    client.post("/api/public/leads", json=VALID_LEAD)
+    r = client.get("/api/admin/leads/counts", headers=auth_headers)
+    assert r.status_code == 200
+    body = r.json()
+    for key in ("all", "new", "contacted", "closed"):
+        assert key in body
+        assert isinstance(body[key], int)
+    assert body["all"] >= 1
+
+
+def test_admin_lead_counts_requires_auth(client):
+    from fastapi.testclient import TestClient
+    from main import app
+    with TestClient(app, raise_server_exceptions=True) as fresh:
+        assert fresh.get("/api/admin/leads/counts").status_code == 401
+
+
+def test_admin_export_csv(client, auth_headers):
+    client.post("/api/public/leads", json={**VALID_LEAD, "name": "csv-export-test"})
+    r = client.get("/api/admin/leads/export.csv", headers=auth_headers)
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["content-type"]
+    body = r.text
+    assert "csv-export-test" in body
+    assert body.startswith("﻿")  # BOM for Excel/Hebrew
+
+
+def test_get_lead_does_not_change_status(client, auth_headers):
+    """Viewing a new lead must NOT silently flip its status to contacted."""
+    r = client.post("/api/public/leads", json={**VALID_LEAD, "name": "status-stable"})
+    lead_id = r.json()["id"]
+    assert r.json()["status"] == "new"
+    got = client.get(f"/api/admin/leads/{lead_id}", headers=auth_headers).json()
+    assert got["status"] == "new"
+    # And it stays new on the next fetch.
+    again = client.get(f"/api/admin/leads/{lead_id}", headers=auth_headers).json()
+    assert again["status"] == "new"

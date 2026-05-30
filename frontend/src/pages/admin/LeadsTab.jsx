@@ -5,6 +5,8 @@ import {
   adminGetTrashedLeads,
   adminRestoreLead,
   adminUpdateLead,
+  adminGetLeadCounts,
+  adminExportLeadsCsv,
 } from "../../api.js";
 import { parseConfig } from "../../lib/parseConfig.js";
 import "./AdminTab.css";
@@ -62,13 +64,20 @@ export default function LeadsTab() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [counts, setCounts] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     load();
   }, [filter]);
 
+  useEffect(() => {
+    adminGetLeadCounts().then(setCounts).catch(() => {});
+  }, [leads]);
+
   async function load() {
     setLoading(true);
+    setError("");
     try {
       const data =
         filter === "trash"
@@ -79,6 +88,17 @@ export default function LeadsTab() {
       setError(e.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await adminExportLeadsCsv();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -113,7 +133,19 @@ export default function LeadsTab() {
     <div className="admin-tab-content">
       <div className="tab-toolbar">
         <h2>פניות</h2>
+        <button className="btn btn--ghost btn--sm" onClick={handleExport} disabled={exporting}>
+          {exporting ? "מייצא..." : "ייצא ל-CSV"}
+        </button>
       </div>
+
+      {counts && (
+        <div className="leads-counts">
+          <span className="leads-counts__item"><strong>{counts.all}</strong> סה״כ</span>
+          <span className="leads-counts__item leads-counts__item--new"><strong>{counts.new}</strong> חדשות</span>
+          <span className="leads-counts__item"><strong>{counts.contacted}</strong> בטיפול</span>
+          <span className="leads-counts__item"><strong>{counts.closed}</strong> סגורות</span>
+        </div>
+      )}
 
       {error && <p className="tab-error">{error}</p>}
 
