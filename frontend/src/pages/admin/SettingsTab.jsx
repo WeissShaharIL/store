@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { adminActivateLogo, adminDeleteLogo, adminGetLogos, adminUploadLogo, getSettings, updateSettings } from "../../api.js";
+import { adminActivateLogo, adminDeleteLogo, adminGetLogos, adminUploadLogo, adminChangePassword, getSettings, updateSettings } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
@@ -7,6 +7,30 @@ export default function SettingsTab() {
   const { confirm, dialog } = useConfirm();
   const [logos, setLogos] = useState([]);
   const [error, setError] = useState("");
+
+  const [cpCurrent, setCpCurrent] = useState("");
+  const [cpNew, setCpNew] = useState("");
+  const [cpConfirm, setCpConfirm] = useState("");
+  const [cpLoading, setCpLoading] = useState(false);
+  const [cpError, setCpError] = useState("");
+  const [cpDone, setCpDone] = useState(false);
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setCpError(""); setCpDone(false);
+    if (cpNew !== cpConfirm) { setCpError("הסיסמאות אינן תואמות"); return; }
+    if (cpNew.length < 6) { setCpError("הסיסמה החדשה חייבת להכיל לפחות 6 תווים"); return; }
+    setCpLoading(true);
+    try {
+      await adminChangePassword(cpCurrent, cpNew);
+      setCpDone(true);
+      setCpCurrent(""); setCpNew(""); setCpConfirm("");
+    } catch (err) {
+      setCpError(err.message);
+    } finally {
+      setCpLoading(false);
+    }
+  }
 
   useEffect(() => {
     adminGetLogos().then(setLogos).catch((e) => setError(e.message));
@@ -77,6 +101,31 @@ export default function SettingsTab() {
           ))}
         </div>
       </section>
+      <section className="settings-section">
+        <div className="settings-section__head">
+          <h3>שינוי סיסמה</h3>
+        </div>
+        <form onSubmit={handleChangePassword} className="settings-form" style={{ maxWidth: 360 }}>
+          <div className="settings-field">
+            <label>סיסמה נוכחית</label>
+            <input type="password" value={cpCurrent} onChange={(e) => setCpCurrent(e.target.value)} required />
+          </div>
+          <div className="settings-field">
+            <label>סיסמה חדשה</label>
+            <input type="password" value={cpNew} onChange={(e) => setCpNew(e.target.value)} required />
+          </div>
+          <div className="settings-field">
+            <label>אימות סיסמה חדשה</label>
+            <input type="password" value={cpConfirm} onChange={(e) => setCpConfirm(e.target.value)} required />
+          </div>
+          {cpError && <p className="tab-error">{cpError}</p>}
+          {cpDone && <p style={{ color: "#86efac", fontSize: "0.82rem", margin: 0 }}>הסיסמה שונתה בהצלחה ✓</p>}
+          <button type="submit" disabled={cpLoading} className="settings-save-btn">
+            {cpLoading ? "שומר..." : "שמור סיסמה"}
+          </button>
+        </form>
+      </section>
+
       {dialog}
     </div>
   );
