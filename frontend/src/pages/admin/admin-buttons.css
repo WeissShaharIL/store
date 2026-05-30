@@ -1,0 +1,105 @@
+/* =============================================================================
+   ADMIN BUTTONS — single source of truth.
+
+   Every button in the admin panel is styled here and nowhere else. Do NOT
+   redefine button visuals in per-tab CSS files; add a variant here instead.
+
+   All selectors are scoped under `.admin` (the admin app root, see
+   AdminDashboard.jsx `<div className="admin">`) so they always win over the
+   global portal `.btn` defined in styles/buttons.css, regardless of CSS
+   bundle order. This is what prevents admin buttons from silently inheriting
+   the customer-portal button look.
+
+   Visual language: borderless text-link, matching the public site CTA
+   (.landing-category-card__cta). Muted gray that brightens to white on hover;
+   primary actions add a forward arrow.
+   ========================================================================== */
+
+/* Base — every admin button class shares this text-link foundation. */
+.admin .btn,
+.admin .btn-add,
+.admin .settings-save-btn,
+.admin .lead-action-btn,
+.admin .leads-filter-btn,
+.admin .admin-logout-btn,
+.admin .create-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0.35rem 0.25rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: none;
+  transition: color 150ms ease;
+}
+.admin .btn:hover:not(:disabled),
+.admin .btn-add:hover:not(:disabled),
+.admin .settings-save-btn:hover:not(:disabled),
+.admin .lead-action-btn:hover:not(:disabled),
+.admin .leads-filter-btn:hover:not(:disabled),
+.admin .admin-logout-btn:hover:not(:disabled),
+.admin .create-form button:hover:not(:disabled) {
+  color: #ffffff;
+}
+.admin .btn:disabled,
+.admin .btn-add:disabled,
+.admin .settings-save-btn:disabled,
+.admin .create-form button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin .btn--sm { font-size: 0.82rem; }
+
+/* Primary intent — brighter, with the forward arrow from the site CTA.
+   Markup classes that mean "the main action" all map here. */
+.admin .btn--primary,
+.admin .settings-save-btn,
+.admin .create-form button[type="submit"] {
+  color: rgba(255, 255, 255, 0.75);
+}
+.admin .btn--primary::after,
+.admin .settings-save-btn::after {
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Ghost / secondary — more muted, no arrow. */
+.admin .btn--ghost,
+.admin .admin-logout-btn,
+.admin .create-form button[type="button"] {
+  color: rgba(255, 255, 255, 0.35);
+}
+.admin .btn--ghost:hover:not(:disabled),
+.admin .admin-logout-btn:hover:not(:disabled),
+.admin .create-form button[type="button"]:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Danger — destructive actions tint red on hover. */
+.admin .btn--danger:hover:not(:disabled),
+.admin .lead-action-btn.danger:hover:not(:disabled),
+.admin .confirm-actions__ok:hover:not(:disabled) {
+  color: #f87171;
+}
+.admin .confirm-actions__ok { color: rgba(248, 113, 113, 0.8); }
+
+/* Active state — used by leads status filters to mark the current view. */
+.admin .leads-filter-btn.active {
+  color: #ffffff;
+  font-weight: 600;
+}

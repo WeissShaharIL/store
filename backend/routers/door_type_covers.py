@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
-from helpers import delete_upload, save_upload
-from models import DoorTypeCover, MediaFile
+from helpers import register_media, save_upload, unregister_media
+from models import DoorTypeCover
 from schemas import DoorTypeCoverOut
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -29,14 +29,15 @@ def upload_cover(
     if kind not in VALID_KINDS:
         raise HTTPException(status_code=422, detail=f"kind חייב להיות: {', '.join(sorted(VALID_KINDS))}")
     filename = save_upload(file)
-    db.add(MediaFile(folder_id=None, image_path=filename, original_name=file.filename))
+    register_media(db, filename, file.filename)
     row = db.get(DoorTypeCover, kind)
     if row:
         old_path = row.image_path
         row.image_path = filename
         db.commit()
         db.refresh(row)
-        delete_upload(old_path)
+        unregister_media(db, old_path)
+        db.commit()
     else:
         row = DoorTypeCover(kind=kind, image_path=filename)
         db.add(row)
@@ -55,4 +56,5 @@ def delete_cover(kind: str, db: Session = Depends(get_db)):
     old_path = row.image_path
     db.delete(row)
     db.commit()
-    delete_upload(old_path)
+    unregister_media(db, old_path)
+    db.commit()

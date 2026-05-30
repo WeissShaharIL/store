@@ -1,21 +1,4 @@
-/* Text-link button, matching the public site CTA (see .btn in AdminBase.css). */
-.btn-add {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  padding: 0.35rem 0.25rem;
-  font-size: 0.82rem;
-  font-family: inherit;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 150ms ease;
-}
-.btn-add:hover { color: #ffffff; }
+/* Button styles (.btn-add, .create-form button) live in ./admin-buttons.css */
 
 .create-form {
   display: flex;
@@ -39,25 +22,6 @@
   transition: border-color 150ms ease;
 }
 .create-form input:focus { border-color: rgba(255,255,255,0.3); }
-.create-form button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  padding: 0.35rem 0.5rem;
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 150ms ease;
-}
-.create-form button[type="submit"] { color: rgba(255, 255, 255, 0.5); }
-.create-form button[type="submit"]:hover { color: #ffffff; }
-.create-form button[type="button"] { color: rgba(255, 255, 255, 0.35); }
-.create-form button[type="button"]:hover { color: rgba(255, 255, 255, 0.8); }
 
 .templates-grid {
   display: grid;
