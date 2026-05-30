@@ -1,0 +1,103 @@
+.activity-alert {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #f87171;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.activity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activity-filter {
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.65);
+  font: inherit;
+  font-size: 0.82rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+.activity-filter:focus { border-color: rgba(255, 255, 255, 0.25); }
+
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 120ms ease;
+}
+.activity-item:hover { background: #161618; }
+
+.activity-item__icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.activity-item__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.activity-item__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.activity-item__actor {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+.activity-item__detail {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.activity-item__meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.activity-item__time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+.activity-item__ip {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.18);
+  font-family: monospace;
+}
+
+/* Color accents by event type */
+.activity-item--green .activity-item__label { color: #86efac; }
+.activity-item--red   .activity-item__label { color: #f87171; }
+.activity-item--blue  .activity-item__label { color: #93c5fd; }
+.activity-item--muted .activity-item__label { color: rgba(255, 255, 255, 0.75); }

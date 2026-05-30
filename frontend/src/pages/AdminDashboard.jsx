@@ -7,17 +7,19 @@ import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
 const PituchTab = lazy(() => import("./admin/PituchTab.jsx"));
 import ImagesTab from "./admin/ImagesTab.jsx";
+import ActivityTab from "./admin/ActivityTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
 import { adminGetLeadsUnreadCount, adminChangePassword } from "../api.js";
 import "../styles/chat.css";
 import "./AdminDashboard.css";
 
 const TABS = [
-  { id: "settings", label: "הגדרות" },
-  { id: "images",   label: "תמונות" },
-  { id: "landing",  label: "דף הבית" },
-  { id: "leads",    label: "פניות" },
-  { id: "pituch",   label: "פיתוח" },
+  { id: "settings",  label: "הגדרות" },
+  { id: "images",    label: "תמונות" },
+  { id: "landing",   label: "דף הבית" },
+  { id: "leads",     label: "פניות" },
+  { id: "activity",  label: "פעילות" },
+  { id: "pituch",    label: "פיתוח" },
 ];
 
 export default function AdminDashboard() {
@@ -89,7 +91,8 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-content">
-        {activeTab === "images"   && <ImagesTab />}
+        {activeTab === "images"    && <ImagesTab />}
+        {activeTab === "activity"  && <ActivityTab />}
         {activeTab === "pituch"   && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
         {activeTab === "leads"    && <LeadsTab />}
         {activeTab === "landing"  && <LandingSettingsTab />}

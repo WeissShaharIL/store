@@ -34,6 +34,7 @@ from routers import public as public_router
 from routers import landing as landing_router
 from routers import version as version_router
 from routers import media as media_router
+from routers import activity_router
 
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "./uploads")).resolve()
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -95,6 +96,7 @@ app.include_router(leads_router.admin_router, prefix="/api/admin/leads", tags=["
 app.include_router(public_router.router, prefix="/api/public", tags=["public"])
 app.include_router(version_router.router, prefix="/api/version", tags=["version"])
 app.include_router(media_router.router, prefix="/api/admin/media", tags=["admin-media"])
+app.include_router(activity_router.router, prefix="/api/admin/activity", tags=["admin-activity"])
 
 
 @app.get("/api/health")

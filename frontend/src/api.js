@@ -137,6 +137,14 @@ export const adminMoveMediaFile = (id, folderId) =>
 export const adminChangePassword = (currentPassword, newPassword) =>
   api.post("/api/auth/change-password", { current_password: currentPassword, new_password: newPassword });
 
+// ── Admin — Activity log ──────────────────────────────────────────────────────
+export const adminGetActivity = (params = {}) => {
+  const qs = new URLSearchParams();
+  if (params.action) qs.set("action", params.action);
+  if (params.limit)  qs.set("limit", params.limit);
+  return api.get(`/api/admin/activity${qs.toString() ? "?" + qs : ""}`);
+};
+
 // ── Namespaced API (used by portal pages) ─────────────────────────────────────
 // The flat exports above are used by existing admin components.
 // Portal pages (CatalogPage, MessagesPage, etc.) use the namespaced form below,
