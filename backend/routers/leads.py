@@ -1,13 +1,14 @@
 import json
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
 from models import Lead, utcnow
 from schemas import LeadCreate, LeadOut, LeadUpdate
+import activity as act
 
 public_router = APIRouter()
 admin_router = APIRouter(dependencies=[Depends(require_admin)])
@@ -40,7 +41,7 @@ def _to_out(row: Lead) -> LeadOut:
 
 
 @public_router.post("", response_model=LeadOut, status_code=201)
-def submit_lead(payload: LeadCreate, db: Session = Depends(get_db)):
+def submit_lead(payload: LeadCreate, request: Request, db: Session = Depends(get_db)):
     row = Lead(
         name=payload.name.strip(),
         phone=payload.phone.strip(),
@@ -56,6 +57,9 @@ def submit_lead(payload: LeadCreate, db: Session = Depends(get_db)):
     db.add(row)
     db.commit()
     db.refresh(row)
+    act.record(db, "lead_submitted", request=request, actor=payload.name.strip(),
+               details={"phone": payload.phone.strip(), "lead_id": row.id,
+                        "items": len(payload.cart)})
     return _to_out(row)
 
 

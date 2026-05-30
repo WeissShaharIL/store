@@ -324,6 +324,17 @@ class Lead(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
 
+class ActivityEvent(Base):
+    __tablename__ = "activity_events"
+
+    id = Column(Integer, primary_key=True)
+    action = Column(String(64), nullable=False, index=True)
+    actor = Column(String(128), nullable=True)
+    ip = Column(String(64), nullable=True)
+    details = Column(Text, nullable=True)  # JSON string
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+
+
 class MediaFolder(Base):
     __tablename__ = "media_folders"
 
