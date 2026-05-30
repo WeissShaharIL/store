@@ -6,7 +6,25 @@ import {
   adminRestoreLead,
   adminUpdateLead,
 } from "../../api.js";
+import { parseConfig } from "../../lib/parseConfig.js";
 import "./AdminTab.css";
+
+function cartItemSummary(item) {
+  const snap = item.snapshot;
+  const cfg = parseConfig(item.config_json);
+  const dims = snap?.customDims ?? cfg.dimensions;
+  const doors = cfg.doors ?? [];
+  const parts = [];
+  if (dims) {
+    const widthCm = Math.round((dims.compartmentWidth ?? 80) * Math.max(1, doors.length));
+    parts.push(`${widthCm}×${dims.H}×${dims.D} ס״מ`);
+  }
+  if (doors.length) parts.push(`${doors.length} דלתות`);
+  const color = snap?.customColor ?? cfg.color;
+  if (color) parts.push(color);
+  if (item.displaySalePrice) parts.push(`₪${Number(item.displaySalePrice).toLocaleString()}`);
+  return parts.join(" · ");
+}
 
 const STATUS_LABELS = { new: "חדש", contacted: "נוצר קשר", closed: "סגור" };
 const FILTERS = [
@@ -101,9 +119,31 @@ export default function LeadsTab() {
                 <span className="lead-name">{l.name}</span>
                 <span className={`lead-status ${l.status}`}>{STATUS_LABELS[l.status]}</span>
               </div>
-              <span className="lead-phone">{l.phone}</span>
-              {l.email && <span className="lead-date">{l.email}</span>}
-              <span className="lead-cart-count">{l.cart?.length || 0} פריטים בסל</span>
+              <a className="lead-phone" href={`tel:${l.phone}`}>{l.phone}</a>
+              {l.email && <div className="lead-detail">✉️ {l.email}</div>}
+              {l.address && <div className="lead-detail">📍 {l.address}</div>}
+              {l.notes && <div className="lead-detail lead-detail--notes">📝 {l.notes}</div>}
+              {l.cart?.length > 0 ? (
+                <div className="lead-cart">
+                  <div className="lead-cart__title">פריטים שנבחרו ({l.cart.length})</div>
+                  <ul className="lead-cart__list">
+                    {l.cart.map((item, i) => {
+                      const summary = cartItemSummary(item);
+                      return (
+                        <li key={item.id || i} className="lead-cart__item">
+                          <span className="lead-cart__name">
+                            {item.snapshot && <span className="lead-cart__badge">מותאם</span>}
+                            {item.name || "ארון"}
+                          </span>
+                          {summary && <span className="lead-cart__summary">{summary}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : (
+                <div className="lead-cart-count">אין פריטים בסל</div>
+              )}
               <span className="lead-date">
                 {new Date(l.created_at).toLocaleDateString("he-IL")}
               </span>
