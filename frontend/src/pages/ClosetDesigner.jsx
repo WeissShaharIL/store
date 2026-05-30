@@ -140,6 +140,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       templateId: item.id,
       name: item.name,
       image_path: item.image_path,
+      config_json: item.config_json,
       snapshot: {
         customDims, customColor, customDivider,
         customDoorHandles, customDoorMaterials,
