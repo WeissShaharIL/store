@@ -44,8 +44,22 @@ export default function LeadClosetPreview({ item, onClose }) {
 
   const base = parseConfig(item.config_json);
   const snap = item.snapshot || {};
+  // Merge stage-2 interior placements into each door's compartment so the
+  // admin sees the exact shelves/rods/drawers the customer added.
+  const mergedDoors = (base.doors ?? []).map((door) => {
+    const placed = snap.customItems?.[door.id];
+    if (!placed) return door;
+    return {
+      ...door,
+      compartment: {
+        defaultVariant: "custom",
+        variants: [{ id: "custom", label: "מותאם", items: placed }],
+      },
+    };
+  });
   const config = {
     ...base,
+    doors: mergedDoors,
     dimensions: { ...base.dimensions, ...(snap.customDims || {}) },
     color: snap.customColor ?? base.color,
     hasInternalDivider: snap.customDivider ?? base.hasInternalDivider,

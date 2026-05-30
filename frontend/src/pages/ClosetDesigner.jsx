@@ -112,12 +112,31 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const setTotalW = (w) =>
     setCustomDims((d) => ({ ...d, compartmentWidth: Math.round(w / nDoors) }));
 
-  const customConfig = useMemo(() => ({
-    ...cfg,
-    dimensions: { ...cfg.dimensions, ...customDims },
-    color: customColor,
-    hasInternalDivider: customDivider,
-  }), [cfg, customDims, customColor, customDivider]);
+  const customConfig = useMemo(() => {
+    // Merge the stage-2 interior plan (customItems: { doorId: [{type,y}] })
+    // into each door's compartment so the renderer (which reads
+    // door.compartment.variants[].items) shows the shelves/rods/drawers the
+    // customer placed. Doors the customer didn't touch keep their template
+    // interior.
+    const doors = (cfg.doors ?? []).map((door) => {
+      const placed = customItems?.[door.id];
+      if (!placed) return door;
+      return {
+        ...door,
+        compartment: {
+          defaultVariant: "custom",
+          variants: [{ id: "custom", label: "מותאם", items: placed }],
+        },
+      };
+    });
+    return {
+      ...cfg,
+      doors,
+      dimensions: { ...cfg.dimensions, ...customDims },
+      color: customColor,
+      hasInternalDivider: customDivider,
+    };
+  }, [cfg, customDims, customColor, customDivider, customItems]);
 
   useEffect(() => {
     saveDesignerState(item.id, {
