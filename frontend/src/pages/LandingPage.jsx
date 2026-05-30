@@ -17,7 +17,6 @@ import "../styles/landing/06-footer.css";
 import "../styles/landing/07-whatsapp.css";
 import "../styles/landing/08-closet-anim.css";
 import "../styles/landing/09-scroll-fx.css";
-import "../styles/landing/10-landing-buttons.css";
 
 const DEFAULTS = {
   welcome_title: "ארונות בהתאמה אישית",
