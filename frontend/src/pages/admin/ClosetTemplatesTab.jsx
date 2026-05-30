@@ -7,9 +7,11 @@ import {
   adminUpdateTemplate,
   adminUploadTemplateImage,
 } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
 export default function ClosetTemplatesTab() {
+  const { confirm, dialog } = useConfirm();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -77,7 +79,7 @@ export default function ClosetTemplatesTab() {
   }
 
   async function handleDelete(id) {
-    if (!confirm("למחוק את התבנית?")) return;
+    if (!await confirm("למחוק את התבנית?")) return;
     try {
       await adminDeleteTemplate(id);
       setTemplates((prev) => prev.filter((t) => t.id !== id));
@@ -149,6 +151,7 @@ export default function ClosetTemplatesTab() {
           </div>
         ))}
       </div>
+      {dialog}
     </div>
   );
 }

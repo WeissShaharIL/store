@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { adminCreateColor, adminDeleteColor, adminGetColors, adminUpdateColor } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
 export default function ColorsTab() {
+  const { confirm, dialog } = useConfirm();
   const [colors, setColors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,7 +30,7 @@ export default function ColorsTab() {
   }
 
   async function handleDelete(id) {
-    if (!confirm("למחוק את הצבע?")) return;
+    if (!await confirm("למחוק את הצבע?")) return;
     try {
       await adminDeleteColor(id);
       setColors((prev) => prev.filter((c) => c.id !== id));
@@ -71,6 +73,7 @@ export default function ColorsTab() {
           </div>
         ))}
       </div>
+      {dialog}
     </div>
   );
 }
