@@ -196,6 +196,9 @@ export default function ClosetScene({
      contrast wall behind it. Only meaningful when `hall` is also
      true (no walls = nothing to darken). */
   showDimToggle = false,
+  /* v0.80.0 — when set, the scene enables preserveDrawingBuffer and mounts a
+     CaptureController that assigns a (position)=>dataURL fn to this ref. */
+  captureRef = null,
 }) {
   // When the intro is on, the camera mounts pretty close to the
   // cabinet, centered horizontally, at cabinet-center eye-level.
@@ -222,6 +225,7 @@ export default function ClosetScene({
       camera={{ position: introStartPosition, fov: cameraFov }}
       dpr={[1, 2]}
       frameloop={frameloop}
+      gl={captureRef ? { preserveDrawingBuffer: true } : undefined}
       onCreated={({ camera }) => {
         // Aim the camera at the cabinet on canvas creation. Normally
         // OrbitControls handles this, but for static thumbnails
@@ -269,6 +273,8 @@ export default function ClosetScene({
       {hall && <Hall dim={dimMode} />}
 
       {children}
+
+      {captureRef && <CaptureController captureRef={captureRef} targetY={targetY} />}
 
       <ContactShadows
         position={[0, 0, 0]}

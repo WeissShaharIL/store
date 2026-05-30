@@ -1,0 +1,78 @@
+.orders-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.orders-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+.orders-filters__input {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.45rem 0.7rem;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.orders-filters__input:focus { border-color: rgba(255, 255, 255, 0.3); }
+.orders-filters__date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.orders-filters__date input {
+  padding: 0.4rem 0.6rem;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.82rem;
+  outline: none;
+  color-scheme: dark;
+}
+
+/* Status pill on each order card */
+.order-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.order-status--new          { color: #f0a050; border-color: rgba(240,160,80,0.4);  background: rgba(240,160,80,0.1); }
+.order-status--in_production { color: #60a8e0; border-color: rgba(96,168,224,0.4);  background: rgba(96,168,224,0.1); }
+.order-status--ready        { color: #c084fc; border-color: rgba(192,132,252,0.4); background: rgba(192,132,252,0.1); }
+.order-status--delivered    { color: #5cba7e; border-color: rgba(92,186,126,0.4);  background: rgba(92,186,126,0.1); }
+.order-status--cancelled    { color: #9aa0a6; border-color: rgba(154,160,166,0.35); background: rgba(154,160,166,0.08); }
+
+.orders-status-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+.orders-status-select select {
+  padding: 0.3rem 0.55rem;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  outline: none;
+}

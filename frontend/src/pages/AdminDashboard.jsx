@@ -19,6 +19,7 @@ const TABS = [
   { id: "images",    label: "תמונות" },
   { id: "landing",   label: "דף הבית" },
   { id: "leads",     label: "פניות" },
+  { id: "orders",    label: "הזמנות" },
   { id: "activity",  label: "פעילות" },
   { id: "pituch",    label: "פיתוח" },
 ];
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("settings");
   const [leadsUnread, setLeadsUnread] = useState(0);
+  const [ordersRefresh, setOrdersRefresh] = useState(0);
 
   const fetchLeadsUnread = useCallback(async () => {
     const r = await adminGetLeadsUnreadCount();
@@ -70,7 +72,8 @@ export default function AdminDashboard() {
         {activeTab === "images"   && <ImagesTab />}
         {activeTab === "activity" && <ActivityTab />}
         {activeTab === "pituch"   && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
-        {activeTab === "leads"    && <LeadsTab />}
+        {activeTab === "leads"    && <LeadsTab onOrderCreated={() => { setOrdersRefresh((n) => n + 1); setActiveTab("orders"); }} />}
+        {activeTab === "orders"   && <OrdersTab key={ordersRefresh} />}
         {activeTab === "landing"  && <LandingSettingsTab />}
         {activeTab === "settings" && <SettingsTab />}
       </div>

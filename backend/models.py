@@ -324,6 +324,29 @@ class Lead(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
 
+class ClosetOrder(Base):
+    """A confirmed order an admin created from a customer lead.
+
+    Carries a snapshot of the customer's contact details and the designed
+    cart (same JSON shape as Lead.cart_snapshot) so the order is self-
+    contained even if the source lead is later edited or deleted.
+    """
+    __tablename__ = "closet_orders"
+
+    id = Column(Integer, primary_key=True)
+    lead_id = Column(Integer, ForeignKey("leads.id"), nullable=True, index=True)
+    customer_name = Column(String(128), nullable=False)
+    phone = Column(String(64), nullable=False, index=True)
+    email = Column(String(128), nullable=True)
+    address = Column(String(256), nullable=True)
+    cart_snapshot = Column(Text, nullable=False, default="[]")
+    total_amount = Column(Numeric(10, 2), nullable=True)
+    status = Column(String(24), nullable=False, default="new", index=True)
+    admin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
+
+
 class ActivityEvent(Base):
     __tablename__ = "activity_events"
 

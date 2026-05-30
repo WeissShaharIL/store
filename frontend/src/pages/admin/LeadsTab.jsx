@@ -7,8 +7,10 @@ import {
   adminUpdateLead,
   adminGetLeadCounts,
   adminExportLeadsCsv,
+  adminCreateOrder,
 } from "../../api.js";
 import { parseConfig } from "../../lib/parseConfig.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
 // Lazy so three.js loads only when an admin opens a 3D preview.
@@ -67,7 +69,8 @@ const FILTERS = [
   { id: "trash", label: "אשפה" },
 ];
 
-export default function LeadsTab() {
+export default function LeadsTab({ onOrderCreated }) {
+  const { confirm, dialog } = useConfirm();
   const [leads, setLeads] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -75,6 +78,21 @@ export default function LeadsTab() {
   const [counts, setCounts] = useState(null);
   const [exporting, setExporting] = useState(false);
   const [preview, setPreview] = useState(null); // cart item being shown in 3D
+  const [creatingOrder, setCreatingOrder] = useState(null); // lead id mid-create
+
+  async function createOrder(lead) {
+    if (!await confirm(`ליצור הזמנה עבור ${lead.name}? הפנייה תסומן כסגורה.`)) return;
+    setCreatingOrder(lead.id);
+    try {
+      await adminCreateOrder(lead.id);
+      setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, status: "closed" } : l)));
+      onOrderCreated?.();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setCreatingOrder(null);
+    }
+  }
 
   useEffect(() => {
     load();
@@ -226,6 +244,13 @@ export default function LeadsTab() {
               <div className="lead-actions">
                 {filter !== "trash" && (
                   <>
+                    <button
+                      className="lead-action-btn lead-action-btn--primary"
+                      onClick={() => createOrder(l)}
+                      disabled={creatingOrder === l.id}
+                    >
+                      {creatingOrder === l.id ? "יוצר..." : "צור הזמנה"}
+                    </button>
                     {l.status !== "contacted" && (
                       <button className="lead-action-btn" onClick={() => setStatus(l.id, "contacted")}>
                         נוצר קשר
@@ -257,6 +282,7 @@ export default function LeadsTab() {
           <LeadClosetPreview item={preview} onClose={() => setPreview(null)} />
         </Suspense>
       )}
+      {dialog}
     </div>
   );
 }
