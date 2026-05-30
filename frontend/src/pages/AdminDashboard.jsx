@@ -23,7 +23,7 @@ const TABS = [
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("pituch");
+  const [activeTab, setActiveTab] = useState("settings");
   const [leadsUnread, setLeadsUnread] = useState(0);
 
   // Change password state
