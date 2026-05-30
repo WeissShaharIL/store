@@ -1,11 +1,11 @@
-import { useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
 import LeadsTab from "./admin/LeadsTab.jsx";
 import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
-import PituchTab from "./admin/PituchTab.jsx";
+const PituchTab = lazy(() => import("./admin/PituchTab.jsx"));
 import ImagesTab from "./admin/ImagesTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
 import { adminGetLeadsUnreadCount, adminChangePassword } from "../api.js";
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
 
       <div className="admin-content">
         {activeTab === "images"   && <ImagesTab />}
-        {activeTab === "pituch"   && <PituchTab />}
+        {activeTab === "pituch"   && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
         {activeTab === "leads"    && <LeadsTab />}
         {activeTab === "landing"  && <LandingSettingsTab />}
         {activeTab === "settings" && (

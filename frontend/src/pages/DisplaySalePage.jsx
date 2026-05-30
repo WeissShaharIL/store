@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDisplaySale } from "../api.js";
 import { parseConfig } from "../lib/parseConfig.js";
@@ -6,7 +6,8 @@ import { totalWidth } from "./admin/closet3d/schema.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
-import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+
+const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
 import InquiryModal from "./InquiryModal.jsx";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/01-shell.css";
@@ -47,14 +48,16 @@ export default function DisplaySalePage() {
       {inquiryCloset && (
         <InquiryModal item={inquiryCloset} onClose={() => setInquiryCloset(null)} />
       )}
-      {selectedCloset && (
-        <ShowroomClosetDetails
-          item={selectedCloset}
-          onClose={() => setSelectedCloset(null)}
-          onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
-          added={addedIds.has(selectedCloset.id)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {selectedCloset && (
+          <ShowroomClosetDetails
+            item={selectedCloset}
+            onClose={() => setSelectedCloset(null)}
+            onAddToCart={(closet) => { handleAddToCart(closet); setSelectedCloset(null); }}
+            added={addedIds.has(selectedCloset.id)}
+          />
+        )}
+      </Suspense>
       <header className="landing-nav showroom__nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand">

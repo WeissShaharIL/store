@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPublicClosets, getPublicSettings } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight, Mail } from "../components/Icons.jsx";
-import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
 import InquiryModal from "./InquiryModal.jsx";
-import ClosetDesigner from "./ClosetDesigner.jsx";
+
+const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
+const ClosetDesigner = lazy(() => import("./ClosetDesigner.jsx"));
 import { parseConfig } from "../lib/parseConfig.js";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import "../styles/landing/01-shell-nav.css";
@@ -76,21 +77,23 @@ export default function ShowroomPage() {
       {inquiryCloset && (
         <InquiryModal item={inquiryCloset} onClose={() => setInquiryCloset(null)} />
       )}
-      {designingCloset && (
-        <ClosetDesigner
-          item={designingCloset}
-          onClose={() => setDesigningCloset(null)}
-        />
-      )}
-      {selectedCloset && !designingCloset && (
-        <ShowroomClosetDetails
-          item={selectedCloset}
-          onClose={() => setSelectedCloset(null)}
-          onAddToCart={(closet) => { handleAddToCart(closet); }}
-          onDesign={handleDesign}
-          added={addedIds.has(selectedCloset.id)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {designingCloset && (
+          <ClosetDesigner
+            item={designingCloset}
+            onClose={() => setDesigningCloset(null)}
+          />
+        )}
+        {selectedCloset && !designingCloset && (
+          <ShowroomClosetDetails
+            item={selectedCloset}
+            onClose={() => setSelectedCloset(null)}
+            onAddToCart={(closet) => { handleAddToCart(closet); }}
+            onDesign={handleDesign}
+            added={addedIds.has(selectedCloset.id)}
+          />
+        )}
+      </Suspense>
       <header className="landing-nav showroom__nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand">

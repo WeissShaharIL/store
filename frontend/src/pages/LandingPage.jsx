@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getActiveLogo, getDoorTypeCovers, getPublicClosets, getPublicHeroBanners, getPublicSettings, submitLead } from "../api.js";
 import CartIcon from "../components/CartIcon.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
-import ShowroomClosetDetails from "./ShowroomClosetDetails.jsx";
+
+const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
 import { addToCart, getCart } from "../lib/cart.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/03-details.css";
@@ -170,14 +171,16 @@ const contactRef = useRef(null);
 
   return (
     <div className="landing">
-      {selectedCloset && (
-        <ShowroomClosetDetails
-          item={selectedCloset}
-          onClose={() => setSelectedCloset(null)}
-          onAddToCart={(closet) => { handleAddToCart(closet); }}
-          added={addedIds.has(selectedCloset.id)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {selectedCloset && (
+          <ShowroomClosetDetails
+            item={selectedCloset}
+            onClose={() => setSelectedCloset(null)}
+            onAddToCart={(closet) => { handleAddToCart(closet); }}
+            added={addedIds.has(selectedCloset.id)}
+          />
+        )}
+      </Suspense>
       <header className="landing-nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand" aria-label={brandName}>
