@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from auth import require_admin
 from db import get_db
 from helpers import delete_upload, save_upload
-from models import HeroBanner
+from models import HeroBanner, MediaFile
 from schemas import HeroBannerOut
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -21,6 +21,7 @@ def list_banners(db: Session = Depends(get_db)):
 @router.post("", response_model=HeroBannerOut, status_code=201)
 def upload_banner(file: UploadFile = File(...), db: Session = Depends(get_db)):
     filename = save_upload(file)
+    db.add(MediaFile(folder_id=None, image_path=filename, original_name=file.filename))
     max_order = db.query(HeroBanner).count()
     row = HeroBanner(image_path=filename, sort_order=max_order)
     db.add(row)

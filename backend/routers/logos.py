@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from auth import require_admin
 from db import get_db
 from helpers import delete_upload, save_upload
-from models import Logo
+from models import Logo, MediaFile
 from schemas import LogoOut
 
 router = APIRouter(dependencies=[Depends(require_admin)])
@@ -25,6 +25,7 @@ def upload_logo(
     db: Session = Depends(get_db),
 ):
     filename = save_upload(file)
+    db.add(MediaFile(folder_id=None, image_path=filename, original_name=file.filename))
     row = Logo(name=(name or "").strip(), image_path=filename, is_active=False)
     db.add(row)
     db.commit()
