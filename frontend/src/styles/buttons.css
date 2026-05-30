@@ -13,10 +13,13 @@
    Admin buttons are handled separately in pages/admin/admin-buttons.css.
    ========================================================================== */
 
-/* ---- The canonical button: every storefront action button maps here ---- */
+/* ---- The canonical button: every storefront action button maps here ----
+   NOTE: .landing-category-card__cta is intentionally NOT listed here. It is
+   the original reference design (styled in landing/03-categories.css) and must
+   stay governed solely by that rule — including it here overrode its original
+   padding/gap/color. Other buttons copy its look; it owns it. */
 .landing .btn--primary,
 .section-hover-title__reveal,
-.landing-category-card__cta,
 .showroom-card__add-btn,
 .sr-details__cta-btn,
 .closet-designer__add-btn,
@@ -50,7 +53,6 @@
 .landing .btn--primary:hover:not(:disabled),
 .landing .btn--primary:active:not(:disabled),
 .section-hover-title:hover .section-hover-title__reveal,
-.landing-category-card__cta:hover,
 .showroom-card__add-btn:hover:not(:disabled),
 .sr-details__cta-btn:hover:not(:disabled),
 .closet-designer__add-btn:hover:not(:disabled),
