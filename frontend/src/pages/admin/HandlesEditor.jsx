@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Image, Plus, Trash, Edit } from "../../components/Icons.jsx";
 import { adminGetHandles, adminCreateHandle, adminUpdateHandle, adminDeleteHandle } from "../../api.js";
 import { useHandles } from "./HandlesContext.jsx";
+import { useConfirm } from "./useConfirm.jsx";
 
 /**
  * v1.84.0 — admin-managed catalog of door handles. Mirror of the
@@ -39,6 +40,7 @@ const DOOR_KIND_BADGE = {
 };
 
 export default function HandlesEditor() {
+  const { confirm, dialog } = useConfirm();
   const { list, loading, error, refresh } = useHandles();
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(null);
@@ -99,7 +101,7 @@ export default function HandlesEditor() {
 
   async function removeRow(row) {
     if (
-      !window.confirm(
+      !await confirm(
         `למחוק את הידית "${row.name}"? פעולה זו אינה ניתנת לביטול.`,
       )
     ) {
@@ -167,6 +169,7 @@ export default function HandlesEditor() {
           ),
         )}
       </div>
+      {dialog}
     </div>
   );
 }

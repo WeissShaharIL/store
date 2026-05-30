@@ -3,6 +3,7 @@ import { Image, Plus, Trash, Edit } from "../../components/Icons.jsx";
 import { adminGetColors, adminCreateColor, adminUpdateColor, adminDeleteColor } from "../../api.js";
 import { usePaletteColors } from "./PaletteContext.jsx";
 import { TEXTURE_OPTIONS } from "./closet3d/textures.js";
+import { useConfirm } from "./useConfirm.jsx";
 
 /**
  * v1.75.0 — admin-managed catalog of palette colors. Lives directly
@@ -22,6 +23,7 @@ import { TEXTURE_OPTIONS } from "./closet3d/textures.js";
  * references the color_key; the error message includes the count.
  */
 export default function PalettesEditor() {
+  const { confirm, dialog } = useConfirm();
   const { list, loading, error, refresh } = usePaletteColors();
   // ID of the row currently being edited (or "new" for a draft row),
   // plus the draft values that haven't been saved yet.
@@ -91,7 +93,7 @@ export default function PalettesEditor() {
 
   async function removeRow(row) {
     if (
-      !window.confirm(
+      !await confirm(
         `למחוק את הצבע "${row.name}"? פעולה זו אינה ניתנת לביטול.`,
       )
     ) {
@@ -159,6 +161,7 @@ export default function PalettesEditor() {
           ),
         )}
       </div>
+      {dialog}
     </div>
   );
 }

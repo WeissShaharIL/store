@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { adminCreateHandle, adminDeleteHandle, adminGetHandles } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
 export default function HandlesTab() {
+  const { confirm, dialog } = useConfirm();
   const [handles, setHandles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,7 +30,7 @@ export default function HandlesTab() {
   }
 
   async function handleDelete(id) {
-    if (!confirm("למחוק את הידית?")) return;
+    if (!await confirm("למחוק את הידית?")) return;
     try {
       await adminDeleteHandle(id);
       setHandles((prev) => prev.filter((h) => h.id !== id));
@@ -84,6 +86,7 @@ export default function HandlesTab() {
           </div>
         ))}
       </div>
+      {dialog}
     </div>
   );
 }

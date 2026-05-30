@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useConfirm } from "./useConfirm.jsx";
 import { Package, Plus, Trash, Save, Check, Download, Upload, Image as ImageIcon, Eye, EyeOff } from "../../components/Icons.jsx";
 import {
   adminGetTemplates,
@@ -62,6 +63,7 @@ function formatILS(amount) {
  */
 
 export default function DevClosetBuilder() {
+  const { confirm, dialog } = useConfirm();
   const [config, setConfig] = useState(newConfig);
   const [currentId, setCurrentId] = useState(null);
   const [isReady, setIsReady] = useState(false);
@@ -379,7 +381,7 @@ export default function DevClosetBuilder() {
 
   async function handleImageRemove() {
     if (!currentId || !imagePath) return;
-    if (!window.confirm("להסיר את התמונה מהמודל?")) return;
+    if (!await confirm("להסיר את התמונה מהמודל?")) return;
     try {
       const updated = await adminDeleteTemplateImage(currentId);
       setImagePath(updated.image_path ?? null);
@@ -392,7 +394,7 @@ export default function DevClosetBuilder() {
 
   async function deleteCurrent() {
     if (!currentId) return;
-    if (!window.confirm(`למחוק את המודל "${config.name}"?`)) return;
+    if (!await confirm(`למחוק את המודל "${config.name}"?`)) return;
     try {
       await adminDeleteTemplate(currentId);
       newOne();
@@ -669,6 +671,7 @@ export default function DevClosetBuilder() {
           </div>
         </div>
       </div>
+      {dialog}
     </div>
   );
 }

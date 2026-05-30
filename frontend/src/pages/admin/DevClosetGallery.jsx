@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useConfirm } from "./useConfirm.jsx";
 import { Package, Upload, Trash, Image as ImageIcon } from "../../components/Icons.jsx";
 import {
   adminGetTemplates,
@@ -193,6 +194,7 @@ function GalleryTypePicker({
 }
 
 function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged, defaultImage }) {
+  const { confirm, dialog } = useConfirm();
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const label = TYPE_LABELS[kind];
@@ -218,7 +220,7 @@ function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged, de
   async function handleRemove(e) {
     e.stopPropagation();
     if (!cover) return;
-    if (!window.confirm(`להסיר את התמונה של ${label}?`)) return;
+    if (!await confirm(`להסיר את התמונה של ${label}?`)) return;
     try {
       await adminDeleteDoorTypeCover(kind);
       await onCoverChanged();
@@ -299,6 +301,7 @@ function TypePickerCard({ kind, active, count, cover, onPick, onCoverChanged, de
         <span>{label}</span>
         <span className="closet-gallery__type-count">{count}</span>
       </div>
+      {dialog}
     </div>
   );
 }

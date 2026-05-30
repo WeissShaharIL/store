@@ -7,6 +7,7 @@ import {
   adminUploadMediaFile,
   adminDeleteMediaFile,
 } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 import "./AdminImages.css";
 
@@ -14,6 +15,7 @@ const VIEW_ALL = "all";
 const VIEW_NONE = "none";
 
 export default function ImagesTab() {
+  const { confirm, dialog } = useConfirm();
   const [folders, setFolders] = useState([]);
   const [view, setView] = useState(VIEW_ALL); // VIEW_ALL | VIEW_NONE | folder.id (number)
   const [files, setFiles] = useState([]);
@@ -65,7 +67,7 @@ export default function ImagesTab() {
   }
 
   async function handleDeleteFolder(id) {
-    if (!window.confirm("למחוק את התיקייה? התמונות יעברו ל״ללא תיקייה״.")) return;
+    if (!await confirm("למחוק את התיקייה? התמונות יעברו ל״ללא תיקייה״.")) return;
     try {
       await adminDeleteMediaFolder(id);
       setFolders((prev) => prev.filter((f) => f.id !== id));
@@ -114,6 +116,11 @@ export default function ImagesTab() {
     } catch (err) {
       setError(err.message);
     }
+  }
+
+  async function handleDeleteFileConfirm(id) {
+    if (!await confirm("למחוק את התמונה לצמיתות?")) return;
+    handleDeleteFile(id);
   }
 
   const currentFolderName =
@@ -217,9 +224,7 @@ export default function ImagesTab() {
                   />
                   <button
                     className="images-grid__del"
-                    onClick={() => {
-                      if (window.confirm("למחוק את התמונה לצמיתות?")) handleDeleteFile(file.id);
-                    }}
+                    onClick={() => handleDeleteFileConfirm(file.id)}
                     title="מחק"
                   >×</button>
                 </div>
@@ -240,6 +245,7 @@ export default function ImagesTab() {
           </div>
         )}
       </div>
+      {dialog}
     </div>
   );
 }

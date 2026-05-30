@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { adminActivateLogo, adminDeleteLogo, adminGetLogos, adminUploadLogo, getSettings, updateSettings } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
 export default function SettingsTab() {
+  const { confirm, dialog } = useConfirm();
   const [logos, setLogos] = useState([]);
   const [error, setError] = useState("");
 
@@ -35,7 +37,7 @@ export default function SettingsTab() {
   }
 
   async function handleDeleteLogo(id) {
-    if (!confirm("למחוק?")) return;
+    if (!await confirm("למחוק?")) return;
     try {
       await adminDeleteLogo(id);
       setLogos((prev) => prev.filter((l) => l.id !== id));
@@ -75,6 +77,7 @@ export default function SettingsTab() {
           ))}
         </div>
       </section>
+      {dialog}
     </div>
   );
 }
