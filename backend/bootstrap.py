@@ -74,6 +74,10 @@ def run_migrations(_db: Session) -> None:
     _add_col("users", "buy_now_discount_enabled", "BOOLEAN", "FALSE")
     _add_col("users", "buy_now_discount_percent", "NUMERIC(5,2)", "6")
 
+    # media_files — name and tags added in v0.63.0
+    _add_col("media_files", "display_name", "VARCHAR(255)", "NULL")
+    _add_col("media_files", "tags", "TEXT", "NULL")
+
 
 def seed_admin(db: Session) -> None:
     customer_id = os.environ.get("ADMIN_CUSTOMER_ID", "admin").strip()
