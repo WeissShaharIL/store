@@ -1,0 +1,110 @@
+/* =============================================================================
+   STOREFRONT BUTTONS — single source of truth for all public-facing buttons.
+
+   Visual language: borderless text-link matching .landing-category-card__cta —
+   no background, no border, no shadow. Muted gray that brightens to white on
+   hover; primary actions get a forward arrow (the .cta-arrow SVG, or a CSS-mask
+   arrow for plain-text buttons).
+
+   This file is imported LAST in main.jsx, so for any selector it shares with a
+   feature CSS file it wins by cascade order. Do NOT add pill/glass button
+   styling to feature files — add variants here instead.
+
+   Admin buttons are handled separately in pages/admin/admin-buttons.css.
+   ========================================================================== */
+
+/* ---- The canonical button: every storefront action button maps here ---- */
+.landing .btn--primary,
+.section-hover-title__reveal,
+.landing-category-card__cta,
+.showroom-card__add-btn,
+.sr-details__cta-btn,
+.closet-designer__add-btn,
+.inquiry-submit,
+.inquiry-done-btn,
+.cart-btn,
+.cart-btn--primary,
+.cookie-bar__accept,
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.25rem;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: var(--text-sm, 0.875rem);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-shadow: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+/* Hover / active: brighten to white, no transform, no shadow. */
+.landing .btn--primary:hover:not(:disabled),
+.landing .btn--primary:active:not(:disabled),
+.section-hover-title:hover .section-hover-title__reveal,
+.landing-category-card__cta:hover,
+.showroom-card__add-btn:hover:not(:disabled),
+.sr-details__cta-btn:hover:not(:disabled),
+.closet-designer__add-btn:hover:not(:disabled),
+.inquiry-submit:hover:not(:disabled),
+.inquiry-done-btn:hover,
+.cart-btn:hover:not(:disabled),
+.cart-btn--primary:hover:not(:disabled),
+.cookie-bar__accept:hover,
+.login-btn:hover:not(:disabled) {
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+  color: #ffffff;
+}
+
+.landing .btn--primary:disabled,
+.showroom-card__add-btn:disabled,
+.sr-details__cta-btn:disabled,
+.closet-designer__add-btn:disabled,
+.inquiry-submit:disabled,
+.cart-btn:disabled,
+.login-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---- Forward arrow for primary actions ----
+   Buttons that already render a <span class="cta-arrow"> or an <ArrowRight>
+   icon in JSX don't need this; for the plain-text ones we append a mask arrow.
+   Applied to the explicit "primary action" buttons only. */
+/* cart-btn already renders <ArrowRight/> in JSX, so it is intentionally
+   excluded here to avoid a double arrow. */
+.showroom-card__add-btn::after,
+.sr-details__cta-btn--quick::after,
+.login-btn::after {
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* ---- "Added to cart" confirmed state — green, no arrow ---- */
+.showroom-card__add-btn--added,
+.sr-details__cta-btn--added {
+  color: #4ade80;
+  cursor: default;
+}
+.showroom-card__add-btn--added::after,
+.sr-details__cta-btn--added::after { display: none; }
+
+/* ---- Secondary actions (design / outline variants) stay plain text ---- */
+.sr-details__cta-btn--design { color: rgba(255, 255, 255, 0.55); }
+.sr-details__cta-btn--design:hover:not(:disabled) { color: #ffffff; }
