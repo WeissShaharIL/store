@@ -7,11 +7,13 @@ import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
 import ImagesTab from "./admin/ImagesTab.jsx";
 import ActivityTab from "./admin/ActivityTab.jsx";
+import OrdersTab from "./admin/OrdersTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
 import { adminGetLeadsUnreadCount } from "../api.js";
 import "../styles/chat.css";
 import "./AdminDashboard.css";
 
+// Lazy so the heavy three.js builder bundle loads only when opened.
 const PituchTab = lazy(() => import("./admin/PituchTab.jsx"));
 
 const TABS = [
@@ -25,7 +27,7 @@ const TABS = [
 ];
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("settings");
   const [leadsUnread, setLeadsUnread] = useState(0);
@@ -69,13 +71,13 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-content">
-        {activeTab === "images"   && <ImagesTab />}
-        {activeTab === "activity" && <ActivityTab />}
-        {activeTab === "pituch"   && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
-        {activeTab === "leads"    && <LeadsTab onOrderCreated={() => { setOrdersRefresh((n) => n + 1); setActiveTab("orders"); }} />}
-        {activeTab === "orders"   && <OrdersTab key={ordersRefresh} />}
-        {activeTab === "landing"  && <LandingSettingsTab />}
-        {activeTab === "settings" && <SettingsTab />}
+        {activeTab === "images"    && <ImagesTab />}
+        {activeTab === "activity"  && <ActivityTab />}
+        {activeTab === "pituch"    && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
+        {activeTab === "leads"     && <LeadsTab onOrderCreated={() => { setOrdersRefresh((n) => n + 1); setActiveTab("orders"); }} />}
+        {activeTab === "orders"    && <OrdersTab key={ordersRefresh} />}
+        {activeTab === "landing"   && <LandingSettingsTab />}
+        {activeTab === "settings"  && <SettingsTab />}
       </div>
     </div>
   );
