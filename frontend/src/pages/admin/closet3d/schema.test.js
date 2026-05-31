@@ -1,18 +1,17 @@
 import { describe, it, expect } from "vitest";
 import {
-  fittingCounts,
-  resolveVariant,
-  estimatePrice,
-  totalPrice,
   totalWidth,
   selectedExtras,
-  resolveHandle,
+  totalPrice,
+  estimatePrice,
+  resolveVariant,
+  PRICE_RATES,
 } from "./schema.js";
 
-// A fully-specified config so every pricing input is controlled.
 function makeConfig(overrides = {}) {
   return {
     kind: "hinged",
+    basePrice: 1000,
     dimensions: { H: 240, D: 56, compartmentWidth: 80 },
     doors: [
       { id: "d1", kind: "hinged" },
@@ -27,8 +26,8 @@ describe("totalWidth", () => {
   it("multiplies compartment width by door count", () => {
     expect(totalWidth(makeConfig())).toBe(160);
   });
-  it("defaults to 80 × 1 when data is missing", () => {
-    expect(totalWidth({})).toBe(80);
+  it("treats <1 door as 1", () => {
+    expect(totalWidth({ dimensions: { compartmentWidth: 80 }, doors: [] })).toBe(80);
   });
 });
 
@@ -40,103 +39,77 @@ describe("resolveVariant", () => {
       { id: "v2", items: [{ type: "rod", y: 0.8 }] },
     ],
   };
-  it("returns the default variant when no state override", () => {
+  it("returns the default variant when no override is given", () => {
     expect(resolveVariant(comp, undefined).id).toBe("v1");
   });
-  it("returns the state-selected variant", () => {
+  it("returns the explicitly selected variant", () => {
     expect(resolveVariant(comp, "v2").id).toBe("v2");
   });
   it("falls back to the first variant for an unknown id", () => {
     expect(resolveVariant(comp, "nope").id).toBe("v1");
-  });
-  it("returns null when there's no compartment / no variants", () => {
-    expect(resolveVariant(null)).toBeNull();
-    expect(resolveVariant({ variants: [] })).toBeNull();
-  });
-});
-
-describe("fittingCounts", () => {
-  it("counts items across compartments plus external drawer stacks", () => {
-    const cfg = makeConfig({
-      doors: [
-        {
-          id: "d1",
-          compartment: {
-            defaultVariant: "x",
-            variants: [{ id: "x", items: [{ type: "shelf" }, { type: "shelf" }, { type: "rod" }] }],
-          },
-        },
-        { id: "d2", drawerStack: 2 }, // external drawers, no compartment
-      ],
-    });
-    expect(fittingCounts(cfg)).toEqual({ shelf: 2, rod: 1, drawer: 2 });
-  });
-
-  it("is all zeros for doors with no compartment and no stack", () => {
-    expect(fittingCounts(makeConfig())).toEqual({ shelf: 0, rod: 0, drawer: 0 });
   });
 });
 
 describe("selectedExtras", () => {
   const cfg = makeConfig({
     addOns: [
-      { id: "a", price: 200 },
-      { id: "b", price: 150 },
+      { id: "a", label: "פרופיל מדפים", price: 200 },
+      { id: "b", label: "פרופיל צדדים", price: 150 },
     ],
   });
-  it("returns only add-ons whose ids are selected", () => {
-    expect(selectedExtras(cfg, { selectedAddOnIds: ["b"] })).toEqual([{ id: "b", price: 150 }]);
+  it("returns {label, price} for toggled-on add-ons only", () => {
+    expect(selectedExtras(cfg, { addOns: { b: true } })).toEqual([
+      { label: "פרופיל צדדים", price: 150 },
+    ]);
   });
-  it("returns [] when nothing is selected", () => {
+  it("returns [] when nothing is toggled on", () => {
     expect(selectedExtras(cfg, {})).toEqual([]);
+    expect(selectedExtras(cfg, { addOns: {} })).toEqual([]);
   });
 });
 
-describe("estimatePrice", () => {
-  // 1.6m × 2.4m × 450 = 1728; + 2×120 = 240; + 1.6×56×1.4 = 125.44 → 2093.44 → 2093
-  it("prices a bare hinged 2-door cabinet", () => {
-    expect(estimatePrice(makeConfig())).toBe(2093);
+describe("totalPrice (template price = base + extras)", () => {
+  it("is basePrice with no extras", () => {
+    expect(totalPrice(makeConfig(), {})).toBe(1000);
   });
-
-  it("adds the sliding surcharge (+300)", () => {
-    expect(estimatePrice(makeConfig({ kind: "sliding" }))).toBe(2393);
-  });
-
-  it("adds per-fitting cost (shelf 35 / rod 45 / drawer 90)", () => {
-    const cfg = makeConfig({
-      doors: [
-        {
-          id: "d1",
-          compartment: {
-            defaultVariant: "x",
-            variants: [{ id: "x", items: [{ type: "shelf" }, { type: "rod" }, { type: "drawer" }] }],
-          },
-        },
-        { id: "d2" },
-      ],
-    });
-    // base 2093.44 + 35 + 45 + 90 = 2263.44 → 2263
-    expect(estimatePrice(cfg)).toBe(2263);
-  });
-
-  it("adds selected add-on prices", () => {
-    const cfg = makeConfig({ addOns: [{ id: "a", price: 500 }] });
-    expect(estimatePrice(cfg, { state: { selectedAddOnIds: ["a"] } })).toBe(2593);
-  });
-
-  it("totalPrice(config, state) matches estimatePrice", () => {
-    const cfg = makeConfig();
-    expect(totalPrice(cfg, {})).toBe(estimatePrice(cfg));
-  });
-
-  it("never returns a fractional price", () => {
-    expect(Number.isInteger(estimatePrice(makeConfig()))).toBe(true);
+  it("adds toggled add-on prices to the base", () => {
+    const cfg = makeConfig({ addOns: [{ id: "a", label: "x", price: 250 }] });
+    expect(totalPrice(cfg, { addOns: { a: true } })).toBe(1250);
   });
 });
 
-describe("resolveHandle", () => {
-  it("returns the key, defaulting to silver", () => {
-    expect(resolveHandle("gold")).toBe("gold");
-    expect(resolveHandle(undefined)).toBe("silver");
+describe("estimatePrice (from-scratch, dimension-based)", () => {
+  // makeConfig: widthM=1.6, heightM=2.4, depthCm=56, 2 hinged doors.
+  // area  = 1.6 * 2.4 * 1400 = 5376
+  // doors = 2 * 180          = 360
+  // depth = 1.6 * 56 * 6     = 537.6
+  // sum 6273.6 → round to nearest 10 → 6270
+  it("prices a bare hinged 2-door cabinet, rounded to ₪10", () => {
+    expect(estimatePrice(makeConfig())).toBe(6270);
+  });
+
+  it("adds the sliding surcharge (+600)", () => {
+    // 6273.6 + 600 = 6873.6 → 6870
+    expect(estimatePrice(makeConfig({ kind: "sliding" }))).toBe(6870);
+  });
+
+  it("adds per-fitting cost from opts.fittings (shelf 45 / rod 35 / drawer 130)", () => {
+    // 6273.6 + 45 + 35 + 130 = 6483.6 → 6480
+    expect(estimatePrice(makeConfig(), { fittings: { shelf: 1, rod: 1, drawer: 1 } })).toBe(6480);
+  });
+
+  it("adds selected add-on prices via opts.state", () => {
+    const cfg = makeConfig({ addOns: [{ id: "a", label: "x", price: 500 }] });
+    // 6273.6 + 500 = 6773.6 → 6770
+    expect(estimatePrice(cfg, { state: { addOns: { a: true } } })).toBe(6770);
+  });
+
+  it("always returns a multiple of 10", () => {
+    expect(estimatePrice(makeConfig()) % 10).toBe(0);
+  });
+
+  it("exposes the documented rate table", () => {
+    expect(PRICE_RATES.perSqMeterFront).toBe(1400);
+    expect(PRICE_RATES.slidingSurcharge).toBe(600);
   });
 });
