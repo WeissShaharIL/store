@@ -69,7 +69,13 @@ export default function ScratchStart({ onClose }) {
 
   if (item) {
     return (
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <div className="designer-loading" role="status" aria-label="טוען…">
+            <div className="designer-loading__spinner" />
+          </div>
+        }
+      >
         <ClosetDesigner item={item} onClose={onClose} fromScratch />
       </Suspense>
     );

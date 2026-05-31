@@ -6,7 +6,22 @@ import FormaLogo from "../components/FormaLogo.jsx";
 import { ArrowRight, Check, Send } from "../components/Icons.jsx";
 
 const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
-const ScratchStart = lazy(() => import("./ScratchStart.jsx"));
+// Named import fns so we can PRELOAD these heavy chunks (ScratchStart pulls in
+// ClosetDesigner → three.js). Without preloading, the first click blanks for
+// ~2s while the chunk downloads behind a null Suspense fallback.
+const importScratchStart = () => import("./ScratchStart.jsx");
+const importClosetDesigner = () => import("./ClosetDesigner.jsx");
+const ScratchStart = lazy(importScratchStart);
+
+// Visible Suspense fallback so a not-yet-loaded chunk shows a spinner instead
+// of a blank flash.
+function DesignerLoading() {
+  return (
+    <div className="designer-loading" role="status" aria-label="טוען…">
+      <div className="designer-loading__spinner" />
+    </div>
+  );
+}
 import { addToCart, getCart } from "../lib/cart.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/03-details.css";
@@ -84,6 +99,25 @@ export default function LandingPage() {
     const id = setInterval(() => setBannerIdx((i) => (i + 1) % banners.length), 5000);
     return () => clearInterval(id);
   }, [banners.length]);
+
+  // Warm the from-scratch designer chunks while the browser is idle so the
+  // first "התחילו לעצב" click opens instantly instead of waiting ~2s for the
+  // download. Vite dedupes, so calling these again on hover/click is free.
+  useEffect(() => {
+    let cancelled = false;
+    const preload = () => {
+      if (cancelled) return;
+      importScratchStart();
+      importClosetDesigner();
+    };
+    const ric = typeof window !== "undefined" && window.requestIdleCallback;
+    const id = ric ? ric(preload, { timeout: 2500 }) : setTimeout(preload, 1500);
+    return () => {
+      cancelled = true;
+      if (ric && window.cancelIdleCallback) window.cancelIdleCallback(id);
+      else clearTimeout(id);
+    };
+  }, []);
 
   const defaultClosetImage = settings.default_closet_image || null;
 
@@ -181,6 +215,8 @@ const contactRef = useRef(null);
             added={addedIds.has(selectedCloset.id)}
           />
         )}
+      </Suspense>
+      <Suspense fallback={<DesignerLoading />}>
         {scratchOpen && <ScratchStart onClose={() => setScratchOpen(false)} />}
       </Suspense>
       <header className="landing-nav">
