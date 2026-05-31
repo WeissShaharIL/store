@@ -9,7 +9,6 @@
  * Extracted from DevClosetBuilder.jsx in v1.46.0.
  */
 
-import { pick, rangeInt, chance } from "./helpers.js";
 
 /* ─────────── Defaults / new-config seed ─────────── */
 
@@ -162,86 +161,3 @@ export function newConfig() {
   };
 }
 
-/* ─────────── "הפתע אותי" random generator (v1.43.0) ─────────── */
-
-/* v1.56.0 — randomDoor takes the closet-level kind so all doors
- * in a random closet share a kind (matches the v1.56.0 "axis or
- * sliding, not mixed" rule). */
-export function randomDoor(index, kind) {
-  const drawerStack = pick([0, 0, 0, 0, 1, 2]); // weighted toward 0
-  const drawerSplit = drawerStack > 0 && chance(0.3);
-  // 2-4 items at sorted random y positions in the door's compartment.
-  // When drawerStack > 0 the variant drawer type is omitted (would
-  // clash with the external stack below).
-  const itemTypes = drawerStack > 0 ? ["shelf", "rod"] : ["shelf", "rod", "drawer"];
-  const count = rangeInt(2, 4);
-  const ys = Array.from({ length: count }, () => 0.15 + Math.random() * 0.75).sort();
-  return {
-    id: `door-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 6)}`,
-    kind,
-    track: index % 2 === 0 ? "back" : "front",
-    label: `דלת ${index + 1}`,
-    defaultMaterial: pick(["wood", "wood", "wood", "glass", "mirror"]),
-    materialChoices: defaultMaterialChoices(),
-    hingeSide: index % 2 === 0 ? "left" : "right",
-    drawerStack,
-    drawerSplit,
-    compartment: {
-      defaultVariant: "default",
-      variants: [
-        {
-          id: "default",
-          label: "ברירת מחדל",
-          items: ys.map((y) => ({ type: pick(itemTypes), y })),
-        },
-      ],
-    },
-  };
-}
-
-export function randomConfig() {
-  const colorOptions = ["white", "cream", "almond", "linen", "concrete", "basalt", "blackMarble", "whiteMarble", "sachlav", "mevuka"];
-  const kind = chance(0.7) ? "hinged" : "sliding";
-  const doorCount = rangeInt(1, 4);
-  // v1.56.0 — derive a per-template constraint set roughly matching
-  // the door count (wider closets need wider widths). Defaults
-  // chosen so the resulting cabinet sits in the middle of its
-  // constraint range.
-  const widthPerDoor = rangeInt(7, 10) * 10; // 70-100 cm per door
-  const totalWidth = widthPerDoor * doorCount;
-  const widthSpread = 40; // ±20 cm around default
-  const heightDefault = rangeInt(20, 27) * 10; // 200-270 cm
-  const depthDefault = pick([41, 56]);
-  const constraints = {
-    height: { min: 180, max: 270, step: 10, default: heightDefault },
-    width: {
-      min: Math.max(40 * doorCount, totalWidth - widthSpread),
-      max: totalWidth + widthSpread,
-      step: 10,
-      default: totalWidth,
-    },
-    depth: { min: 41, max: 56, step: 15, default: depthDefault },
-  };
-  const doors = Array.from({ length: doorCount }, (_, i) => randomDoor(i, kind));
-  return {
-    name: `ארון אקראי ${rangeInt(100, 999)}`,
-    basePrice: rangeInt(8, 30) * 100,
-    kind,
-    constraints,
-    dimensions: {
-      compartmentWidth: widthPerDoor,
-      H: heightDefault,
-      D: depthDefault,
-      T: 5,
-    },
-    color: pick(colorOptions),
-    hasTrackRails: kind === "sliding",
-    doors,
-    addOns: chance(0.5)
-      ? [
-          { id: "shelfProfile", label: "פרופיל אלומיניום למדפים", price: 200, effect: "aluminumOnShelves" },
-          { id: "sideProfile",  label: "פרופיל אלומיניום לצדדים", price: 150, effect: "aluminumPerimeterOnSides" },
-        ]
-      : [],
-  };
-}
