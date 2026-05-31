@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v0.0.1",
-  "released_at": "2026-05-25T13:01:38Z",
-  "notes": "0bfd3d5 fix: release.ps1 unicode chars causing PS5.1 parse error\na26368e chore: dev/release workflow ΓÇö gitme enforces dev branch, release.ps1 merges+tags+publishes, deploy.sh deploys from latest tag\n71f172f fix: SQLAlchemy 2 compat in run_migrations + self-contained admin login\n1b2d725 remove splash screen and admin link from landing page\nad4ecac refactor: admin link on landing, light-only mode\ne12c335 feat: add customer portal ΓÇö catalog, orders, messages, announcements\nd9906ad Overhaul public frontend to match simple\u0027s visual design system\nb512cf2 Use HTTP-only nginx config for certbot TLS provisioning\n1f7bcbb fix: default deploy branch to main\ne3df197 feat: initial store scaffold\n6564bd7 Initial commit"
+  "version": "v1.14.0",
+  "released_at": "2026-05-31T22:23:09Z",
+  "notes": "535cfaf ui(closet-builder): style door-vis buttons as ghost pills"
 }
