@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 function Fail($m) { Write-Host "`nPREDEPLOY FAILED: $m" -ForegroundColor Red; exit 1 }
 function Ok($m)   { Write-Host "   $m" -ForegroundColor Green }
 
-Write-Host "=> [1/2] Building frontend..." -ForegroundColor Cyan
+Write-Host "=> [1/3] Building frontend..." -ForegroundColor Cyan
 Push-Location frontend
 npm run build
 $build = $LASTEXITCODE
@@ -22,7 +22,15 @@ Pop-Location
 if ($build -ne 0) { Fail "frontend build failed --DO NOT deploy" }
 Ok "frontend build OK"
 
-Write-Host "=> [2/2] Running backend tests..." -ForegroundColor Cyan
+Write-Host "=> [2/3] Running frontend tests (vitest)..." -ForegroundColor Cyan
+Push-Location frontend
+npx vitest run
+$ftests = $LASTEXITCODE
+Pop-Location
+if ($ftests -ne 0) { Fail "frontend tests failed --DO NOT deploy" }
+Ok "frontend tests OK"
+
+Write-Host "=> [3/3] Running backend tests..." -ForegroundColor Cyan
 Push-Location backend
 python -m pytest tests/ -q -p no:cacheprovider
 $tests = $LASTEXITCODE
