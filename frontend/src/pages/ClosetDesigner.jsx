@@ -10,6 +10,7 @@ import { useHandles } from "./admin/HandlesContext.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
 import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
 import { renderInteriorPlanPng } from "./admin/closet3d/interior-plan/planImage.js";
+import { dataUrlToU8, delay } from "../lib/dataUrl.js";
 import RoomPlanner from "./admin/RoomPlanner.jsx";
 import { WIZARD_STEPS } from "./admin/designer/wizardSteps.js";
 import StepNav from "./admin/designer/StepNav.jsx";
@@ -275,15 +276,6 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const captureRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
-  const _delay = (ms) => new Promise((r) => setTimeout(r, ms));
-
-  function dataUrlToU8(dataUrl) {
-    const bin = atob(dataUrl.split(",")[1]);
-    const u8 = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-    return u8;
-  }
-
   // Download = front view (closed + open) + a 2D image of the stage-2 interior
   // configuration, bundled into one ZIP. (No 3/4 angle — per customer request.)
   // Browsers block multiple rapid programmatic downloads, hence the single zip.
@@ -299,12 +291,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       const shots = [];
 
       setOpenDoorIds([]);
-      await _delay(450);
+      await delay(450);
       if (captureRef.current) {
         shots.push([`${name}-חזית-סגור.png`, captureRef.current(front)]);
       }
       setOpenDoorIds(doorList.map((d) => d.id));
-      await _delay(750);
+      await delay(750);
       if (captureRef.current) {
         shots.push([`${name}-חזית-פתוח.png`, captureRef.current(front)]);
       }

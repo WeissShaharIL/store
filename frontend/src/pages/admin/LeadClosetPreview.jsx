@@ -5,6 +5,7 @@ import { totalWidth } from "./closet3d/schema.js";
 import ClosetScene from "./closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./closet3d/ClosetFromConfig.jsx";
 import { renderInteriorPlanPng } from "./closet3d/interior-plan/planImage.js";
+import { dataUrlToU8, delay } from "../../lib/dataUrl.js";
 import "./AdminLeadPreview.css";
 
 /**
@@ -12,17 +13,9 @@ import "./AdminLeadPreview.css";
  * from a lead/order. Reconstructs the live config the way the designer does:
  * base template (config_json) + customer snapshot overrides.
  *
- * v0.80.0 — admin can open/close doors and download a set of product photos
- * (front + 3/4, closed + open). Lazy-loaded so three.js only ships on demand.
+ * v0.80.0 — admin can open/close doors and download product photos. Lazy-loaded
+ * so three.js only ships on demand.
  */
-function delay(ms) { return new Promise((r) => setTimeout(r, ms)); }
-
-function dataUrlToU8(dataUrl) {
-  const bin = atob(dataUrl.split(",")[1]);
-  const u8 = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-  return u8;
-}
 
 export default function LeadClosetPreview({ item, onClose }) {
   const captureRef = useRef(null);
