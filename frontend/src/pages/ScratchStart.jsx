@@ -44,7 +44,17 @@ export default function ScratchStart({ onClose }) {
       },
       dimensions: { ...base.dimensions, compartmentWidth: perDoorDefault },
       hasInternalDivider: doorCount > 1,
-      doors: Array.from({ length: doorCount }, (_, i) => newDoor(i, kind)),
+      // From-scratch closets start with EMPTY cabins — no default shelves or
+      // hanging rod. The customer places interior items themselves in stage 2.
+      // (newDoor's defaults stay intact for the admin/template flows.)
+      doors: Array.from({ length: doorCount }, (_, i) => {
+        const d = newDoor(i, kind);
+        d.compartment = {
+          defaultVariant: "default",
+          variants: [{ id: "default", label: "ברירת מחדל", items: [] }],
+        };
+        return d;
+      }),
     };
     // Unique id so the designer's localStorage draft key doesn't collide
     // with a template design.

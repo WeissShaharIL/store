@@ -300,16 +300,27 @@ export default function ClosetFromConfig({
         const drawerId = `item-${door.id}-${i}`;
         const isDrawerOpen =
           state.openDrawerIds?.includes(drawerId) ?? false;
+        // A drawer has real vertical extent (unlike a thin shelf/rod), so its
+        // CENTER must be kept at least half-height away from the compartment
+        // floor/ceiling — otherwise the lowest slot would push the drawer's
+        // bottom out through the cabinet floor. INTERIOR_DRAWER_H must match the
+        // <Drawer> height passed below.
+        const INTERIOR_DRAWER_H = 0.28;
+        const drawerY = Math.max(
+          compartmentBottomY + INTERIOR_DRAWER_H / 2,
+          Math.min(compartmentTopY - INTERIOR_DRAWER_H / 2, y),
+        );
         let node = wrap(
           <Drawer
             key={key}
             position={[
               cx,
-              y,
+              drawerY,
               D / 2 - T + (isDrawerOpen ? DRAWER_OPEN_SHIFT : 0),
             ]}
             width={itemWidth}
             depth={innerCompartmentDepth}
+            height={INTERIOR_DRAWER_H}
             color={palette.wood}
             texture={palette.texture}
             handleMaterial={compartmentHandleMaterial}
