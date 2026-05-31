@@ -27,6 +27,8 @@ Write-Host ""
 
 $RemoteScript = @'
 set -e
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 cd code/store/frontend
 npm ci --prefer-offline
 npx playwright install chromium --with-deps
