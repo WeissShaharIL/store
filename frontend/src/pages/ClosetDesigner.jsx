@@ -9,6 +9,7 @@ import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import { useHandles } from "./admin/HandlesContext.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
 import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
+import { renderInteriorPlanPng } from "./admin/closet3d/interior-plan/planImage.js";
 import RoomPlanner from "./admin/RoomPlanner.jsx";
 import { WIZARD_STEPS } from "./admin/designer/wizardSteps.js";
 import StepNav from "./admin/designer/StepNav.jsx";
@@ -283,18 +284,15 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     return u8;
   }
 
-  // Capture all 4 views (closed/open × front/angle) and bundle into a single
-  // ZIP — one download. Browsers block multiple rapid programmatic downloads,
-  // which is why the per-image approach only delivered the first file.
+  // Download = front view (closed + open) + a 2D image of the stage-2 interior
+  // configuration, bundled into one ZIP. (No 3/4 angle — per customer request.)
+  // Browsers block multiple rapid programmatic downloads, hence the single zip.
   async function handleDownloadPhotos() {
     if (!captureRef.current || downloading) return;
     setDownloading(true);
     const name = (item.name || "ארון").replace(/\s+/g, "-");
     const dist = Math.max(3.5, Math.max(Hm, Wm) * 2.0);
     const front = [0, sceneTargetY, Dm / 2 + dist];
-    // 3/4 view: pull the camera back (×1.3) instead of in (×0.92) so a wide
-    // cabinet's side panel stays inside the frame rather than being cropped.
-    const angle = [Wm * 0.5, sceneTargetY + Hm * 0.32, Dm / 2 + dist * 1.3];
     try {
       const { default: JSZip } = await import("jszip");
       const zip = new JSZip();
@@ -303,19 +301,24 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       setOpenDoorIds([]);
       await _delay(450);
       if (captureRef.current) {
-        shots.push([`${name}-סגור-חזית.png`, captureRef.current(front)]);
-        await _delay(120);
-        shots.push([`${name}-סגור-זווית.png`, captureRef.current(angle)]);
+        shots.push([`${name}-חזית-סגור.png`, captureRef.current(front)]);
       }
       setOpenDoorIds(doorList.map((d) => d.id));
       await _delay(750);
       if (captureRef.current) {
-        shots.push([`${name}-פתוח-חזית.png`, captureRef.current(front)]);
-        await _delay(120);
-        shots.push([`${name}-פתוח-זווית.png`, captureRef.current(angle)]);
+        shots.push([`${name}-חזית-פתוח.png`, captureRef.current(front)]);
       }
 
       for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
+
+      // The 2D interior configuration from stage 2 (shelves/rods/drawers + cm).
+      try {
+        const planPng = await renderInteriorPlanPng(customConfig, customItems);
+        zip.file(`${name}-תצורת-פנים.png`, dataUrlToU8(planPng));
+      } catch {
+        // A failed config image shouldn't block the photo download.
+      }
+
       const blob = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
