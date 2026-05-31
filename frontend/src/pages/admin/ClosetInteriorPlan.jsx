@@ -254,28 +254,6 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
     }, 3200);
   }
 
-  const sortedItems = activeItems
-    .map((item, idx) => ({ ...item, _idx: idx }))
-    .slice()
-    .sort((a, b) => b.y - a.y);
-
-  function commitChange(next) {
-    commitActive(next.map((it) => ({ type: it.type, y: it.y })));
-  }
-
-  function addItem(type) {
-    const idx = findFreeSlotIndex(activeItems, type);
-    if (idx == null) {
-      showNotice("אין מקום פנוי לפריט נוסף בארון.");
-      return;
-    }
-    commitChange([...activeItems, { type, y: SNAP_POSITIONS[idx] }]);
-  }
-
-  function removeItem(originalIdx) {
-    commitChange(activeItems.filter((_, i) => i !== originalIdx));
-  }
-
   // Remove an item from ANY compartment (not just the active one) — the planner
   // now lets the user edit every cabin directly without selecting it first.
   function removeItemFrom(doorId, originalIdx) {
