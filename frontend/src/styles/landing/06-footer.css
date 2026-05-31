@@ -39,6 +39,17 @@
 }
 .landing-footer__supplier:hover { color: rgba(255, 255, 255, 0.6); }
 
+/* Discreet admin entry — replaces typing /admin by hand. */
+.landing-footer__admin {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.22);
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  transition: color 150ms ease;
+}
+.landing-footer__admin:hover { color: rgba(255, 255, 255, 0.6); }
+
 @media (max-width: 720px) {
   .landing-footer__inner {
     grid-template-columns: 1fr;
