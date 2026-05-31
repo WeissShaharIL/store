@@ -325,6 +325,7 @@ const contactRef = useRef(null);
               <button
                 type="button"
                 className="landing-category-card__cta"
+                onPointerEnter={() => { importScratchStart(); importClosetDesigner(); }}
                 onClick={() => setScratchOpen(true)}
               >
                 התחילו לעצב <span className="cta-arrow"><ArrowRight /></span>
