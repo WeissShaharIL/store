@@ -10,6 +10,8 @@
 # undefined component) was tagged and "deployed" while production silently
 # stayed on the old version. Running this first makes that impossible.
 
+param([switch]$E2E)  # -E2E also runs the slow Playwright live-WebGL suite
+
 $ErrorActionPreference = "Stop"
 function Fail($m) { Write-Host "`nPREDEPLOY FAILED: $m" -ForegroundColor Red; exit 1 }
 function Ok($m)   { Write-Host "   $m" -ForegroundColor Green }
@@ -37,5 +39,17 @@ $tests = $LASTEXITCODE
 Pop-Location
 if ($tests -ne 0) { Fail "backend tests failed --DO NOT deploy" }
 Ok "backend tests OK"
+
+if ($E2E) {
+    Write-Host "=> [4/4] Running Playwright E2E (live WebGL)..." -ForegroundColor Cyan
+    Push-Location frontend
+    npm run test:e2e
+    $e2e = $LASTEXITCODE
+    Pop-Location
+    if ($e2e -ne 0) { Fail "E2E tests failed --DO NOT deploy" }
+    Ok "E2E tests OK"
+} else {
+    Write-Host "   (skipping E2E -- pass -E2E to include the Playwright suite)" -ForegroundColor DarkGray
+}
 
 Write-Host "`nPREDEPLOY PASSED --safe to release/deploy." -ForegroundColor Green
