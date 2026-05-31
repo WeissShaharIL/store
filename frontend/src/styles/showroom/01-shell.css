@@ -77,3 +77,18 @@
   margin: 0 auto;
   padding: var(--space-4) var(--space-5) var(--space-12);
 }
+
+/* Phone: the 40px header top padding wastes space above the title, and the
+   20px side gutters eat into already-narrow card width. Trim both a touch.
+   (Filters already wrap and the grid already collapses — see 02-grid.css.) */
+@media (max-width: 560px) {
+  .showroom__header {
+    padding: var(--space-6) var(--space-4) var(--space-4);
+  }
+  .showroom__filters {
+    padding: 0 var(--space-4) var(--space-4);
+  }
+  .showroom__main {
+    padding: var(--space-4) var(--space-4) var(--space-10);
+  }
+}
