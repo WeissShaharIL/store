@@ -23,17 +23,6 @@ function dataUrlToU8(dataUrl) {
   return u8;
 }
 
-// Single-file download helper. handleDownload still uses this; the ZIP-bundling
-// conversion (mirroring the customer designer) is a follow-up.
-function downloadDataUrl(dataUrl, filename) {
-  const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
 export default function LeadClosetPreview({ item, onClose }) {
   const captureRef = useRef(null);
   const [openDoorIds, setOpenDoorIds] = useState([]);
@@ -106,28 +95,40 @@ export default function LeadClosetPreview({ item, onClose }) {
     setOpenDoorIds(allOpen ? [] : doors.map((d) => d.id));
   }
 
+  // Capture all 4 views (closed/open × front/3-quarter) and bundle into ONE zip.
+  // Browsers block multiple rapid programmatic a.click() downloads (only the
+  // first lands) — that was the "only 1 picture downloads" bug.
   async function handleDownload() {
     if (!captureRef.current || downloading) return;
     setDownloading(true);
     const baseName = (item.name || "closet").replace(/\s+/g, "-");
     try {
-      // 1+2: closed — front, then three-quarter
+      const { default: JSZip } = await import("jszip");
+      const zip = new JSZip();
+      const shots = [];
+
       setOpenDoorIds([]);
       await delay(450); // let any closing animation settle
       if (captureRef.current) {
-        downloadDataUrl(captureRef.current(frontCamera), `${baseName}-סגור-חזית.png`);
-        await delay(150);
-        downloadDataUrl(captureRef.current(threeQuarterCamera), `${baseName}-סגור-זווית.png`);
-        await delay(150);
+        shots.push([`${baseName}-סגור-חזית.png`, captureRef.current(frontCamera)]);
+        await delay(120);
+        shots.push([`${baseName}-סגור-זווית.png`, captureRef.current(threeQuarterCamera)]);
       }
-      // 3+4: open — front, then three-quarter
       setOpenDoorIds(doors.map((d) => d.id));
       await delay(750); // hinged doors animate open
       if (captureRef.current) {
-        downloadDataUrl(captureRef.current(frontCamera), `${baseName}-פתוח-חזית.png`);
-        await delay(150);
-        downloadDataUrl(captureRef.current(threeQuarterCamera), `${baseName}-פתוח-זווית.png`);
+        shots.push([`${baseName}-פתוח-חזית.png`, captureRef.current(frontCamera)]);
+        await delay(120);
+        shots.push([`${baseName}-פתוח-זווית.png`, captureRef.current(threeQuarterCamera)]);
       }
+
+      for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${baseName}.zip`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     } finally {
       setDownloading(false);
     }
