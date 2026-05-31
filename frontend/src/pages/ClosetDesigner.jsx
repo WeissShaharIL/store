@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, ArrowLeft, ArrowRight, Eye, EyeOff } from "../components/Icons.jsx";
+import { X, ArrowLeft, ArrowRight, Eye, EyeOff, Download } from "../components/Icons.jsx";
 import { addToCart } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
@@ -249,6 +249,46 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const uniformHandle = doorList.length && doorList.every((d) => customDoorHandles[d.id] === customDoorHandles[doorList[0].id])
     ? customDoorHandles[doorList[0].id] : null;
 
+  const idx = availableSteps.findIndex((s) => s.id === step);
+  const prevId = idx > 0 ? availableSteps[idx - 1].id : null;
+  const nextId = idx < availableSteps.length - 1 ? availableSteps[idx + 1].id : null;
+  const isLastStep = step === availableSteps[availableSteps.length - 1].id;
+
+  // ── Photo download (final step) ──────────────────────────────────────────
+  const captureRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
+
+  function dlDataUrl(dataUrl, filename) {
+    const a = document.createElement("a");
+    a.href = dataUrl; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+  const _delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function handleDownloadPhotos() {
+    if (!captureRef.current || downloading) return;
+    setDownloading(true);
+    const name = (item.name || "ארון").replace(/\s+/g, "-");
+    const front = [0, sceneTargetY, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0)];
+    const angle = [Wm * 0.55, sceneTargetY + Hm * 0.35, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0) * 0.92];
+    try {
+      setOpenDoorIds([]);
+      await _delay(450);
+      if (captureRef.current) {
+        dlDataUrl(captureRef.current(front), `${name}-סגור-חזית.png`); await _delay(150);
+        dlDataUrl(captureRef.current(angle), `${name}-סגור-זווית.png`); await _delay(150);
+      }
+      setOpenDoorIds(doorList.map((d) => d.id));
+      await _delay(750);
+      if (captureRef.current) {
+        dlDataUrl(captureRef.current(front), `${name}-פתוח-חזית.png`); await _delay(150);
+        dlDataUrl(captureRef.current(angle), `${name}-פתוח-זווית.png`);
+      }
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   const Preview = (
     <div className="closet-designer__preview">
       {hasSliding && (
@@ -261,6 +301,18 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           {slidingDoorsHidden ? <EyeOff /> : <Eye />}
         </button>
       )}
+      {isLastStep && (
+        <button
+          type="button"
+          className="closet-preview__eye-btn closet-preview__dl-btn"
+          onClick={handleDownloadPhotos}
+          disabled={downloading}
+          title="הורד תמונות הארון (פתוח/סגור, חזית/זווית)"
+          aria-label="הורד תמונות"
+        >
+          <Download />
+        </button>
+      )}
       <ClosetScene
         cameraPosition={sceneCamera}
         targetY={sceneTargetY}
@@ -269,22 +321,19 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         introAnimation={step === availableSteps[0].id}
         hall
         showDimToggle
+        captureRef={captureRef}
       >
         <ClosetFromConfig
           config={customConfig}
           state={commonState}
           onSelectDoor={toggleDoor}
           onSelectDrawer={toggleDrawer}
-          showDimensions={step === 1}
+          showDimensions={step === 1 || isLastStep}
         />
       </ClosetScene>
+      {downloading && <div className="closet-preview__capturing">מכין תמונות…</div>}
     </div>
   );
-
-  const idx = availableSteps.findIndex((s) => s.id === step);
-  const prevId = idx > 0 ? availableSteps[idx - 1].id : null;
-  const nextId = idx < availableSteps.length - 1 ? availableSteps[idx + 1].id : null;
-  const isLastStep = step === availableSteps[availableSteps.length - 1].id;
 
   return (
     <div className="closet-designer__overlay" role="dialog" aria-label={`עיצוב: ${item.name}`}>
