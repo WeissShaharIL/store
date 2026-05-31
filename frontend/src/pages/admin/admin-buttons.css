@@ -136,3 +136,28 @@
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Pressed feedback — New / Surprise Me / Save (and the add-door/add-item ghost
+   buttons, which use these same .btn classes) need a clear "click registered"
+   cue. On :active the button depresses + brightens; focus-visible adds a ring
+   so keyboard activation is obvious too. */
+.admin .pituch-tab__content .btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.42);
+  color: #fff;
+}
+.admin .pituch-tab__content .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.6);
+}
+
+/* Steady ON state for the toggle buttons (מוכן/טיוטה, מכירה מתצוגה) — they swap
+   btn--ghost↔btn--primary in JSX when active; the extra ring makes "currently
+   on" unmistakable and distinct from a transient press. */
+.admin .pituch-tab__content .btn--primary {
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.45),
+    0 6px 18px rgba(37, 99, 235, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
