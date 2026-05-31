@@ -28,10 +28,11 @@ if ($dirty) {
 }
 
 git pull origin dev
+git fetch --tags --force
 
 # 2. Compute next version
 $latestTag = ""
-try { $latestTag = git describe --tags --abbrev=0 2>$null } catch {}
+try { $latestTag = git tag --sort=-version:refname | Select-Object -First 1 } catch {}
 if (-not $latestTag) { $latestTag = "v0.0.0" }
 
 $parts = $latestTag.TrimStart("v").Split(".")
