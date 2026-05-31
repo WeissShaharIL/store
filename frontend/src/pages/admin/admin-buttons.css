@@ -102,3 +102,37 @@
   color: #ffffff;
   font-weight: 600;
 }
+
+/* ── פיתוח (dev builder/gallery) buttons — pill look ──────────────────────
+   The dev-builder/gallery use the storefront `.btn`/`.btn--primary`/
+   `.btn--ghost` classes, which the admin base above flattens to text-links —
+   leaving them looking unstyled in this section. Scope a rounded-pill style
+   (matching the storefront .showroom__filter-btn--active the user asked for) to
+   ONLY .pituch-tab__content so other admin tabs keep their text-link look. */
+.admin .pituch-tab__content .btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 18px;
+  color: rgba(242, 242, 244, 0.7);
+}
+.admin .pituch-tab__content .btn--sm { padding: 5px 14px; }
+.admin .pituch-tab__content .btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.admin .pituch-tab__content .btn--primary {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  box-shadow:
+    0 6px 18px rgba(37, 99, 235, 0.28),
+    0 2px 6px rgba(37, 99, 235, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.admin .pituch-tab__content .btn--primary::after { display: none; }
+.admin .pituch-tab__content .btn--primary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+}
