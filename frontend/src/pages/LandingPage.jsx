@@ -251,12 +251,6 @@ const contactRef = useRef(null);
           </div>
         </section>
 
-        <div className="landing-hero__cta-band">
-          <button type="button" className="landing-hero__cta" onClick={() => setScratchOpen(true)}>
-            עצבו ארון משלכם
-          </button>
-        </div>
-
         <section id="categories" data-scroll-section className="landing-scroll-section landing-section landing-categories">
           <header className="landing-section__head">
             <div className="section-hover-title">
@@ -286,6 +280,20 @@ const contactRef = useRef(null);
               image={doorCovers.hinged ? `/uploads/${doorCovers.hinged}` : undefined}
               slides={hingedSlides}
             />
+            {/* "Design your own" as a third category card (relocated from the
+               hero CTA band) — opens the from-scratch designer, same action as
+               before. Grid now reads: הזזה · פתיחה · עצבו ארון משלכם. */}
+            <article className="landing-category-card landing-category-card--design">
+              <h3>עצבו ארון משלכם</h3>
+              <p>בנו ארון מאפס בכלי העיצוב התלת-ממדי — מידות, דלתות, צבעים ופנים, בדיוק כרצונכם.</p>
+              <button
+                type="button"
+                className="landing-category-card__cta"
+                onClick={() => setScratchOpen(true)}
+              >
+                התחילו לעצב <span className="cta-arrow"><ArrowRight /></span>
+              </button>
+            </article>
           </div>
         </section>
 

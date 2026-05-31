@@ -27,6 +27,13 @@
   transition: border-color 150ms ease;
 }
 .activity-filter:focus { border-color: rgba(255, 255, 255, 0.25); }
+/* The native dropdown popup renders <option>s with the OS default white
+   background; on the dark admin theme that was white-on-white (invisible).
+   Force a dark, readable palette for the open list. */
+.activity-filter option {
+  background: #1f1f22;
+  color: #f2f2f4;
+}
 
 .activity-list {
   list-style: none;
