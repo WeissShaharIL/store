@@ -195,6 +195,18 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
     commitChange(activeItems.filter((_, i) => i !== originalIdx));
   }
 
+  // Remove an item from ANY compartment (not just the active one) — the planner
+  // now lets the user edit every cabin directly without selecting it first.
+  function removeItemFrom(doorId, originalIdx) {
+    const cur = items?.[doorId] ?? [];
+    onChange({
+      ...items,
+      [doorId]: cur
+        .filter((_, i) => i !== originalIdx)
+        .map((it) => ({ type: it.type, y: it.y })),
+    });
+  }
+
   const onItemPointerDown = useCallback((e, originalIdx, sourceDoorId) => {
     e.stopPropagation();
     const item = (allItemsRef.current?.[sourceDoorId] ?? [])[originalIdx];
@@ -324,7 +336,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
           <Plus /> מגירה
         </button>
         <p className="closet-plan__hint">
-          גרור פריטים מעלה ומטה — הם יוצמדו לאחד מ-10 המיקומים הקבועים בפנים הארון. לחץ × להסרת פריט.
+          גררו פריטים מעלה ומטה או בין התאים. כדי להוסיף פריט לתא מסוים, בחרו תחילה את התא (תא 1, תא 2…) ואז הוסיפו. לחיצה על × מסירה פריט.
         </p>
       </div>
 
@@ -387,38 +399,42 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
               const slice = interiorWidthPx / compartmentCount;
               const cx = interiorLeftPx + (i + 0.5) * slice;
               const cy = VIEW_TOP_PAD / 2;
-              const isActive = door.id === activeDoorId;
-              const chipR = isMobile ? (isActive ? 18 : 14) : (isActive ? 10 : 8);
-              const hitR = isMobile ? 28 : 14;
+              // The label is now a named "תא N" pill. It marks where the
+              // "add item" buttons will place new items; every cabin is
+              // editable directly regardless of which is selected.
+              const isTarget = door.id === activeDoorId;
+              const label = `תא ${i + 1}`;
+              const pillW = isMobile ? 62 : 52;
+              const pillH = isMobile ? 26 : 22;
               return (
                 <g
-                  key={`compartment-chip-${door.id}`}
+                  key={`compartment-label-${door.id}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedDoorId(door.id);
                   }}
                   style={{ cursor: "pointer" }}
                 >
-                  <circle cx={cx} cy={cy} r={hitR} fill="transparent" pointerEvents="all" />
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={chipR}
-                    fill={isActive ? "#7c3aed" : "#ffffff"}
-                    stroke={isActive ? "#7c3aed" : "#94959a"}
-                    strokeWidth={isActive ? 0 : 1.5}
-                    pointerEvents="none"
+                  <rect
+                    x={cx - pillW / 2}
+                    y={cy - pillH / 2}
+                    width={pillW}
+                    height={pillH}
+                    rx={pillH / 2}
+                    fill={isTarget ? "#7c3aed" : "#ffffff"}
+                    stroke={isTarget ? "#7c3aed" : "#c4c5ca"}
+                    strokeWidth={1.5}
                   />
                   <text
                     x={cx}
-                    y={cy + 4}
+                    y={cy + (isMobile ? 5 : 4)}
                     textAnchor="middle"
-                    fontSize={isMobile ? (isActive ? 14 : 12) : (isActive ? 12 : 11)}
+                    fontSize={isMobile ? 13 : 11}
                     fontWeight="700"
-                    fill={isActive ? "#ffffff" : "#94959a"}
+                    fill={isTarget ? "#ffffff" : "#6b6c72"}
                     pointerEvents="none"
                   >
-                    {i + 1}
+                    {label}
                   </text>
                 </g>
               );
@@ -458,54 +474,68 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
             />
           ))}
 
-          {segments.map((seg, i) => {
-            const centerY = (yToPx(seg.lowY) + yToPx(seg.highY)) / 2;
-            const cm = Math.round((seg.highY - seg.lowY) * interiorHeightCm);
-            if (cm < 1) return null;
-            const pillCenterX = (itemLeftPx + itemRightPx) / 2;
-            const text = String(cm);
-            const pillW = Math.max(28, text.length * 8 + 12);
-            const pillH = 18;
+          {doors.map((door, di) => {
+            // Per-compartment gap measurements: each cabin shows its own
+            // segment sizes (cm) so the user can read every cabin at once,
+            // not only the selected one.
+            if (!hasDivider && di > 0) return null;
+            const dItems = items?.[door.id] ?? [];
+            const asc = [...dItems].sort((a, b) => a.y - b.y);
+            const segs = [];
+            let prevY = 0;
+            for (const it of asc) { segs.push({ lowY: prevY, highY: it.y }); prevY = it.y; }
+            segs.push({ lowY: prevY, highY: 1 });
+            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
+            const colCenterX = (hasDivider ? interiorLeftPx + di * slice : interiorLeftPx) + slice / 2;
             return (
-              <g key={`seg-${i}`} pointerEvents="none">
-                <rect
-                  x={pillCenterX - pillW / 2}
-                  y={centerY - pillH / 2}
-                  width={pillW}
-                  height={pillH}
-                  rx={pillH / 2}
-                  fill="#eef0fa"
-                  stroke="rgba(0, 0, 0, 0.10)"
-                  strokeWidth={1}
-                />
-                <text
-                  x={pillCenterX}
-                  y={centerY + 4}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontWeight="600"
-                  fill="#3a3f55"
-                >
-                  {text}
-                </text>
+              <g key={`segs-${door.id}`} pointerEvents="none">
+                {segs.map((seg, i) => {
+                  const centerY = (yToPx(seg.lowY) + yToPx(seg.highY)) / 2;
+                  const cm = Math.round((seg.highY - seg.lowY) * interiorHeightCm);
+                  if (cm < 1) return null;
+                  const text = String(cm);
+                  const pillW = Math.max(26, text.length * 8 + 10);
+                  const pillH = 17;
+                  return (
+                    <g key={`seg-${door.id}-${i}`}>
+                      <rect
+                        x={colCenterX - pillW / 2}
+                        y={centerY - pillH / 2}
+                        width={pillW}
+                        height={pillH}
+                        rx={pillH / 2}
+                        fill="#eef0fa"
+                        stroke="rgba(0, 0, 0, 0.10)"
+                        strokeWidth={1}
+                      />
+                      <text
+                        x={colCenterX}
+                        y={centerY + 4}
+                        textAnchor="middle"
+                        fontSize="11"
+                        fontWeight="600"
+                        fill="#3a3f55"
+                      >
+                        {text}
+                      </text>
+                    </g>
+                  );
+                })}
               </g>
             );
           })}
 
           {doors.map((door, di) => {
-            const isActive = door.id === activeDoorId;
             const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
             const sliceLeft = hasDivider
               ? interiorLeftPx + di * slice
               : interiorLeftPx;
             const compItems = items?.[door.id] ?? [];
             if (compItems.length === 0) return null;
+            // Every compartment's items are now fully interactive — drag,
+            // move between cabins, and delete without selecting a cabin first.
             return (
-              <g
-                key={`items-${door.id}`}
-                opacity={isActive ? 1 : 0.35}
-                pointerEvents={isActive ? "auto" : "none"}
-              >
+              <g key={`items-${door.id}`}>
                 {compItems.map((item, idx) => {
                   if (
                     dragPreview?.sourceDoorId === door.id &&
@@ -520,12 +550,8 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
                       widthPx={slice}
                       yToPx={yToPx}
                       isDragging={false}
-                      onPointerDown={
-                        isActive
-                          ? (e, _) => onItemPointerDown(e, idx, door.id)
-                          : () => {}
-                      }
-                      onDelete={isActive ? () => removeItem(idx) : () => {}}
+                      onPointerDown={(e, _) => onItemPointerDown(e, idx, door.id)}
+                      onDelete={() => removeItemFrom(door.id, idx)}
                     />
                   );
                 })}
