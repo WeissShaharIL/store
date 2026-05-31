@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   SNAP_POSITIONS,
   SLOT_EPS,
@@ -44,16 +44,6 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
   const hasDivider = !!cfg.hasInternalDivider;
   const compartmentCount = hasDivider ? nDoors : 1;
 
-  const [selectedDoorId, setSelectedDoorId] = useState(doors[0]?.id ?? null);
-  const activeDoorId =
-    doors.find((d) => d.id === selectedDoorId)?.id ?? doors[0]?.id ?? null;
-  const activeItems = (activeDoorId && items?.[activeDoorId]) || [];
-
-  function commitActive(nextItems) {
-    if (!activeDoorId) return;
-    onChange({ ...items, [activeDoorId]: nextItems });
-  }
-
   const widthCm = (cfg.dimensions.compartmentWidth ?? 80) * nDoors;
   const heightCm = cfg.dimensions.H ?? 240;
   const T = cfg.dimensions.T ?? 2;
@@ -94,18 +84,6 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
   const interiorWidthPx = interiorRightPx - interiorLeftPx;
   const compartmentWidthPx = interiorWidthPx / compartmentCount;
 
-  const activeDoorIndex = Math.max(
-    0,
-    doors.findIndex((d) => d.id === activeDoorId),
-  );
-  const itemLeftPx = hasDivider
-    ? interiorLeftPx + activeDoorIndex * compartmentWidthPx
-    : interiorLeftPx;
-  const itemRightPx = hasDivider
-    ? itemLeftPx + compartmentWidthPx
-    : interiorRightPx;
-  const itemWidthPx = itemRightPx - itemLeftPx;
-
   const yToPx = useCallback(
     (yNorm) => interiorBottomPx - yNorm * (interiorBottomPx - interiorTopPx),
     [interiorBottomPx, interiorTopPx],
@@ -137,18 +115,6 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
   }, [interiorLeftPx, interiorWidthPx, compartmentCount]);
 
   const interiorHeightCm = Math.max(1, heightCm - 2 * T);
-
-  const segments = useMemo(() => {
-    const asc = [...activeItems].sort((a, b) => a.y - b.y);
-    const segs = [];
-    let prevY = 0;
-    for (const it of asc) {
-      segs.push({ lowY: prevY, highY: it.y });
-      prevY = it.y;
-    }
-    segs.push({ lowY: prevY, highY: 1 });
-    return segs;
-  }, [activeItems]);
 
   const svgRef = useRef(null);
 
