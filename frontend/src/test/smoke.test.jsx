@@ -66,6 +66,7 @@ vi.mock("../api.js", () => {
 import LeadClosetPreview from "../pages/admin/LeadClosetPreview.jsx";
 import LeadsTab from "../pages/admin/LeadsTab.jsx";
 import OrdersTab from "../pages/admin/OrdersTab.jsx";
+import ClosetInteriorPlan from "../pages/admin/ClosetInteriorPlan.jsx";
 
 function wrap(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
@@ -101,5 +102,42 @@ describe("admin pages mount without throwing", () => {
     // here throws and fails the test.
     const { getByText } = wrap(<LeadClosetPreview item={SAMPLE_ITEM} onClose={() => {}} />);
     expect(getByText("ארון בדיקה")).toBeTruthy();
+  });
+});
+
+describe("ClosetInteriorPlan (stage-2) renders without throwing", () => {
+  // Regression guard for the v1.8.0 "activeItems is not defined" crash: a
+  // dead-code removal left dangling refs that only blew up at render time.
+  // This component is pure SVG (no WebGL), so jsdom renders it for real —
+  // a render-time ReferenceError throws here and fails the test. It exercises
+  // the multi-cabin paths (divider + items + cm-gap pills + תא labels) that
+  // referenced the removed symbols.
+  const CFG = {
+    dimensions: { H: 240, D: 56, T: 2, compartmentWidth: 80 },
+    hasInternalDivider: true,
+    doors: [
+      { id: "d1", kind: "hinged" },
+      { id: "d2", kind: "hinged" },
+    ],
+  };
+  const ITEMS = {
+    d1: [{ type: "shelf", y: 0.5 }, { type: "rod", y: 0.85 }],
+    d2: [{ type: "drawer", y: 0.07 }],
+  };
+
+  it("renders with a divider, items in multiple cabins, and gap labels", () => {
+    const { container } = render(
+      <ClosetInteriorPlan cfg={CFG} items={ITEMS} onChange={() => {}} />,
+    );
+    expect(container.querySelector("svg")).toBeTruthy();
+    // תא labels prove the multi-compartment render path executed.
+    expect(container.textContent).toContain("תא 1");
+  });
+
+  it("renders an empty (from-scratch) cabinet without items", () => {
+    const { container } = render(
+      <ClosetInteriorPlan cfg={CFG} items={{}} onChange={() => {}} />,
+    );
+    expect(container.querySelector("svg")).toBeTruthy();
   });
 });
