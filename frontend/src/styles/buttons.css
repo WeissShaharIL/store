@@ -69,6 +69,33 @@
   color: #ffffff;
 }
 
+/* The showroom card "הצג" button is a pill (matching .showroom__filter-btn--active),
+   not the borderless text-link. This later same-specificity rule overrides the
+   canonical group above for this one button. */
+.showroom-card__add-btn {
+  align-self: flex-start;
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 6px 18px rgba(37, 99, 235, 0.28),
+    0 2px 6px rgba(37, 99, 235, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.showroom-card__add-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 22px rgba(37, 99, 235, 0.34),
+    0 3px 8px rgba(37, 99, 235, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
 .landing .btn--primary:disabled,
 .showroom-card__add-btn:disabled,
 .sr-details__cta-btn:disabled,
@@ -86,7 +113,6 @@
    Applied to the explicit "primary action" buttons only. */
 /* cart-btn already renders <ArrowRight/> in JSX, so it is intentionally
    excluded here to avoid a double arrow. */
-.showroom-card__add-btn::after,
 .sr-details__cta-btn--quick::after,
 .login-btn::after {
   content: "";
