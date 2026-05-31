@@ -64,7 +64,23 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     saved?.customDivider ?? cfg.hasInternalDivider ?? false,
   );
 
-  const [customItems, setCustomItems] = useState(saved?.customItems ?? {});
+  const [customItems, setCustomItems] = useState(() => {
+    if (saved?.customItems) return saved.customItems;
+    // Seed the stage-2 interior plan from each door's default compartment
+    // variant, so the planner shows the template's built-in shelves/rods/
+    // drawers instead of an empty cabinet. (The renderer already falls back to
+    // these defaults on later steps; this keeps stage 2 consistent.)
+    const seed = {};
+    for (const door of cfg.doors ?? []) {
+      const comp = door.compartment;
+      const variant =
+        comp?.variants?.find((v) => v.id === comp.defaultVariant) ?? comp?.variants?.[0];
+      if (variant?.items?.length) {
+        seed[door.id] = variant.items.map((it) => ({ type: it.type, y: it.y }));
+      }
+    }
+    return seed;
+  });
 
   const [customRoom, setCustomRoom] = useState(
     saved?.customRoom ?? { widthCm: 400, depthCm: 400, items: [] },
@@ -258,13 +274,18 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const captureRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
-  function dlDataUrl(dataUrl, filename) {
-    const a = document.createElement("a");
-    a.href = dataUrl; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  }
   const _delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+  function dataUrlToU8(dataUrl) {
+    const bin = atob(dataUrl.split(",")[1]);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8;
+  }
+
+  // Capture all 4 views (closed/open × front/angle) and bundle into a single
+  // ZIP — one download. Browsers block multiple rapid programmatic downloads,
+  // which is why the per-image approach only delivered the first file.
   async function handleDownloadPhotos() {
     if (!captureRef.current || downloading) return;
     setDownloading(true);
@@ -272,18 +293,32 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     const front = [0, sceneTargetY, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0)];
     const angle = [Wm * 0.55, sceneTargetY + Hm * 0.35, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0) * 0.92];
     try {
+      const { default: JSZip } = await import("jszip");
+      const zip = new JSZip();
+      const shots = [];
+
       setOpenDoorIds([]);
       await _delay(450);
       if (captureRef.current) {
-        dlDataUrl(captureRef.current(front), `${name}-סגור-חזית.png`); await _delay(150);
-        dlDataUrl(captureRef.current(angle), `${name}-סגור-זווית.png`); await _delay(150);
+        shots.push([`${name}-סגור-חזית.png`, captureRef.current(front)]);
+        await _delay(120);
+        shots.push([`${name}-סגור-זווית.png`, captureRef.current(angle)]);
       }
       setOpenDoorIds(doorList.map((d) => d.id));
       await _delay(750);
       if (captureRef.current) {
-        dlDataUrl(captureRef.current(front), `${name}-פתוח-חזית.png`); await _delay(150);
-        dlDataUrl(captureRef.current(angle), `${name}-פתוח-זווית.png`);
+        shots.push([`${name}-פתוח-חזית.png`, captureRef.current(front)]);
+        await _delay(120);
+        shots.push([`${name}-פתוח-זווית.png`, captureRef.current(angle)]);
       }
+
+      for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${name}.zip`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     } finally {
       setDownloading(false);
     }

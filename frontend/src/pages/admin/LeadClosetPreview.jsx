@@ -16,13 +16,11 @@ import "./AdminLeadPreview.css";
  */
 function delay(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-function downloadDataUrl(dataUrl, filename) {
-  const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+function dataUrlToU8(dataUrl) {
+  const bin = atob(dataUrl.split(",")[1]);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return u8;
 }
 
 export default function LeadClosetPreview({ item, onClose }) {
