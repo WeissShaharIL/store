@@ -83,7 +83,9 @@ export default function LeadClosetPreview({ item, onClose }) {
   // Default orbit (three-quarter) and a straight-on front camera position.
   const sceneCamera = [Wm * 0.2, targetY + Hm * 0.4, Dm / 2 + dist];
   const frontCamera = [0, targetY, Dm / 2 + dist];
-  const threeQuarterCamera = [Wm * 0.55, targetY + Hm * 0.35, Dm / 2 + dist * 0.92];
+  // 3/4 view: pull the camera back (×1.3) so a wide cabinet's side panel stays
+  // in frame for the downloaded photo instead of being cropped.
+  const threeQuarterCamera = [Wm * 0.5, targetY + Hm * 0.32, Dm / 2 + dist * 1.3];
 
   function toggleDoor(id) {
     setOpenDoorIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);

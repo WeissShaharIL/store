@@ -290,8 +290,11 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     if (!captureRef.current || downloading) return;
     setDownloading(true);
     const name = (item.name || "ארון").replace(/\s+/g, "-");
-    const front = [0, sceneTargetY, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0)];
-    const angle = [Wm * 0.55, sceneTargetY + Hm * 0.35, Dm / 2 + Math.max(3.5, Math.max(Hm, Wm) * 2.0) * 0.92];
+    const dist = Math.max(3.5, Math.max(Hm, Wm) * 2.0);
+    const front = [0, sceneTargetY, Dm / 2 + dist];
+    // 3/4 view: pull the camera back (×1.3) instead of in (×0.92) so a wide
+    // cabinet's side panel stays inside the frame rather than being cropped.
+    const angle = [Wm * 0.5, sceneTargetY + Hm * 0.32, Dm / 2 + dist * 1.3];
     try {
       const { default: JSZip } = await import("jszip");
       const zip = new JSZip();
