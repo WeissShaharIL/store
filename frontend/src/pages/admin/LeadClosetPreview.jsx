@@ -4,6 +4,7 @@ import { parseConfig } from "../../lib/parseConfig.js";
 import { totalWidth } from "./closet3d/schema.js";
 import ClosetScene from "./closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./closet3d/ClosetFromConfig.jsx";
+import { renderInteriorPlanPng } from "./closet3d/interior-plan/planImage.js";
 import "./AdminLeadPreview.css";
 
 /**
@@ -83,9 +84,6 @@ export default function LeadClosetPreview({ item, onClose }) {
   // Default orbit (three-quarter) and a straight-on front camera position.
   const sceneCamera = [Wm * 0.2, targetY + Hm * 0.4, Dm / 2 + dist];
   const frontCamera = [0, targetY, Dm / 2 + dist];
-  // 3/4 view: pull the camera back (×1.3) so a wide cabinet's side panel stays
-  // in frame for the downloaded photo instead of being cropped.
-  const threeQuarterCamera = [Wm * 0.5, targetY + Hm * 0.32, Dm / 2 + dist * 1.3];
 
   function toggleDoor(id) {
     setOpenDoorIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
@@ -97,9 +95,9 @@ export default function LeadClosetPreview({ item, onClose }) {
     setOpenDoorIds(allOpen ? [] : doors.map((d) => d.id));
   }
 
-  // Capture all 4 views (closed/open × front/3-quarter) and bundle into ONE zip.
-  // Browsers block multiple rapid programmatic a.click() downloads (only the
-  // first lands) — that was the "only 1 picture downloads" bug.
+  // Download = front view (closed + open) + a 2D image of the customer's
+  // stage-2 interior configuration — same set the customer gets, no 3/4 angle.
+  // One ZIP (browsers block multiple rapid programmatic downloads).
   async function handleDownload() {
     if (!captureRef.current || downloading) return;
     setDownloading(true);
@@ -112,19 +110,24 @@ export default function LeadClosetPreview({ item, onClose }) {
       setOpenDoorIds([]);
       await delay(450); // let any closing animation settle
       if (captureRef.current) {
-        shots.push([`${baseName}-סגור-חזית.png`, captureRef.current(frontCamera)]);
-        await delay(120);
-        shots.push([`${baseName}-סגור-זווית.png`, captureRef.current(threeQuarterCamera)]);
+        shots.push([`${baseName}-חזית-סגור.png`, captureRef.current(frontCamera)]);
       }
       setOpenDoorIds(doors.map((d) => d.id));
       await delay(750); // hinged doors animate open
       if (captureRef.current) {
-        shots.push([`${baseName}-פתוח-חזית.png`, captureRef.current(frontCamera)]);
-        await delay(120);
-        shots.push([`${baseName}-פתוח-זווית.png`, captureRef.current(threeQuarterCamera)]);
+        shots.push([`${baseName}-חזית-פתוח.png`, captureRef.current(frontCamera)]);
       }
 
       for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
+
+      // 2D interior configuration (shelves/rods/drawers + cm) from the snapshot.
+      try {
+        const planPng = await renderInteriorPlanPng(config, snap.customItems || {});
+        zip.file(`${baseName}-תצורת-פנים.png`, dataUrlToU8(planPng));
+      } catch {
+        // A failed config image shouldn't block the photo download.
+      }
+
       const blob = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -158,7 +161,7 @@ export default function LeadClosetPreview({ item, onClose }) {
                   className="lead-preview__icon-btn"
                   onClick={handleDownload}
                   disabled={downloading}
-                  title="הורד תמונות (חזית, זווית, פתוח, סגור)"
+                  title="הורד תמונות (חזית פתוח/סגור + תצורת פנים)"
                   aria-label="הורד תמונות"
                 >
                   <Download />

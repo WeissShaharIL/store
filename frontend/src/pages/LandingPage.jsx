@@ -435,6 +435,7 @@ const contactRef = useRef(null);
           <p className="landing-footer__copy">
             © {new Date().getFullYear()} {brandName} ארונות. כל הזכויות שמורות.
           </p>
+          <Link to="/admin" className="landing-footer__admin">ניהול</Link>
         </div>
       </footer>
 
