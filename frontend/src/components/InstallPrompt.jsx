@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, X } from "./Icons.jsx";
+import { Download } from "./Icons.jsx";
 import "../styles/install.css";
 
 /**
@@ -121,9 +121,6 @@ export default function InstallPrompt() {
 
   return (
     <div className="pwa-install" role="dialog" aria-label="התקנת האפליקציה">
-      <button className="pwa-install__close" onClick={dismiss} aria-label="סגור">
-        <X />
-      </button>
       <div className="pwa-install__content">
         <div className="pwa-install__icon">
           <Download />
@@ -137,11 +134,20 @@ export default function InstallPrompt() {
       </div>
 
       {ios ? (
-        <p className="pwa-install__ios-hint">
-          להתקנה: הקישו על כפתור השיתוף
-          <IosShareGlyph />
-          ואז בחרו ב״הוסף למסך הבית״.
-        </p>
+        <>
+          <p className="pwa-install__ios-hint">
+            להתקנה: הקישו על כפתור השיתוף
+            <IosShareGlyph />
+            ואז בחרו ב״הוסף למסך הבית״.
+          </p>
+          {/* iOS has no התקן button (no install API), so keep one dismiss
+             action here now that the top-right X is gone. */}
+          <div className="pwa-install__actions">
+            <button className="pwa-install__btn pwa-install__btn--ghost" onClick={dismiss}>
+              הבנתי
+            </button>
+          </div>
+        </>
       ) : (
         <div className="pwa-install__actions">
           <button className="pwa-install__btn pwa-install__btn--ghost" onClick={dismiss}>
