@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.14.0",
-  "released_at": "2026-05-31T22:24:49Z",
-  "notes": "d44c355 fix(test-remote): source nvm before running npm in non-interactive SSH session\n535cfaf ui(closet-builder): style door-vis buttons as ghost pills"
+  "version": "v1.15.0",
+  "released_at": "2026-05-31T22:26:24Z",
+  "notes": "ba5e00b fix(release): fetch tags before computing next version to avoid duplicate tag on consecutive releases\nd44c355 fix(test-remote): source nvm before running npm in non-interactive SSH session"
 }
