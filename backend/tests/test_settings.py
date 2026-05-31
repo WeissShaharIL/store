@@ -1,4 +1,6 @@
 """Settings endpoints (/api/settings) — public GET, admin-only PATCH."""
+from fastapi.testclient import TestClient
+from main import app
 
 
 def test_get_settings_no_auth(client):
@@ -7,9 +9,11 @@ def test_get_settings_no_auth(client):
     assert isinstance(r.json(), dict)
 
 
-def test_patch_settings_requires_admin(client):
-    r = client.patch("/api/settings", json={"values": {"welcome_title": "x"}})
-    assert r.status_code == 401
+def test_patch_settings_requires_admin():
+    # Fresh client (no admin cookie from the shared fixture) to test the guard.
+    with TestClient(app, raise_server_exceptions=True) as fresh:
+        r = fresh.patch("/api/settings", json={"values": {"welcome_title": "x"}})
+        assert r.status_code == 401
 
 
 def test_patch_settings_persists_values(client, auth_headers):

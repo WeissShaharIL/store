@@ -1,9 +1,14 @@
 """Admin handles catalog CRUD (/api/admin/handles — admin-only)."""
+from fastapi.testclient import TestClient
+from main import app
 
 
-def test_handles_list_requires_auth(client):
-    r = client.get("/api/admin/handles")
-    assert r.status_code == 401
+def test_handles_list_requires_auth():
+    # Fresh client with no cookies — the shared `client` fixture carries the
+    # admin login cookie set by the admin_token fixture, so it can't test guards.
+    with TestClient(app, raise_server_exceptions=True) as fresh:
+        r = fresh.get("/api/admin/handles")
+        assert r.status_code == 401
 
 
 def test_handles_list_with_auth(client, auth_headers):
