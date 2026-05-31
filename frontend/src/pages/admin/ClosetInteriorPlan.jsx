@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Plus } from "../../components/Icons.jsx";
 import {
   SNAP_POSITIONS,
   SLOT_EPS,
@@ -11,6 +10,14 @@ import {
   DimensionLineV,
   DimensionLineH,
 } from "./interior-plan/DimensionLines.jsx";
+
+// Draggable item palette (right side). Users drag these chips onto a cabin
+// instead of clicking a "+" button — the drop height decides the slot.
+const PALETTE = [
+  { type: "shelf", label: "מדף", color: "#8b6f47" },
+  { type: "rod", label: "מוט תליה", color: "#9a9a9f" },
+  { type: "drawer", label: "מגירה", color: "#6f7787" },
+];
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() => {
@@ -157,9 +164,117 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
 
   const geoRef = useRef({});
   geoRef.current = {
-    interiorLeftPx, compartmentWidthPx, compartmentCount,
-    doors, hasDivider, VIEW_WIDTH, VIEW_HEIGHT,
+    interiorLeftPx, interiorRightPx, interiorTopPx, interiorBottomPx,
+    compartmentWidthPx, compartmentCount,
+    doors, nDoors, hasDivider, VIEW_WIDTH, VIEW_HEIGHT,
   };
+
+  // ── New-item drag (palette chip → cabin) ──────────────────────────────
+  // Separate from the existing-item drag above. Tracks a chip being dragged
+  // from the right-hand palette; on drop over a cabin it adds the item at the
+  // snapped drop height. `clientX/Y` drive a cursor-following ghost.
+  const [newDrag, setNewDrag] = useState(null);
+  const newDragRef = useRef(null);
+  const newDragActive = newDrag != null;
+
+  function onPalettePointerDown(e, type) {
+    e.preventDefault();
+    const nd = {
+      type,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      overCanvas: false,
+      targetDoorId: null,
+      y: null,
+    };
+    newDragRef.current = nd;
+    setNewDrag(nd);
+  }
+
+  useEffect(() => {
+    if (!newDragActive) return;
+
+    function onMove(e) {
+      const nd = newDragRef.current;
+      if (!nd) return;
+      const geo = geoRef.current;
+      const rect = svgRef.current?.getBoundingClientRect();
+      let next = {
+        ...nd,
+        clientX: e.clientX,
+        clientY: e.clientY,
+        overCanvas: false,
+        targetDoorId: null,
+        y: null,
+      };
+      if (rect) {
+        const svgX = (e.clientX - rect.left) * (geo.VIEW_WIDTH / rect.width);
+        const svgY = (e.clientY - rect.top) * (geo.VIEW_HEIGHT / rect.height);
+        const inX = svgX >= geo.interiorLeftPx && svgX <= geo.interiorRightPx;
+        const inY =
+          svgY >= geo.interiorTopPx - 24 && svgY <= geo.interiorBottomPx + 24;
+        if (inX && inY) {
+          let di = 0;
+          if (geo.hasDivider && geo.compartmentCount > 1) {
+            const raw = Math.floor(
+              (svgX - geo.interiorLeftPx) / geo.compartmentWidthPx,
+            );
+            di = Math.max(0, Math.min(geo.compartmentCount - 1, raw));
+          }
+          next.targetDoorId = geo.doors[di]?.id ?? null;
+          next.overCanvas = !!next.targetDoorId;
+          next.y = snapToSlot(pxToY(svgY));
+        }
+      }
+      newDragRef.current = next;
+      setNewDrag(next);
+    }
+
+    function onEnd() {
+      const nd = newDragRef.current;
+      if (nd && nd.overCanvas && nd.targetDoorId && nd.y != null) {
+        const all = allItemsRef.current ?? {};
+        const existing = all[nd.targetDoorId] ?? [];
+        const conflict = existing.some((it) => Math.abs(it.y - nd.y) < SLOT_EPS);
+        if (conflict) {
+          // The exact drop slot is taken — fall back to the nearest free slot.
+          const idx = findFreeSlotIndex(existing, nd.type);
+          if (idx == null) {
+            showNotice("אין מקום פנוי לפריט נוסף בתא.");
+          } else {
+            onChangeRef.current({
+              ...all,
+              [nd.targetDoorId]: [
+                ...existing.map((it) => ({ type: it.type, y: it.y })),
+                { type: nd.type, y: SNAP_POSITIONS[idx] },
+              ],
+            });
+          }
+        } else {
+          onChangeRef.current({
+            ...all,
+            [nd.targetDoorId]: [
+              ...existing.map((it) => ({ type: it.type, y: it.y })),
+              { type: nd.type, y: nd.y },
+            ],
+          });
+        }
+      }
+      newDragRef.current = null;
+      setNewDrag(null);
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onEnd);
+    window.addEventListener("pointercancel", onEnd);
+    window.addEventListener("blur", onEnd);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onEnd);
+      window.removeEventListener("pointercancel", onEnd);
+      window.removeEventListener("blur", onEnd);
+    };
+  }, [newDragActive, pxToY]);
 
   const [notice, setNotice] = useState(null);
   const noticeTimerRef = useRef(null);
@@ -325,18 +440,25 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
   return (
     <div className="closet-plan">
       <div className="closet-plan__palette">
-        <h5 className="closet-plan__palette-title">הוסף פריט</h5>
-        <button type="button" className="closet-plan__add-btn" onClick={() => addItem("shelf")}>
-          <Plus /> מדף
-        </button>
-        <button type="button" className="closet-plan__add-btn" onClick={() => addItem("rod")}>
-          <Plus /> מוט תליה
-        </button>
-        <button type="button" className="closet-plan__add-btn" onClick={() => addItem("drawer")}>
-          <Plus /> מגירה
-        </button>
+        <h5 className="closet-plan__palette-title">גררו פריט לארון</h5>
+        {PALETTE.map((p) => (
+          <button
+            key={p.type}
+            type="button"
+            className="closet-plan__add-btn closet-plan__drag-chip"
+            style={{ touchAction: "none" }}
+            onPointerDown={(e) => onPalettePointerDown(e, p.type)}
+          >
+            <span
+              className="closet-plan__chip-swatch"
+              style={{ background: p.color }}
+              aria-hidden="true"
+            />
+            {p.label}
+          </button>
+        ))}
         <p className="closet-plan__hint">
-          גררו פריטים מעלה ומטה או בין התאים. כדי להוסיף פריט לתא מסוים, בחרו תחילה את התא (תא 1, תא 2…) ואז הוסיפו. לחיצה על × מסירה פריט.
+          גררו מדף, מוט או מגירה אל התא הרצוי בארון, לגובה שתבחרו. אפשר גם לגרור פריט קיים מעלה/מטה או בין התאים. לחיצה על × מסירה פריט.
         </p>
       </div>
 
@@ -399,30 +521,21 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
               const slice = interiorWidthPx / compartmentCount;
               const cx = interiorLeftPx + (i + 0.5) * slice;
               const cy = VIEW_TOP_PAD / 2;
-              // The label is now a named "תא N" pill. It marks where the
-              // "add item" buttons will place new items; every cabin is
-              // editable directly regardless of which is selected.
-              const isTarget = door.id === activeDoorId;
+              // Plain black-and-white "תא N" identifier — no active/selected
+              // state (every cabin is edited directly by dragging into it).
               const label = `תא ${i + 1}`;
               const pillW = isMobile ? 62 : 52;
               const pillH = isMobile ? 26 : 22;
               return (
-                <g
-                  key={`compartment-label-${door.id}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedDoorId(door.id);
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
+                <g key={`compartment-label-${door.id}`} pointerEvents="none">
                   <rect
                     x={cx - pillW / 2}
                     y={cy - pillH / 2}
                     width={pillW}
                     height={pillH}
                     rx={pillH / 2}
-                    fill={isTarget ? "#7c3aed" : "#ffffff"}
-                    stroke={isTarget ? "#7c3aed" : "#c4c5ca"}
+                    fill="#ffffff"
+                    stroke="#1d1d1f"
                     strokeWidth={1.5}
                   />
                   <text
@@ -431,33 +544,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
                     textAnchor="middle"
                     fontSize={isMobile ? 13 : 11}
                     fontWeight="700"
-                    fill={isTarget ? "#ffffff" : "#6b6c72"}
-                    pointerEvents="none"
+                    fill="#1d1d1f"
                   >
                     {label}
                   </text>
                 </g>
-              );
-            })}
-
-          {compartmentCount > 1 &&
-            doors.map((door, i) => {
-              const slice = interiorWidthPx / compartmentCount;
-              const x = interiorLeftPx + i * slice;
-              const isActive = door.id === activeDoorId;
-              if (!isActive) return null;
-              return (
-                <rect
-                  key={`compartment-highlight-${door.id}`}
-                  x={x}
-                  y={interiorTopPx}
-                  width={slice}
-                  height={interiorBottomPx - interiorTopPx}
-                  fill="rgba(124, 58, 237, 0.10)"
-                  stroke="#7c3aed"
-                  strokeWidth={2}
-                  pointerEvents="none"
-                />
               );
             })}
 
@@ -581,6 +672,28 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
             );
           })()}
 
+          {newDrag?.overCanvas && newDrag.targetDoorId && newDrag.y != null && (() => {
+            const di = doors.findIndex((d) => d.id === newDrag.targetDoorId);
+            if (di < 0) return null;
+            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
+            const previewLeft = hasDivider
+              ? interiorLeftPx + di * slice
+              : interiorLeftPx;
+            return (
+              <PlacedItem
+                key="new-drag-preview"
+                item={{ type: newDrag.type, y: newDrag.y }}
+                originalIdx={-1}
+                leftPx={previewLeft}
+                widthPx={slice}
+                yToPx={yToPx}
+                isDragging={true}
+                onPointerDown={() => {}}
+                onDelete={() => {}}
+              />
+            );
+          })()}
+
           <DimensionLineV
             x={LEFT_GUTTER / 2 - 4}
             y1={bodyTopPx}
@@ -619,6 +732,15 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
           <div className="closet-plan__notice" role="alert">{notice}</div>
         )}
       </div>
+
+      {newDrag && (
+        <div
+          className="closet-plan__drag-ghost"
+          style={{ left: newDrag.clientX, top: newDrag.clientY }}
+        >
+          {PALETTE.find((p) => p.type === newDrag.type)?.label}
+        </div>
+      )}
     </div>
   );
 }
