@@ -49,16 +49,29 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-// Open the from-scratch designer and return once its 3D <canvas> is on screen.
-async function openDesigner(page) {
-  const cta = page.getByRole("button", { name: /התחילו לעצב/ });
-  await cta.scrollIntoViewIfNeeded();
-  await cta.click({ force: true });
+// Dismiss the announcement dialog + cookie-consent bar that overlay the landing
+// page on first load — they intercept clicks on the design CTA otherwise.
+async function dismissOverlays(page) {
+  const ack = page.getByRole("button", { name: /אישור והמשך/ });
+  if (await ack.count()) await ack.click().catch(() => {});
+  const cookie = page.getByRole("button", { name: /^אישור$/ });
+  if (await cookie.count()) await cookie.click().catch(() => {});
+}
 
-  // ScratchStart chooser (lazy/Suspense). Click "התחל לעצב" to mount the wizard.
+// Open the from-scratch designer and return once its 3D <canvas> is on screen.
+// The landing page runs continuous scroll-reveal animations, so the CTA never
+// reaches Playwright's "stable" state — even force-click waits on stability and
+// times out. dispatchEvent('click') fires the handler directly without any
+// actionability/stability wait, which is what we want here (we're testing the
+// 3D scene, not the button's pointer mechanics).
+async function openDesigner(page) {
+  await dismissOverlays(page);
+  await page.getByRole("button", { name: /התחילו לעצב/ }).dispatchEvent("click");
+
+  // ScratchStart chooser (lazy/Suspense). Fire "התחל לעצב" the same way.
   const start = page.getByRole("button", { name: /^התחל לעצב$/ });
   await expect(start).toBeVisible({ timeout: 30_000 });
-  await start.click({ force: true });
+  await start.dispatchEvent("click");
 
   const canvas = page.locator("canvas").first();
   await expect(canvas).toBeVisible({ timeout: 30_000 });
@@ -68,6 +81,7 @@ async function openDesigner(page) {
 test("landing page renders without page errors", async ({ page }) => {
   const spy = attachErrorSpies(page);
   await page.goto("/");
+  await dismissOverlays(page);
   await expect(page.locator(".landing")).toBeVisible();
   await expect(page.getByRole("button", { name: /התחילו לעצב/ })).toBeVisible();
   if (spy.resource404.length) console.log("non-fatal 404s:", spy.resource404);
@@ -101,7 +115,7 @@ test("designer step navigation does not crash the scene", async ({ page }) => {
   // activeItems crash lived). Label varies; try common ones, skip if absent.
   const next = page.getByRole("button", { name: /הבא|המשך|next/i }).first();
   if (await next.count()) {
-    await next.click({ force: true }).catch(() => {});
+    await next.dispatchEvent("click").catch(() => {});
     await page.waitForTimeout(800);
   }
   if (spy.resource404.length) console.log("non-fatal 404s:", spy.resource404);

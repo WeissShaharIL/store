@@ -29,8 +29,12 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    // Build then serve the production bundle on a fixed port.
-    command: "npm run build && npm run preview -- --port 4173 --strictPort",
+    // Invoke vite DIRECTLY (not via `npm run`): the npm lifecycle wrapper
+    // re-reads package.json on Playwright's teardown in a torn-down cwd and
+    // intermittently emits a spurious "Command failed with exit code 1" that
+    // makes the whole run exit non-zero EVEN WHEN ALL TESTS PASS — which would
+    // wrongly fail the deploy gate. Calling vite directly removes that race.
+    command: "npx vite build && npx vite preview --port 4173 --strictPort",
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
