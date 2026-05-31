@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "./Icons.jsx";
+import "../styles/install.css";
 
 /**
  * PWA "install as app" prompt.
