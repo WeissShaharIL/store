@@ -1,0 +1,33 @@
+.section-hover-title {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Visual styling comes from the canonical `.btn .btn--ghost` classes so this
+   matches every other button on the site. Here we only add the
+   reveal-on-hover behaviour (hidden until the title group is hovered/focused). */
+.section-hover-title__reveal {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease,
+    background 160ms ease, border-color 160ms ease;
+}
+.section-hover-title:hover .section-hover-title__reveal,
+.section-hover-title:focus-within .section-hover-title__reveal {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* On touch screens there's no hover — always show it. */
+@media (max-width: 720px) {
+  .section-hover-title__reveal {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
