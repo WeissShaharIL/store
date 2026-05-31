@@ -1,0 +1,81 @@
+/* =============================================================================
+   ADMIN MOBILE — all phone/tablet responsive overrides for the admin panel,
+   in ONE place. Scoped under `.admin` so nothing here can affect the public
+   site. Imported LAST from AdminDashboard.css so it wins by cascade order.
+
+   Breakpoints: 768px (tablet/landscape phone) and 480px (small phone).
+   Add admin responsive rules HERE, not scattered across per-tab files.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Shell: tighter header + content padding so content isn't squeezed. */
+  .admin .admin-header { padding: 0.7rem 1rem; }
+  .admin-content { padding: 1rem 0.85rem; }
+
+  /* Tabs already scroll horizontally; make them a touch more compact. */
+  .admin .admin-tab { padding: 0.7rem 0.8rem; font-size: 11px; letter-spacing: 0.05em; }
+
+  /* Toolbar: title over the action button instead of side-by-side. */
+  .admin .tab-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  /* Filters / counts wrap and stay tappable. */
+  .admin .leads-counts { gap: 0.75rem; }
+  .admin .leads-filters { gap: 0.5rem; }
+  .admin .orders-filters__row { flex-direction: column; align-items: stretch; }
+  .admin .orders-filters__input,
+  .admin .orders-filters__date,
+  .admin .orders-filters__date input { width: 100%; }
+
+  /* Lead / order action rows wrap so buttons never overflow the card. */
+  .admin .lead-actions { gap: 0.5rem; }
+  .admin .lead-action-btn { padding: 0.45rem 0.7rem; }
+
+  /* Images tab: stack the folder sidebar above the grid instead of beside it,
+     and let the page scroll naturally rather than locking to viewport height. */
+  .admin .images-tab {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+  .admin .images-sidebar {
+    width: 100%;
+    border-left: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem;
+  }
+  .admin .images-sidebar__head { width: 100%; }
+  .admin .images-sidebar__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .admin .images-sidebar__item { margin: 0; }
+  .admin .images-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+
+  /* Pituch (builder) sub-nav wraps. */
+  .admin .pituch-tab__nav { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .admin-content { padding: 0.75rem 0.6rem; }
+
+  /* Stack the per-item action buttons full width for big tap targets. */
+  .admin .lead-actions { flex-direction: column; align-items: stretch; }
+  .admin .lead-actions .lead-action-btn { width: 100%; text-align: center; }
+
+  /* The login/change-password form fields go full width. */
+  .admin .settings-form,
+  .admin .settings-field input,
+  .admin .settings-field textarea { width: 100%; }
+
+  /* 3D preview / capture modal uses the full screen on a small phone. */
+  .lead-preview__card { height: 92vh; width: 100%; border-radius: 10px; }
+}

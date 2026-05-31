@@ -1,4 +1,5 @@
 @import "./admin/admin-buttons.css";
+@import "./admin/admin-mobile.css";
 
 .admin {
   min-height: 100vh;
