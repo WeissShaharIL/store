@@ -23,6 +23,17 @@ function dataUrlToU8(dataUrl) {
   return u8;
 }
 
+// Single-file download helper. handleDownload still uses this; the ZIP-bundling
+// conversion (mirroring the customer designer) is a follow-up.
+function downloadDataUrl(dataUrl, filename) {
+  const a = document.createElement("a");
+  a.href = dataUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 export default function LeadClosetPreview({ item, onClose }) {
   const captureRef = useRef(null);
   const [openDoorIds, setOpenDoorIds] = useState([]);
