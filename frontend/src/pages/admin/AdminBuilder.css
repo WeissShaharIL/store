@@ -81,6 +81,42 @@
   text-transform: uppercase;
   color: rgba(255,255,255,0.35);
 }
+.closet-builder__door-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.closet-builder__door-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.closet-builder__door-vis {
+  display: flex;
+  gap: 0.25rem;
+}
+.closet-builder__door-vis-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 5px 14px;
+  background: transparent;
+  color: rgba(242, 242, 244, 0.55);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+.closet-builder__door-vis-btn:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.closet-builder__door-vis-btn--active {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.30);
+  color: rgba(242, 242, 244, 0.9);
+}
 .closet-builder__image-preview {
   display: flex;
   flex-direction: column;
