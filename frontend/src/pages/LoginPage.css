@@ -74,7 +74,9 @@
 }
 
 .login-btn {
+  display: block;
   width: 100%;
+  text-align: center;
   background: #ffffff;
   color: #0d0d0f;
   border: none;
