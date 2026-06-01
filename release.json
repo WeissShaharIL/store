@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.29.0",
-  "released_at": "2026-06-01T18:22:10Z",
-  "notes": "3b6e221 fix(landing): increase selector specificity so reveal font-size beats buttons.css override"
+  "version": "v1.30.0",
+  "released_at": "2026-06-01T18:27:13Z",
+  "notes": "9abc829 ui(landing): grid-stack reveal to exact h2 position; remove arrow from הזמן button"
 }
