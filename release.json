@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.56.0",
-  "released_at": "2026-06-01T22:51:48Z",
-  "notes": "e37c317 ui(admin): remove logo section from settings tab"
+  "version": "v1.57.0",
+  "released_at": "2026-06-01T22:54:25Z",
+  "notes": "b2d730e ui(landing): always show FORMA ארונות text brand in nav instead of uploaded logo image"
 }
