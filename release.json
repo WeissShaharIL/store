@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.48.0",
-  "released_at": "2026-06-01T22:26:57Z",
-  "notes": "f6efe91 fix(designer): depth slider broken when constraint exists but keys are undefined — use ?. fallback"
+  "version": "v1.49.0",
+  "released_at": "2026-06-01T22:33:46Z",
+  "notes": "837158a feat: edit cart closet; fix FormaLogo always show ארונות; enlarge animation; remove logo upload button"
 }
