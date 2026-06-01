@@ -29,9 +29,22 @@ $RemoteScript = @'
 set -e
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+# Install Google Chrome as the Chromium executable (works on any Ubuntu version)
+if ! command -v google-chrome-stable &>/dev/null; then
+  wget -qO- https://dl.google.com/linux/linux_signing_key.pub \
+    | gpg --dearmor \
+    | sudo tee /etc/apt/trusted.gpg.d/google-chrome.gpg > /dev/null
+  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
+    | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
+  sudo apt-get update -qq
+  sudo apt-get install -y google-chrome-stable
+fi
+
 cd code/store/frontend
 npm ci --prefer-offline
-npx playwright install chromium --with-deps
+export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$(which google-chrome-stable)
 npx playwright test
 '@
 
