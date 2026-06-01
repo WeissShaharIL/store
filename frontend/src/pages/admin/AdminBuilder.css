@@ -563,6 +563,57 @@
   white-space: nowrap;
 }
 
+/* ── Number stepper field ────────────────────────────────────────────────────── */
+.number-field {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #111113;
+  transition: border-color 150ms ease;
+}
+.number-field:focus-within {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.number-field input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f2f2f4;
+  font: inherit;
+  font-size: 0.88rem;
+  text-align: center;
+  padding: 8px 4px;
+  outline: none;
+}
+.number-field__btn {
+  flex-shrink: 0;
+  width: 32px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background 120ms ease, color 120ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.number-field__btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.75);
+}
+.number-field__btn:active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
 /* ── dim-label (3D annotation HTML overlay) ─────────────────────────────────── */
 .dim-label {
   background: rgba(0,0,0,0.55);

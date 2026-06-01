@@ -40,51 +40,42 @@ import { usePaletteColors } from "../PaletteContext.jsx";
 export function NumberField({ label, value, onChange, min, max, step = 1 }) {
   const [draft, setDraft] = useState(() => String(value ?? ""));
 
-  // External sync: if the parent's value changes for reasons
-  // other than this field's commit (e.g., "הפתע אותי"
-  // randomized the config, or a sibling field's commit
-  // recomputed this one), pull the new value into the draft.
   useEffect(() => {
     setDraft(String(value ?? ""));
   }, [value]);
 
-  function commit() {
-    const n = Number(draft);
-    if (!Number.isFinite(n)) {
-      setDraft(String(value ?? ""));
-      return;
-    }
-    const clamped = Math.min(
-      max ?? Number.POSITIVE_INFINITY,
-      Math.max(min ?? Number.NEGATIVE_INFINITY, n),
-    );
-    if (clamped !== value) {
-      onChange(clamped);
-    } else {
-      // Snap the draft to the canonical string so the input
-      // doesn't show "300" when the parent already has 300.
-      setDraft(String(clamped));
-    }
+  function commit(raw = draft) {
+    const n = Number(raw);
+    if (!Number.isFinite(n)) { setDraft(String(value ?? "")); return; }
+    const clamped = Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
+    if (clamped !== value) onChange(clamped);
+    else setDraft(String(clamped));
+  }
+
+  function stepBy(delta) {
+    const base = Number.isFinite(Number(draft)) ? Number(draft) : (value ?? min ?? 0);
+    commit(String(base + delta));
   }
 
   return (
     <label className="field field--small">
       <span>{label}</span>
-      <input
-        type="number"
-        value={draft}
-        min={min}
-        max={max}
-        step={step}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            commit();
-          }
-        }}
-      />
+      <div className="number-field">
+        <button type="button" className="number-field__btn" onClick={() => stepBy(-step)} tabIndex={-1} aria-label="הפחת">−</button>
+        <input
+          type="text"
+          inputMode="numeric"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => commit()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { e.preventDefault(); commit(); }
+            if (e.key === "ArrowUp") { e.preventDefault(); stepBy(step); }
+            if (e.key === "ArrowDown") { e.preventDefault(); stepBy(-step); }
+          }}
+        />
+        <button type="button" className="number-field__btn" onClick={() => stepBy(step)} tabIndex={-1} aria-label="הגדל">+</button>
+      </div>
     </label>
   );
 }
