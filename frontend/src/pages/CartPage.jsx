@@ -169,6 +169,7 @@ export default function CartPage() {
   }
 
   return (
+    <>
     <div className="cart-page">
       <CartNav />
       <div className="cart-page__inner">
@@ -246,6 +247,7 @@ export default function CartPage() {
     </div>
 
     {/* Edit closet designer overlay */}
+
     {editingCartItem && (
       <Suspense fallback={null}>
         <ClosetDesigner
@@ -262,5 +264,6 @@ export default function CartPage() {
         />
       </Suspense>
     )}
+    </>
   );
 }
