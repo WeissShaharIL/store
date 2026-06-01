@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.50.0",
-  "released_at": "2026-06-01T22:37:10Z",
-  "notes": "a89b148 fix: CartPage JSX fragment; feat: global floating WhatsApp button across all pages"
+  "version": "v1.51.0",
+  "released_at": "2026-06-01T22:41:49Z",
+  "notes": "55f449d ui(admin login): show only FORMA without ארונות subtitle"
 }
