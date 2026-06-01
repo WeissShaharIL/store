@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.38.0",
-  "released_at": "2026-06-01T21:42:40Z",
-  "notes": "ff29a13 fix(login): higher-specificity selector to override inline-flex on כניסה button"
+  "version": "v1.39.0",
+  "released_at": "2026-06-01T21:47:35Z",
+  "notes": "7b84d13 fix(login): force login-btn visual styles with !important to beat buttons.css override"
 }
