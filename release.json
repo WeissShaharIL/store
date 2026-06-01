@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.39.0",
-  "released_at": "2026-06-01T21:47:35Z",
-  "notes": "7b84d13 fix(login): force login-btn visual styles with !important to beat buttons.css override"
+  "version": "v1.40.0",
+  "released_at": "2026-06-01T21:49:18Z",
+  "notes": "92bd315 ui(admin images): more dramatic lightbox zoom animation (scale 0.15→1 over 500ms)\n5b39708 ui(admin): remove arrow from confirm dialog אישור button"
 }
