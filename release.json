@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.47.0",
-  "released_at": "2026-06-01T22:17:17Z",
-  "notes": "56bdd29 feat(landing): story-driven closet animation — doors open/close, shelves add/remove, color change"
+  "version": "v1.48.0",
+  "released_at": "2026-06-01T22:26:57Z",
+  "notes": "f6efe91 fix(designer): depth slider broken when constraint exists but keys are undefined — use ?. fallback"
 }
