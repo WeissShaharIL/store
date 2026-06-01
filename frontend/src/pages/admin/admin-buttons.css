@@ -135,7 +135,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .admin .pituch-tab__content .btn--primary::after,
-.admin .settings-section .btn--primary::after { display: none; }
+.admin .settings-section .btn--primary::after,
+.admin .confirm-actions__ok::after { display: none; }
 .admin .pituch-tab__content .btn--primary:hover:not(:disabled),
 .admin .settings-section .btn--primary:hover:not(:disabled) {
   background: rgba(34, 197, 94, 0.22);
