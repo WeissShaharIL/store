@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.27.0",
-  "released_at": "2026-06-01T18:18:33Z",
-  "notes": "38d0f1d ui(cart): remove arrow from empty cart showroom link"
+  "version": "v1.28.0",
+  "released_at": "2026-06-01T18:20:28Z",
+  "notes": "59a067b ui(admin): apply pill button style to settings-section (landing page upload buttons)"
 }
