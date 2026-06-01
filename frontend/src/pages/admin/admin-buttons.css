@@ -123,18 +123,18 @@
   color: #fff;
 }
 .admin .pituch-tab__content .btn--primary {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: rgb(134, 239, 172);
   box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.28),
-    0 2px 6px rgba(37, 99, 235, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    0 0 0 1px rgba(34, 197, 94, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .admin .pituch-tab__content .btn--primary::after { display: none; }
 .admin .pituch-tab__content .btn--primary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(34, 197, 94, 0.22);
+  border-color: rgba(34, 197, 94, 0.65);
+  color: rgb(187, 247, 208);
 }
 
 /* Pressed feedback — New / Surprise Me / Save (and the add-door/add-item ghost
@@ -153,11 +153,5 @@
 }
 
 /* Steady ON state for the toggle buttons (מוכן/טיוטה, מכירה מתצוגה) — they swap
-   btn--ghost↔btn--primary in JSX when active; the extra ring makes "currently
-   on" unmistakable and distinct from a transient press. */
-.admin .pituch-tab__content .btn--primary {
-  box-shadow:
-    0 0 0 1px rgba(37, 99, 235, 0.45),
-    0 6px 18px rgba(37, 99, 235, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
+   btn--ghost↔btn--primary in JSX when active; green tint makes "currently on"
+   unmistakable at a glance and distinct from a transient press. */
