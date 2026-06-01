@@ -113,15 +113,6 @@
    Applied to the explicit "primary action" buttons only. */
 /* cart-btn already renders <ArrowRight/> in JSX, so it is intentionally
    excluded here to avoid a double arrow. */
-.sr-details__cta-btn--quick::after {
-  content: "";
-  width: 1.05em;
-  height: 1.05em;
-  flex-shrink: 0;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E") center / contain no-repeat;
-}
 
 /* ---- "Added to cart" confirmed state — green, no arrow ---- */
 .showroom-card__add-btn--added,
