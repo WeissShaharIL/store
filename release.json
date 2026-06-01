@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.43.0",
-  "released_at": "2026-06-01T21:59:17Z",
-  "notes": "48f1350 feat(landing): CSS closet design animation on design card; fix: SVG eye icon for password toggle"
+  "version": "v1.44.0",
+  "released_at": "2026-06-01T22:02:37Z",
+  "notes": "56b81db ui(login): style כניסה button as frosted-glass pill matching category card CTA"
 }
