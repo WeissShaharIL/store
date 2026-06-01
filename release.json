@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.30.0",
-  "released_at": "2026-06-01T18:27:13Z",
-  "notes": "9abc829 ui(landing): grid-stack reveal to exact h2 position; remove arrow from הזמן button"
+  "version": "v1.31.0",
+  "released_at": "2026-06-01T18:41:47Z",
+  "notes": "7767ae5 ui(landing): remove section hover-reveal, keep plain הארונות שלנו heading"
 }
