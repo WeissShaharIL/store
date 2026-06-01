@@ -23,41 +23,45 @@
   font-weight: 400;
 }
 
-/* Section title with hover-reveal button */
+/* Section title with hover-reveal button.
+   Grid-stack technique: both children share the same grid area so the reveal
+   sits in exactly the same box as the h2 — no absolute-centering guesswork. */
 .section-hover-title {
-  position: relative;
-  display: inline-block;
+  display: inline-grid;
   cursor: default;
+}
+.section-hover-title__h2,
+.section-hover-title__reveal {
+  grid-area: 1 / 1;
 }
 .section-hover-title__h2 {
   margin: 0 0 var(--space-3);
-  transition: transform 2000ms cubic-bezier(0.4, 0, 0.2, 1), opacity 2000ms ease;
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms ease;
 }
 .section-hover-title:hover .section-hover-title__h2 {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   opacity: 0;
 }
-/* Appearance is owned by the canonical button rule in buttons.css (the
-   borderless text-link look shared by every storefront button). Here we only
-   position the reveal over the title and handle the hover fade-in — no pill,
-   no background, no shadow, per the buttons.css single-source rule. */
 .section-hover-title__reveal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(calc(-50% + 14px));
+  /* match h2 spacing so the grid cell sizes identically */
+  margin: 0 0 var(--space-3);
+  transform: translateY(8px);
   opacity: 0;
-  transition: transform 2000ms cubic-bezier(0.4, 0, 0.2, 1), opacity 2000ms ease;
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms ease;
   pointer-events: none;
   white-space: nowrap;
+  align-self: start;
 }
 /* Specificity bump: beats the (0,1,0) font-size in buttons.css */
 .section-hover-title .section-hover-title__reveal {
   font-size: clamp(28px, 4vw, 48px);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #f2f2f4;
 }
 .section-hover-title:hover .section-hover-title__reveal {
-  transform: translateX(-50%) translateY(-50%);
+  transform: translateY(0);
   opacity: 1;
   pointer-events: auto;
 }
