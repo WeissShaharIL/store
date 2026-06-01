@@ -35,7 +35,7 @@ export default function AdminLoginGate({ children }) {
       <div className="login-card">
         <div className="login-brand"><FormaLogo /></div>
         <p className="login-title">כניסה למנהל</p>
-        <Link to="/" className="login-back-link">← חזרה לאתר</Link>
+        <Link to="/" className="login-back-link">חזרה לאתר</Link>
         <form onSubmit={handleSubmit} className="login-form">
           <label>
             <span>שם משתמש</span>
