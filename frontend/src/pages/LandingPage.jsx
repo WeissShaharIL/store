@@ -202,7 +202,7 @@ const contactRef = useRef(null);
     : null;
 
   const heroSrc = settings.hero_image ? `/uploads/${settings.hero_image}` : null;
-  const brandName = settings.brand_name || "Store";
+  const brandName = settings.brand_name || "Forma";
 
   return (
     <div className="landing">
