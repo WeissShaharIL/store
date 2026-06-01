@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.55.0",
-  "released_at": "2026-06-01T22:50:09Z",
-  "notes": "286eaba ui: fix WhatsApp shine animation — keyframe fade-in/out so no residual line after hover"
+  "version": "v1.56.0",
+  "released_at": "2026-06-01T22:51:48Z",
+  "notes": "e37c317 ui(admin): remove logo section from settings tab"
 }
