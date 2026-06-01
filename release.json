@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.54.0",
-  "released_at": "2026-06-01T22:48:51Z",
-  "notes": "a84fe19 fix(designer): download open-door photo hides sliding doors instead of showing them shifted"
+  "version": "v1.55.0",
+  "released_at": "2026-06-01T22:50:09Z",
+  "notes": "286eaba ui: fix WhatsApp shine animation — keyframe fade-in/out so no residual line after hover"
 }
