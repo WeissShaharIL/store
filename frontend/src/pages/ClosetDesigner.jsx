@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, ArrowLeft, ArrowRight, Eye, EyeOff, Download } from "../components/Icons.jsx";
-import { addToCart } from "../lib/cart.js";
+import { addToCart, updateCartItem } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
 import { totalPrice, estimatePrice } from "./admin/closet3d/schema.js";
@@ -24,7 +24,7 @@ import {
 } from "./admin/designer/persistence.js";
 import "../styles/showroom/05-designer.css";
 
-export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false }) {
+export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false, editCartItemId = null }) {
   const navigate = useNavigate();
   const cfg = item.config;
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
@@ -181,6 +181,18 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const sceneTargetY = Hm / 2;
 
   function handleAddToCart() {
+    const snapshot = {
+      customDims, customColor, customDivider,
+      customDoorHandles, customDoorMaterials,
+      customItems, customRoom,
+      priceEstimate,
+    };
+    if (editCartItemId) {
+      updateCartItem(editCartItemId, { snapshot, priceEstimate });
+      clearDesignerState(item.id);
+      onClose?.();
+      return;
+    }
     addToCart({
       id: "closet-" + item.id + "-" + Date.now(),
       templateId: item.id,
@@ -188,12 +200,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       image_path: item.image_path,
       config_json: item.config_json,
       priceEstimate,
-      snapshot: {
-        customDims, customColor, customDivider,
-        customDoorHandles, customDoorMaterials,
-        customItems, customRoom,
-        priceEstimate,
-      },
+      snapshot,
     });
     clearDesignerState(item.id);
     onClose?.();
@@ -534,7 +541,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
             className="closet-designer__mobile-nav__btn closet-designer__mobile-nav__btn--primary"
             onClick={() => nextId != null ? setStep(nextId) : handleAddToCart()}
           >
-            {nextId != null ? "הבא" : "הוסף לעגלה"} <ArrowLeft />
+            {nextId != null ? "הבא" : editCartItemId ? "שמור שינויים" : "הוסף לעגלה"} <ArrowLeft />
           </button>
         </div>
 
@@ -548,7 +555,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           )}
           {isLastStep && (
             <button type="button" className="closet-designer__add-btn" onClick={handleContinue}>
-              הוסף לעגלה <ArrowLeft />
+              {editCartItemId ? "שמור שינויים" : "הוסף לעגלה"} <ArrowLeft />
             </button>
           )}
         </div>

@@ -157,8 +157,8 @@
 
 .dpa__closet {
   display: flex;
-  width: 114px;
-  height: 90px;
+  width: 160px;
+  height: 128px;
   border: 1.5px solid rgba(255,255,255,0.22);
   border-radius: 3px;
   overflow: hidden;
@@ -326,7 +326,7 @@
 /* ── Palette ── */
 .dpa__palette {
   display: flex;
-  gap: 7px;
+  gap: 9px;
   animation: dpa-palette-story 18s ease infinite;
 }
 @keyframes dpa-palette-story {
@@ -337,7 +337,7 @@
   100%   { opacity: 0; }
 }
 .dpa__dot {
-  width: 12px; height: 12px;
+  width: 14px; height: 14px;
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.15);
 }

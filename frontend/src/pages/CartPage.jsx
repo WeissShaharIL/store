@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { submitLead } from "../api.js";
 import { clearCart, getCart, removeFromCart, subscribeToCart } from "../lib/cart.js";
 import { parseConfig } from "../lib/parseConfig.js";
+import { saveDesignerState } from "./admin/designer/persistence.js";
 import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import CartIcon from "../components/CartIcon.jsx";
 import { ArrowRight } from "../components/Icons.jsx";
 import "../styles/landing/01-shell-nav.css";
 import "./CartPage.css";
+
+const ClosetDesigner = lazy(() => import("./ClosetDesigner.jsx"));
 
 function CartNav() {
   return (
@@ -38,7 +41,16 @@ export default function CartPage() {
   const [step, setStep] = useState("cart"); // "cart" | "contact" | "done"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [editingCartItem, setEditingCartItem] = useState(null);
   const navigate = useNavigate();
+
+  function handleEditItem(cartItem) {
+    // Pre-populate the designer's saved state from the cart item's snapshot
+    if (cartItem.snapshot) {
+      saveDesignerState(cartItem.templateId, cartItem.snapshot);
+    }
+    setEditingCartItem(cartItem);
+  }
 
   // Override body background so the dark-theme page background shows correctly
   // regardless of what the global body style sets.
@@ -215,6 +227,9 @@ export default function CartPage() {
                       )}
                       {price && <span className="cart-item__price">{price}</span>}
                     </div>
+                    {isCustom && (
+                      <button onClick={() => handleEditItem(item)} className="cart-item__edit" aria-label="ערוך" title="ערוך ארון">✏️</button>
+                    )}
                     <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
                   </li>
                 );
@@ -229,5 +244,23 @@ export default function CartPage() {
         )}
       </div>
     </div>
+
+    {/* Edit closet designer overlay */}
+    {editingCartItem && (
+      <Suspense fallback={null}>
+        <ClosetDesigner
+          item={{
+            id: editingCartItem.templateId,
+            name: editingCartItem.name,
+            config_json: editingCartItem.config_json,
+            config: parseConfig(editingCartItem.config_json),
+            image_path: editingCartItem.image_path,
+          }}
+          editCartItemId={editingCartItem.id}
+          onClose={() => setEditingCartItem(null)}
+          mode="full"
+        />
+      </Suspense>
+    )}
   );
 }

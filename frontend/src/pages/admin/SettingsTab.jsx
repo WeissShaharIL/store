@@ -80,10 +80,6 @@ export default function SettingsTab() {
       <section>
         <div className="tab-toolbar" style={{ marginBottom: "0.75rem" }}>
           <h3 style={{ margin: 0, fontSize: "0.95rem" }}>לוגו</h3>
-          <label className="btn-add" style={{ cursor: "pointer" }}>
-            + העלה לוגו
-            <input type="file" accept="image/*" hidden onChange={handleLogoUpload} />
-          </label>
         </div>
         <div className="palette-list">
           {logos.map((l) => (
