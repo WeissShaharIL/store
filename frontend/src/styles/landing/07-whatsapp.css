@@ -21,24 +21,27 @@
 .landing-whatsapp::after {
   content: "";
   position: absolute;
-  top: -20%;
-  left: -60%;
-  width: 40%;
-  height: 140%;
+  top: -10%;
+  left: 0;
+  width: 50%;
+  height: 120%;
   background: linear-gradient(
     105deg,
-    transparent 30%,
-    rgba(255,255,255,0.45) 50%,
-    transparent 70%
+    transparent 20%,
+    rgba(255,255,255,0.5) 50%,
+    transparent 80%
   );
-  transform: skewX(-15deg) translateX(0);
+  transform: skewX(-15deg) translateX(-200%);
   opacity: 0;
-  transition: none;
 }
 .landing-whatsapp:hover::after {
-  opacity: 1;
-  transform: skewX(-15deg) translateX(340%);
-  transition: transform 480ms ease, opacity 80ms ease;
+  animation: wa-shine 600ms ease forwards;
+}
+@keyframes wa-shine {
+  0%   { opacity: 0;   transform: skewX(-15deg) translateX(-200%); }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { opacity: 0;   transform: skewX(-15deg) translateX(480%); }
 }
 .landing-whatsapp:hover {
   transform: translateY(-2px) scale(1.04);
