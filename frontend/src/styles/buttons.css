@@ -113,8 +113,7 @@
    Applied to the explicit "primary action" buttons only. */
 /* cart-btn already renders <ArrowRight/> in JSX, so it is intentionally
    excluded here to avoid a double arrow. */
-.sr-details__cta-btn--quick::after,
-.login-btn::after {
+.sr-details__cta-btn--quick::after {
   content: "";
   width: 1.05em;
   height: 1.05em;
