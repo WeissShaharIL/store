@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.53.0",
-  "released_at": "2026-06-01T22:45:02Z",
-  "notes": "9dd80da fix(backend): add from_attributes to LogoOut schema — fixes 500 on GET /api/admin/logos"
+  "version": "v1.54.0",
+  "released_at": "2026-06-01T22:48:51Z",
+  "notes": "a84fe19 fix(designer): download open-door photo hides sliding doors instead of showing them shifted"
 }
