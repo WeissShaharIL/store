@@ -267,14 +267,16 @@ function DoorCard({
                 className={"closet-builder__item" + (isSelected ? " closet-builder__item--selected" : "")}
                 onClick={() => setSelectedItem({ doorIndex, itemIndex: i })}
               >
-                <select
-                  value={item.type}
-                  onChange={(e) => updateItem(i, (it) => { it.type = e.target.value; })}
-                >
-                  <option value="shelf">מדף</option>
-                  <option value="rod">מוט</option>
-                  <option value="drawer">מגירה</option>
-                </select>
+                <div className="closet-builder__item-type">
+                  {[{v:"shelf",l:"מדף"},{v:"rod",l:"מוט"},{v:"drawer",l:"מגירה"}].map(({v,l}) => (
+                    <button
+                      key={v}
+                      type="button"
+                      className={"closet-builder__item-type-btn" + (item.type === v ? " closet-builder__item-type-btn--active" : "")}
+                      onClick={(e) => { e.stopPropagation(); updateItem(i, (it) => { it.type = v; }); }}
+                    >{l}</button>
+                  ))}
+                </div>
                 <input
                   type="number"
                   min={0}
