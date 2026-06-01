@@ -34,7 +34,7 @@ export function buildInteriorPlanSvg(config, items) {
 
   const W = 900;
   const H = 640;
-  const PAD_TOP = 64;
+  const PAD_TOP = 90;
   const PAD_BOTTOM = 60;
   const PAD_X = 70;
   const drawW = W - PAD_X * 2;
