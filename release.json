@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.52.0",
-  "released_at": "2026-06-01T22:42:57Z",
-  "notes": "3c1b2a6 ui: shine sweep animation on WhatsApp button hover"
+  "version": "v1.53.0",
+  "released_at": "2026-06-01T22:45:02Z",
+  "notes": "9dd80da fix(backend): add from_attributes to LogoOut schema — fixes 500 on GET /api/admin/logos"
 }
