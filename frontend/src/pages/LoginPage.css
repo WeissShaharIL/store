@@ -74,6 +74,7 @@
 }
 
 .login-btn {
+  width: 100%;
   background: #ffffff;
   color: #0d0d0f;
   border: none;

@@ -110,9 +110,15 @@ def list_orders(
 
 @router.post("", response_model=OrderOut, status_code=201)
 def create_order(payload: OrderCreate, request: Request, db: Session = Depends(get_db)):
-    lead = db.get(Lead, payload.lead_id)
+    # Lock the lead row so concurrent requests for the same lead are serialised.
+    lead = db.query(Lead).filter(Lead.id == payload.lead_id).with_for_update().first()
     if lead is None:
         raise HTTPException(status_code=404, detail="פנייה לא נמצאה")
+
+    # Guard: one order per lead.
+    existing = db.query(ClosetOrder).filter(ClosetOrder.lead_id == payload.lead_id).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="כבר קיימת הזמנה עבור פנייה זו")
 
     # Best-effort total: sum displaySalePrice / snapshot.priceEstimate per item.
     total = None
