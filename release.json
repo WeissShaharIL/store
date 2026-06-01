@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.45.0",
-  "released_at": "2026-06-01T22:05:26Z",
-  "notes": "72a0916 feat(landing): enhanced closet animation — drawer, door open/close, color cycling, 4th shelf, 14s loop"
+  "version": "v1.46.0",
+  "released_at": "2026-06-01T22:10:21Z",
+  "notes": "340c0c6 ui(landing): revert to original animation + add door slide effect from v1.45"
 }
