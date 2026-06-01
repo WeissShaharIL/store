@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.15.0",
-  "released_at": "2026-05-31T22:26:24Z",
-  "notes": "ba5e00b fix(release): fetch tags before computing next version to avoid duplicate tag on consecutive releases\nd44c355 fix(test-remote): source nvm before running npm in non-interactive SSH session"
+  "version": "v1.16.0",
+  "released_at": "2026-06-01T14:27:57Z",
+  "notes": "ce79fc4 ui(closet-builder): style variant-tab buttons as ghost pills; fix(test-remote): use system Chrome on Ubuntu 26.04"
 }
