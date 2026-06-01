@@ -317,16 +317,19 @@ const contactRef = useRef(null);
             <article className="landing-category-card landing-category-card--design">
               <div className="design-preview-anim" aria-hidden="true">
                 <div className="dpa__closet">
+                  {/* Left panel */}
                   <div className="dpa__panel dpa__panel--l">
                     <div className="dpa__shelf dpa__shelf--1" />
                     <div className="dpa__shelf dpa__shelf--2" />
                     <div className="dpa__shelf dpa__shelf--3" />
+                    <div className="dpa__color-bg" />
+                    <div className="dpa__door dpa__door--l" />
                   </div>
                   <div className="dpa__divider" />
+                  {/* Right panel */}
                   <div className="dpa__panel dpa__panel--r">
                     <div className="dpa__rod" />
-                    <div className="dpa__color-fill" />
-                    <div className="dpa__door" />
+                    <div className="dpa__door dpa__door--r" />
                   </div>
                 </div>
                 <div className="dpa__palette">

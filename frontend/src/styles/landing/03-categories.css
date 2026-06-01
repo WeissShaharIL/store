@@ -136,7 +136,17 @@
 }
 .landing-category-card--design h3 { margin-top: 0; }
 
-/* ── Closet design preview animation ───────────────────────────────────────── */
+/* ── Closet design preview animation — 18s story loop ────────────────────────
+   0-5%  (0-0.9s): box appears
+   5-18% (0.9-3.2s): doors slide OPEN (left→right, right→left)
+   18-38%(3.2-6.8s): shelves added inside
+   38-52%(6.8-9.4s): doors slide CLOSED
+   52-62%(9.4-11.2s): door color changes (palette selects)
+   62-72%(11.2-13s): doors slide OPEN again
+   72-82%(13-14.8s): 2 shelves removed
+   82-92%(14.8-16.6s): doors CLOSE
+   92-100%(16.6-18s): fade out → loop
+*/
 .design-preview-anim {
   display: flex;
   flex-direction: column;
@@ -145,54 +155,63 @@
   padding: var(--space-4) 0 var(--space-2);
 }
 
-/* Cabinet box */
 .dpa__closet {
   display: flex;
-  width: 110px;
-  height: 88px;
+  width: 114px;
+  height: 90px;
   border: 1.5px solid rgba(255,255,255,0.22);
   border-radius: 3px;
   overflow: hidden;
   background: rgba(0,0,0,0.25);
-  animation: dpa-box-in 0.5s ease forwards;
+  animation: dpa-box-in 0.6s ease forwards;
 }
 @keyframes dpa-box-in {
-  from { opacity: 0; transform: scaleY(0.6); }
+  from { opacity: 0; transform: scaleY(0.5); }
   to   { opacity: 1; transform: scaleY(1); }
 }
 
-/* Panels */
 .dpa__panel { position: relative; flex: 1; overflow: hidden; }
-.dpa__panel--l { flex: 1.2; }
-.dpa__panel--r { flex: 0.8; }
+.dpa__panel--l { flex: 1.25; }
+.dpa__panel--r { flex: 0.85; }
+.dpa__divider  { width: 1.5px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
 
-/* Vertical divider */
-.dpa__divider {
-  width: 1.5px;
-  background: rgba(255,255,255,0.2);
-  flex-shrink: 0;
-}
-
-/* Shelves — slide in from left */
+/* ── Shelves ── */
 .dpa__shelf {
   position: absolute;
   left: 4px; right: 4px;
   height: 1.5px;
-  background: rgba(139,111,71,0.85);
+  background: rgba(139,111,71,0.9);
   border-radius: 1px;
-  transform-origin: left;
-  transform: scaleX(0);
-  opacity: 0;
 }
-.dpa__shelf--1 { top: 28%; animation: dpa-shelf 0.4s 0.6s ease forwards; }
-.dpa__shelf--2 { top: 54%; animation: dpa-shelf 0.4s 1.0s ease forwards; }
-.dpa__shelf--3 { top: 76%; animation: dpa-shelf 0.4s 1.4s ease forwards; }
-@keyframes dpa-shelf {
-  from { transform: scaleX(0); opacity: 0; }
-  to   { transform: scaleX(1); opacity: 1; }
+/* shelf-1: added at 18%, removed at 72% */
+.dpa__shelf--1 { top: 28%; animation: dpa-shelf-story 18s ease infinite; }
+@keyframes dpa-shelf-story {
+  0%,17%  { opacity:0; transform:scaleX(0); transform-origin:right; }
+  22%     { opacity:1; transform:scaleX(1); }
+  70%     { opacity:1; }
+  75%     { opacity:0; }
+  100%    { opacity:0; }
+}
+/* shelf-2: added at 24%, removed at 77% */
+.dpa__shelf--2 { top: 54%; animation: dpa-shelf2-story 18s ease infinite; }
+@keyframes dpa-shelf2-story {
+  0%,23%  { opacity:0; transform:scaleX(0); transform-origin:right; }
+  28%     { opacity:1; transform:scaleX(1); }
+  74%     { opacity:1; }
+  79%     { opacity:0; }
+  100%    { opacity:0; }
+}
+/* shelf-3: added at 30%, stays */
+.dpa__shelf--3 { top: 76%; animation: dpa-shelf3-story 18s ease infinite; }
+@keyframes dpa-shelf3-story {
+  0%,29%  { opacity:0; transform:scaleX(0); transform-origin:right; }
+  34%     { opacity:1; transform:scaleX(1); }
+  92%     { opacity:1; }
+  96%     { opacity:0; }
+  100%    { opacity:0; }
 }
 
-/* Hanging rod in right panel */
+/* ── Rod (right panel, appears when door opens) ── */
 .dpa__rod {
   position: absolute;
   left: 5px; right: 5px;
@@ -200,96 +219,146 @@
   height: 2px;
   border-radius: 2px;
   background: rgba(154,154,159,0.75);
-  opacity: 0;
-  animation: dpa-fade-in 0.4s 1.7s ease forwards;
+  animation: dpa-rod-story 18s ease infinite;
 }
 .dpa__rod::before {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 2px;
-  width: 1px;
-  height: 18px;
+  left: 50%; top: 2px;
+  width: 1px; height: 20px;
   background: rgba(154,154,159,0.4);
   transform: translateX(-50%);
 }
+@keyframes dpa-rod-story {
+  0%,17%  { opacity: 0; }
+  20%     { opacity: 1; }
+  92%     { opacity: 1; }
+  96%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
 
-/* Color fill cycling in right panel */
-.dpa__color-fill {
+/* ── Color background on left panel — changes while doors are closed ── */
+.dpa__color-bg {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  animation: dpa-color-cycle 6s 2.2s ease infinite;
+  pointer-events: none;
+  animation: dpa-color-story 18s ease infinite;
 }
-@keyframes dpa-color-cycle {
-  0%   { background: rgba(210,180,140,0.18); opacity: 0; }
-  8%   { opacity: 1; }
-  25%  { background: rgba(210,180,140,0.18); }
-  33%  { background: rgba(200,200,210,0.22); }
-  50%  { background: rgba(200,200,210,0.22); }
-  58%  { background: rgba(60,60,80,0.35);  }
-  75%  { background: rgba(60,60,80,0.35); opacity: 1; }
-  90%  { opacity: 0; }
-  100% { opacity: 0; }
+@keyframes dpa-color-story {
+  0%,51%  { opacity: 0; background: rgba(210,180,140,0.18); }
+  55%     { opacity: 1; background: rgba(210,180,140,0.18); }   /* warm wood */
+  59%     { background: rgba(200,200,215,0.22); }               /* cool grey */
+  63%     { background: rgba(55,60,80,0.35); }                  /* dark */
+  67%     { opacity: 1; }
+  70%     { opacity: 0; }
+  100%    { opacity: 0; }
 }
 
-/* Door panel — slides in on right side, swings open then closed */
-.dpa__door {
+/* ── LEFT DOOR — slides right to open, slides back to close ── */
+.dpa__door--l {
   position: absolute;
-  top: 0; bottom: 0; right: 0;
-  width: 100%;
-  background: rgba(255,255,255,0.06);
-  border-left: 1.5px solid rgba(255,255,255,0.2);
-  transform-origin: right;
-  opacity: 0;
-  animation: dpa-door 6s 2.2s ease infinite;
+  inset: 0;
+  background: rgba(255,255,255,0.07);
+  border-right: 1.5px solid rgba(255,255,255,0.22);
+  transform: translateX(0%);
+  animation: dpa-door-l 18s ease infinite;
 }
-.dpa__door::after {
+.dpa__door--l::after {
   content: "";
   position: absolute;
-  left: 4px; top: 50%;
+  right: 6px; top: 50%;
   transform: translateY(-50%);
-  width: 3px; height: 10px;
-  background: rgba(255,255,255,0.28);
+  width: 3px; height: 12px;
+  background: rgba(255,255,255,0.3);
   border-radius: 2px;
 }
-@keyframes dpa-door {
-  0%,8%  { opacity: 0; transform: scaleX(1); }
-  14%    { opacity: 1; transform: scaleX(1); }       /* closed */
-  32%    { opacity: 1; transform: scaleX(1); }
-  42%    { opacity: 0.5; transform: scaleX(0.2); }   /* swings open */
-  58%    { opacity: 0.5; transform: scaleX(0.2); }   /* stays open */
-  68%    { opacity: 1; transform: scaleX(1); }        /* closes */
-  80%    { opacity: 1; }
-  90%    { opacity: 0; }
-  100%   { opacity: 0; }
+@keyframes dpa-door-l {
+  0%      { opacity: 0; transform: translateX(0%); }
+  4%      { opacity: 1; transform: translateX(0%); }   /* door appears, closed */
+  7%      { opacity: 1; transform: translateX(0%); }
+  18%     { opacity: 1; transform: translateX(112%); }  /* OPEN — slid right */
+  50%     { opacity: 1; transform: translateX(112%); }  /* stays open */
+  60%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
+  65%     { opacity: 1; transform: translateX(0%); background: rgba(210,180,140,0.18); } /* color 1 */
+  59%     { background: rgba(200,200,215,0.22); }       /* color 2 */
+  63%     { background: rgba(55,60,80,0.35); }          /* color 3 */
+  68%     { opacity: 1; transform: translateX(0%); background: rgba(255,255,255,0.07); }
+  72%     { opacity: 1; transform: translateX(112%); }  /* OPEN again */
+  84%     { opacity: 1; transform: translateX(112%); }
+  92%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
+  96%     { opacity: 0; }
+  100%    { opacity: 0; }
 }
 
-/* Color palette dots */
+/* ── RIGHT DOOR — slides left to open ── */
+.dpa__door--r {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.07);
+  border-left: 1.5px solid rgba(255,255,255,0.22);
+  transform: translateX(0%);
+  animation: dpa-door-r 18s ease infinite;
+}
+.dpa__door--r::after {
+  content: "";
+  position: absolute;
+  left: 6px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 12px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+}
+@keyframes dpa-door-r {
+  0%      { opacity: 0; transform: translateX(0%); }
+  4%      { opacity: 1; transform: translateX(0%); }
+  7%      { opacity: 1; transform: translateX(0%); }
+  18%     { opacity: 1; transform: translateX(-112%); } /* OPEN — slid left */
+  50%     { opacity: 1; transform: translateX(-112%); }
+  60%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
+  68%     { opacity: 1; transform: translateX(0%); }
+  72%     { opacity: 1; transform: translateX(-112%); } /* OPEN again */
+  84%     { opacity: 1; transform: translateX(-112%); }
+  92%     { opacity: 1; transform: translateX(0%); }
+  96%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
+
+/* ── Palette ── */
 .dpa__palette {
   display: flex;
   gap: 7px;
-  opacity: 0;
-  animation: dpa-fade-in 0.4s 2.0s ease forwards;
+  animation: dpa-palette-story 18s ease infinite;
 }
-@keyframes dpa-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes dpa-palette-story {
+  0%,51% { opacity: 0; }
+  55%    { opacity: 1; }
+  92%    { opacity: 1; }
+  97%    { opacity: 0; }
+  100%   { opacity: 0; }
 }
 .dpa__dot {
   width: 12px; height: 12px;
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.15);
-  transition: border-color 0.3s ease;
 }
-.dpa__dot--1 { background: #d2b48c; animation: dpa-dot-select 6s 2.2s ease infinite; }
-.dpa__dot--2 { background: #c8c8d2; animation: dpa-dot-select 6s 4.2s ease infinite; }
-.dpa__dot--3 { background: #3c3c50; }
+.dpa__dot--1 { background: #d2b48c; animation: dpa-d1 18s ease infinite; }
+.dpa__dot--2 { background: #c8c8d2; animation: dpa-d2 18s ease infinite; }
+.dpa__dot--3 { background: #3c3c50; animation: dpa-d3 18s ease infinite; }
 .dpa__dot--4 { background: #8b6f47; }
-@keyframes dpa-dot-select {
-  0%, 100% { border-color: rgba(255,255,255,0.15); transform: scale(1); }
-  10%, 40% { border-color: rgba(255,255,255,0.7);  transform: scale(1.25); }
-  55%       { border-color: rgba(255,255,255,0.15); transform: scale(1); }
+@keyframes dpa-d1 {
+  0%,54%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  57%,61% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
+  64%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
+}
+@keyframes dpa-d2 {
+  0%,59%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  62%,65% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
+  68%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
+}
+@keyframes dpa-d3 {
+  0%,64%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  67%,70% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
+  73%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
 }
 /* Category card CTA: small frosted-glass pill with subtle blue aurora.
    This is the original reference design (restored from the pre-refactor
