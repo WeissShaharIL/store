@@ -43,13 +43,23 @@ export function BasicsEditor({ config, setConfig }) {
         step={50}
         onChange={(v) => setConfig(withClone(config, (d) => { d.basePrice = v; }))}
       />
-      <label className="field field--small">
+      <div className="field field--small">
         <span>סוג ארון</span>
-        <select value={kind} onChange={(e) => setKind(e.target.value)}>
-          <option value="hinged">צירים</option>
-          <option value="sliding">הזזה</option>
-        </select>
-      </label>
+        <div className="closet-builder__door-vis" role="radiogroup" aria-label="סוג ארון">
+          {[{ value: "hinged", label: "צירים" }, { value: "sliding", label: "הזזה" }].map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={kind === value}
+              className={"closet-builder__door-vis-btn" + (kind === value ? " closet-builder__door-vis-btn--active" : "")}
+              onClick={() => setKind(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
