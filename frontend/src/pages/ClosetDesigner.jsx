@@ -43,9 +43,9 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const saved = useMemo(() => loadDesignerState(item.id), [item.id]);
 
   const c = cfg.constraints ?? {};
-  const widthC = c.width ?? { min: nDoors * 40, max: nDoors * 150, step: 5 };
-  const heightC = c.height ?? { min: 100, max: 300, step: 5 };
-  const depthC = c.depth ?? { min: 30, max: 100, step: 5 };
+  const widthC  = { min: c.width?.min  ?? nDoors * 40,  max: c.width?.max  ?? nDoors * 150, step: c.width?.step  ?? 5 };
+  const heightC = { min: c.height?.min ?? 100,           max: c.height?.max ?? 300,          step: c.height?.step ?? 5 };
+  const depthC  = { min: c.depth?.min  ?? 30,            max: c.depth?.max  ?? 100,           step: c.depth?.step  ?? 5 };
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
   const [customDims, setCustomDims] = useState(saved?.customDims ?? {
