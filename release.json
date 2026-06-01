@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.26.0",
-  "released_at": "2026-06-01T17:55:22Z",
-  "notes": "4f9f829 fix(interior-plan-png): increase PAD_TOP so compartment labels don\u0027t overlap title"
+  "version": "v1.27.0",
+  "released_at": "2026-06-01T18:18:33Z",
+  "notes": "38d0f1d ui(cart): remove arrow from empty cart showroom link"
 }
