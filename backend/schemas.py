@@ -242,6 +242,9 @@ class LogoOut(BaseModel):
     is_active: bool
     created_at: datetime
 
+    class Config:
+        from_attributes = True
+
 
 class HeroBannerOut(BaseModel):
     id: int
