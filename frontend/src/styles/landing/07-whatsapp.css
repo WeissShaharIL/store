@@ -11,10 +11,34 @@
   background: #25d366;
   color: #ffffff;
   border-radius: 999px;
+  overflow: hidden;
   box-shadow:
     0 8px 16px -4px rgba(37, 211, 102, 0.45),
     0 16px 40px -12px rgba(0, 0, 0, 0.25);
   transition: transform 180ms ease, box-shadow 180ms ease;
+}
+/* Shine sweep on hover */
+.landing-whatsapp::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -60%;
+  width: 40%;
+  height: 140%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.45) 50%,
+    transparent 70%
+  );
+  transform: skewX(-15deg) translateX(0);
+  opacity: 0;
+  transition: none;
+}
+.landing-whatsapp:hover::after {
+  opacity: 1;
+  transform: skewX(-15deg) translateX(340%);
+  transition: transform 480ms ease, opacity 80ms ease;
 }
 .landing-whatsapp:hover {
   transform: translateY(-2px) scale(1.04);
