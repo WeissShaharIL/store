@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.40.0",
-  "released_at": "2026-06-01T21:49:18Z",
-  "notes": "92bd315 ui(admin images): more dramatic lightbox zoom animation (scale 0.15→1 over 500ms)\n5b39708 ui(admin): remove arrow from confirm dialog אישור button"
+  "version": "v1.41.0",
+  "released_at": "2026-06-01T21:52:21Z",
+  "notes": "ea1a5ab fix(admin landing): settings-section btn--primary = neutral pill, not green; pituch-tab keeps green\n11d0d14 ui: remove לכל הדגמים arrow; fix nav brand-mark size to 13px; password show/hide toggle on login"
 }
