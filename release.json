@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.49.0",
-  "released_at": "2026-06-01T22:33:46Z",
-  "notes": "837158a feat: edit cart closet; fix FormaLogo always show ארונות; enlarge animation; remove logo upload button"
+  "version": "v1.50.0",
+  "released_at": "2026-06-01T22:37:10Z",
+  "notes": "a89b148 fix: CartPage JSX fragment; feat: global floating WhatsApp button across all pages"
 }
