@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.36.0",
-  "released_at": "2026-06-01T21:25:34Z",
-  "notes": "a45e141 fix: prevent duplicate orders per lead (with_for_update + 409 guard); center login button"
+  "version": "v1.37.0",
+  "released_at": "2026-06-01T21:29:01Z",
+  "notes": "20468cc fix(login): override inline-flex with display:block so כניסה button fills full width"
 }
