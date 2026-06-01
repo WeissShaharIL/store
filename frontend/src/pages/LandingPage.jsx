@@ -222,11 +222,7 @@ const contactRef = useRef(null);
       <header className="landing-nav">
         <div className="landing-nav__inner">
           <Link to="/" className="landing-nav__brand" aria-label={brandName}>
-            {logo ? (
-              <img src={`/uploads/${logo.image_path}`} alt={brandName} className="landing-nav__brand-logo" />
-            ) : (
-              <FormaLogo />
-            )}
+            <FormaLogo />
           </Link>
 
           <nav className="landing-nav__links" aria-label="ניווט ראשי">
