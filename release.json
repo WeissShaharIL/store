@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.28.0",
-  "released_at": "2026-06-01T18:20:28Z",
-  "notes": "59a067b ui(admin): apply pill button style to settings-section (landing page upload buttons)"
+  "version": "v1.29.0",
+  "released_at": "2026-06-01T18:22:10Z",
+  "notes": "3b6e221 fix(landing): increase selector specificity so reveal font-size beats buttons.css override"
 }
