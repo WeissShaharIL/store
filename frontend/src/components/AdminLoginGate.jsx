@@ -7,6 +7,7 @@ import "../pages/LoginPage.css";
 export default function AdminLoginGate({ children }) {
   const { user, login } = useAuth();
   const [form, setForm] = useState({ customer_id: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -49,13 +50,23 @@ export default function AdminLoginGate({ children }) {
           </label>
           <label>
             <span>סיסמה</span>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              autoComplete="current-password"
-              required
-            />
+            <div className="login-password-wrap">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                className="login-password-toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+              >
+                {showPassword ? "🙈" : "👁"}
+              </button>
+            </div>
           </label>
           {error && <p className="login-error">{error}</p>}
           <button type="submit" disabled={loading} className="login-btn">

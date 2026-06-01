@@ -125,8 +125,7 @@
   background: rgba(255, 255, 255, 0.09);
   color: #fff;
 }
-.admin .pituch-tab__content .btn--primary,
-.admin .settings-section .btn--primary {
+.admin .pituch-tab__content .btn--primary {
   background: rgba(34, 197, 94, 0.15);
   border-color: rgba(34, 197, 94, 0.45);
   color: rgb(134, 239, 172);
@@ -137,11 +136,19 @@
 .admin .pituch-tab__content .btn--primary::after,
 .admin .settings-section .btn--primary::after,
 .admin .confirm-actions__ok::after { display: none; }
-.admin .pituch-tab__content .btn--primary:hover:not(:disabled),
-.admin .settings-section .btn--primary:hover:not(:disabled) {
+.admin .pituch-tab__content .btn--primary:hover:not(:disabled) {
   background: rgba(34, 197, 94, 0.22);
   border-color: rgba(34, 197, 94, 0.65);
   color: rgb(187, 247, 208);
+}
+/* settings-section primary = neutral pill, not green */
+.admin .settings-section .btn--primary {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(242, 242, 244, 0.85);
+}
+.admin .settings-section .btn--primary:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.38);
+  color: #fff;
 }
 
 /* Pressed feedback */
