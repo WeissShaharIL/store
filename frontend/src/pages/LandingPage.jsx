@@ -364,7 +364,7 @@ const contactRef = useRef(null);
             </div>
             <div className="landing-gallery__cta-row">
               <Link to="/showroom" className="btn btn--primary">
-                לכל הדגמים <ArrowRight />
+                לכל הדגמים
               </Link>
             </div>
           </section>
