@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.37.0",
-  "released_at": "2026-06-01T21:29:01Z",
-  "notes": "20468cc fix(login): override inline-flex with display:block so כניסה button fills full width"
+  "version": "v1.38.0",
+  "released_at": "2026-06-01T21:42:40Z",
+  "notes": "ff29a13 fix(login): higher-specificity selector to override inline-flex on כניסה button"
 }
