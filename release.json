@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.35.0",
-  "released_at": "2026-06-01T21:23:40Z",
-  "notes": "9c69886 fix(admin images): move lightbox click to thumb-wrap; overlay buttons stop propagation"
+  "version": "v1.36.0",
+  "released_at": "2026-06-01T21:25:34Z",
+  "notes": "a45e141 fix: prevent duplicate orders per lead (with_for_update + 409 guard); center login button"
 }
