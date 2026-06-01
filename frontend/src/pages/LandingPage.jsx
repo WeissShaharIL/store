@@ -315,6 +315,26 @@ const contactRef = useRef(null);
                hero CTA band) — opens the from-scratch designer, same action as
                before. Grid now reads: הזזה · פתיחה · עצבו ארון משלכם. */}
             <article className="landing-category-card landing-category-card--design">
+              <div className="design-preview-anim" aria-hidden="true">
+                <div className="dpa__closet">
+                  <div className="dpa__panel dpa__panel--l">
+                    <div className="dpa__shelf dpa__shelf--1" />
+                    <div className="dpa__shelf dpa__shelf--2" />
+                    <div className="dpa__shelf dpa__shelf--3" />
+                  </div>
+                  <div className="dpa__divider" />
+                  <div className="dpa__panel dpa__panel--r">
+                    <div className="dpa__rod" />
+                    <div className="dpa__color-fill" />
+                  </div>
+                </div>
+                <div className="dpa__palette">
+                  <div className="dpa__dot dpa__dot--1" />
+                  <div className="dpa__dot dpa__dot--2" />
+                  <div className="dpa__dot dpa__dot--3" />
+                  <div className="dpa__dot dpa__dot--4" />
+                </div>
+              </div>
               <h3>עצבו ארון משלכם</h3>
               <p>בנו ארון מאפס בכלי העיצוב התלת-ממדי — מידות, דלתות, צבעים ופנים, בדיוק כרצונכם.</p>
               <button
