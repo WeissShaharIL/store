@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.16.0",
-  "released_at": "2026-06-01T14:27:57Z",
-  "notes": "ce79fc4 ui(closet-builder): style variant-tab buttons as ghost pills; fix(test-remote): use system Chrome on Ubuntu 26.04"
+  "version": "v1.17.0",
+  "released_at": "2026-06-01T14:31:45Z",
+  "notes": "94fd34f fix(test-remote): remove sudo Chrome install (requires interactive terminal); print setup instructions instead"
 }
