@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.34.0",
-  "released_at": "2026-06-01T21:13:28Z",
-  "notes": "412cf2d ui(admin images): smooth scale+fade animation on lightbox open"
+  "version": "v1.35.0",
+  "released_at": "2026-06-01T21:23:40Z",
+  "notes": "9c69886 fix(admin images): move lightbox click to thumb-wrap; overlay buttons stop propagation"
 }
