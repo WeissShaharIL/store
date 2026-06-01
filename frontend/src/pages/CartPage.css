@@ -146,6 +146,18 @@
   border-radius: 4px;
 }
 .cart-item__remove:hover { color: #f87171; background: rgba(248, 113, 113, 0.08); }
+.cart-item__edit {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.85rem;
+  padding: 0.3rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 150ms ease, background 150ms ease;
+  border-radius: 4px;
+}
+.cart-item__edit:hover { color: rgba(255, 255, 255, 0.8); background: rgba(255, 255, 255, 0.07); }
 
 /* Footer */
 .cart-footer {

@@ -30,6 +30,10 @@ export function removeFromCart(itemId) {
   writeCart(getCart().filter((i) => i.id !== itemId));
 }
 
+export function updateCartItem(itemId, patch) {
+  writeCart(getCart().map((i) => i.id === itemId ? { ...i, ...patch } : i));
+}
+
 export function clearCart() {
   writeCart([]);
 }

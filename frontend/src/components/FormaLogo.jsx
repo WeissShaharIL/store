@@ -1,22 +1,12 @@
 export default function FormaLogo({ className, style }) {
   return (
     <span
-      className={className}
-      aria-label="FORMA"
-      style={{
-        fontFamily: '"Manrope", "Inter", system-ui, sans-serif',
-        fontWeight: 700,
-        fontSize: "13px",
-        letterSpacing: "0.32em",
-        textTransform: "uppercase",
-        lineHeight: 1,
-        display: "block",
-        whiteSpace: "nowrap",
-        color: "#ffffff",
-        ...style,
-      }}
+      className={["landing-nav__brand", className].filter(Boolean).join(" ")}
+      aria-label="FORMA ארונות"
+      style={{ textDecoration: "none", color: "#ffffff", ...style }}
     >
-      FORMA
+      <span className="landing-nav__brand-mark">Forma</span>
+      <span className="landing-nav__brand-sub">ארונות</span>
     </span>
   );
 }
