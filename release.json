@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.51.0",
-  "released_at": "2026-06-01T22:41:49Z",
-  "notes": "55f449d ui(admin login): show only FORMA without ארונות subtitle"
+  "version": "v1.52.0",
+  "released_at": "2026-06-01T22:42:57Z",
+  "notes": "3c1b2a6 ui: shine sweep animation on WhatsApp button hover"
 }
