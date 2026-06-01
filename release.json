@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.24.0",
-  "released_at": "2026-06-01T17:13:01Z",
-  "notes": "4ebf7f4 ui: remove unwanted arrows — landing-settings btn--primary, login-btn, login back link"
+  "version": "v1.25.0",
+  "released_at": "2026-06-01T17:50:15Z",
+  "notes": "de137c4 ui(landing): match reveal font size to section h2; remove arrow from category card CTA"
 }
