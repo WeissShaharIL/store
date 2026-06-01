@@ -14,7 +14,7 @@ function CartNav() {
     <header className="landing-nav cart-nav">
       <div className="landing-nav__inner">
         <Link to="/" className="landing-nav__brand">
-          <span className="landing-nav__brand-mark">Store</span>
+          <span className="landing-nav__brand-mark">Forma</span>
           <span className="landing-nav__brand-sub">ארונות</span>
         </Link>
         <nav className="landing-nav__links" aria-label="ניווט ראשי">
