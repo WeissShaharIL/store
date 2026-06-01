@@ -143,69 +143,69 @@ function DoorCard({
             set at the top level (BasicsEditor). track / hingeSide
             now read from the closet's kind. */}
         {door.kind === "sliding" && (
-          <label className="field field--small">
+          <div className="field field--small">
             <span>מסילה</span>
-            <select
-              value={door.track ?? "back"}
-              onChange={(e) => setDoor((d) => { d.track = e.target.value; })}
-            >
-              <option value="back">אחורית</option>
-              <option value="front">קדמית</option>
-            </select>
-          </label>
+            <div className="closet-builder__door-vis" role="radiogroup" aria-label="מסילה">
+              {[{v:"back",l:"אחורית"},{v:"front",l:"קדמית"}].map(({v,l}) => (
+                <button key={v} type="button" role="radio" aria-checked={(door.track ?? "back") === v}
+                  className={"closet-builder__door-vis-btn" + ((door.track ?? "back") === v ? " closet-builder__door-vis-btn--active" : "")}
+                  onClick={() => setDoor((d) => { d.track = v; })}
+                >{l}</button>
+              ))}
+            </div>
+          </div>
         )}
         {door.kind === "hinged" && (
-          <label className="field field--small">
+          <div className="field field--small">
             <span>כיוון פתיחה</span>
-            <select
-              value={door.hingeSide ?? "left"}
-              onChange={(e) => setDoor((d) => { d.hingeSide = e.target.value; })}
-            >
-              <option value="left">צירים בשמאל</option>
-              <option value="right">צירים בימין</option>
-            </select>
-          </label>
+            <div className="closet-builder__door-vis" role="radiogroup" aria-label="כיוון פתיחה">
+              {[{v:"left",l:"צירים בשמאל"},{v:"right",l:"צירים בימין"}].map(({v,l}) => (
+                <button key={v} type="button" role="radio" aria-checked={(door.hingeSide ?? "left") === v}
+                  className={"closet-builder__door-vis-btn" + ((door.hingeSide ?? "left") === v ? " closet-builder__door-vis-btn--active" : "")}
+                  onClick={() => setDoor((d) => { d.hingeSide = v; })}
+                >{l}</button>
+              ))}
+            </div>
+          </div>
         )}
-        <label className="field field--small">
+        <div className="field field--small">
           <span>קיצור</span>
-          <select
-            value={door.drawerStack ?? 0}
-            onChange={(e) => setDoor((d) => { d.drawerStack = Number(e.target.value); })}
-            title="קיצור הדלת והוספת מגירות בתחתית"
-          >
-            <option value={0}>ללא</option>
-            <option value={1}>+ מגירה</option>
-            <option value={2}>+ 2 מגירות</option>
-          </select>
-        </label>
+          <div className="closet-builder__door-vis" role="radiogroup" aria-label="קיצור">
+            {[{v:0,l:"ללא"},{v:1,l:"+ מגירה"},{v:2,l:"+ 2 מגירות"}].map(({v,l}) => (
+              <button key={v} type="button" role="radio" aria-checked={(door.drawerStack ?? 0) === v}
+                className={"closet-builder__door-vis-btn" + ((door.drawerStack ?? 0) === v ? " closet-builder__door-vis-btn--active" : "")}
+                onClick={() => setDoor((d) => { d.drawerStack = v; })}
+              >{l}</button>
+            ))}
+          </div>
+        </div>
         {(door.drawerStack ?? 0) > 0 && (
-          <label className="field field--small">
+          <div className="field field--small">
             <span>פיצול מגירות</span>
-            <select
-              value={door.drawerSplit ? "yes" : "no"}
-              onChange={(e) => setDoor((d) => { d.drawerSplit = e.target.value === "yes"; })}
-              title="חלוקת כל שורת מגירות לשתי מגירות בצד-יד-צד"
-            >
-              <option value="no">ללא</option>
-              <option value="yes">לשניים</option>
-            </select>
-          </label>
+            <div className="closet-builder__door-vis" role="radiogroup" aria-label="פיצול מגירות">
+              {[{v:false,l:"ללא"},{v:true,l:"לשניים"}].map(({v,l}) => (
+                <button key={String(v)} type="button" role="radio" aria-checked={!!door.drawerSplit === v}
+                  className={"closet-builder__door-vis-btn" + (!!door.drawerSplit === v ? " closet-builder__door-vis-btn--active" : "")}
+                  onClick={() => setDoor((d) => { d.drawerSplit = v; })}
+                >{l}</button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
       <div className="closet-builder__row">
-        <label className="field field--small">
+        <div className="field field--small">
           <span>חומר ברירת מחדל</span>
-          <select
-            value={door.defaultMaterial ?? "wood"}
-            onChange={(e) => setDoor((d) => { d.defaultMaterial = e.target.value; })}
-            title="החומר שמוצג בתצוגה. הלקוח יוכל לבחור אחר אחרת בעתיד."
-          >
+          <div className="closet-builder__door-vis" role="radiogroup" aria-label="חומר ברירת מחדל">
             {door.materialChoices.map((mc) => (
-              <option key={mc.id} value={mc.id}>{mc.label}</option>
+              <button key={mc.id} type="button" role="radio" aria-checked={(door.defaultMaterial ?? "wood") === mc.id}
+                className={"closet-builder__door-vis-btn" + ((door.defaultMaterial ?? "wood") === mc.id ? " closet-builder__door-vis-btn--active" : "")}
+                onClick={() => setDoor((d) => { d.defaultMaterial = mc.id; })}
+              >{mc.label}</button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
 
       {/* Compartment editor */}
