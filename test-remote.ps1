@@ -30,21 +30,19 @@ set -e
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# Install Google Chrome as the Chromium executable (works on any Ubuntu version)
-if ! command -v google-chrome-stable &>/dev/null; then
-  wget -qO- https://dl.google.com/linux/linux_signing_key.pub \
-    | gpg --dearmor \
-    | sudo tee /etc/apt/trusted.gpg.d/google-chrome.gpg > /dev/null
-  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
-    | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
-  sudo apt-get update -qq
-  sudo apt-get install -y google-chrome-stable
+CHROME=$(which google-chrome-stable 2>/dev/null || true)
+if [ -z "$CHROME" ]; then
+  echo "ERROR: google-chrome-stable not found. Run this once on the server:"
+  echo "  wget -qO- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google-chrome.gpg > /dev/null"
+  echo "  echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null"
+  echo "  sudo apt-get update -qq && sudo apt-get install -y google-chrome-stable"
+  exit 1
 fi
 
 cd code/store/frontend
 npm ci --prefer-offline
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$(which google-chrome-stable)
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$CHROME"
 npx playwright test
 '@
 
