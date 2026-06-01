@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.44.0",
-  "released_at": "2026-06-01T22:02:37Z",
-  "notes": "56b81db ui(login): style כניסה button as frosted-glass pill matching category card CTA"
+  "version": "v1.45.0",
+  "released_at": "2026-06-01T22:05:26Z",
+  "notes": "72a0916 feat(landing): enhanced closet animation — drawer, door open/close, color cycling, 4th shelf, 14s loop"
 }
