@@ -348,3 +348,5 @@
   justify-content: flex-end;
   margin-top: auto;
 }
+.admin .images-edit-panel .btn--primary::after,
+.admin .images-toolbar .btn--primary::after { display: none; }
