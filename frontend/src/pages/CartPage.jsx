@@ -169,7 +169,7 @@ export default function CartPage() {
           <div className="cart-empty">
             <p className="cart-empty__text">הסל ריק</p>
             <Link to="/showroom" className="cart-btn cart-btn--primary">
-              לתצוגת הארונות <ArrowRight />
+              לתצוגת הארונות
             </Link>
           </div>
         ) : (
