@@ -35,6 +35,9 @@ export default function ImagesTab() {
   const uploadRef = useRef(null);
 
   // Edit panel state
+  const [gridSize, setGridSize] = useState("md"); // "sm" | "md" | "lg"
+  const [lightboxFile, setLightboxFile] = useState(null);
+
   const [editingFile, setEditingFile] = useState(null); // file object being edited
   const [editName, setEditName] = useState("");
   const [editTags, setEditTags] = useState("");
@@ -337,6 +340,17 @@ export default function ImagesTab() {
       >
         <div className="images-toolbar">
           <h2 className="images-toolbar__title">{currentFolderName}</h2>
+          <div className="images-toolbar__size-toggle">
+            {[["sm","S"],["md","M"],["lg","L"]].map(([s,l]) => (
+              <button
+                key={s}
+                type="button"
+                className={"images-size-btn" + (gridSize === s ? " images-size-btn--active" : "")}
+                onClick={() => setGridSize(s)}
+                aria-label={s === "sm" ? "קטן" : s === "md" ? "בינוני" : "גדול"}
+              >{l}</button>
+            ))}
+          </div>
           <label className={"btn btn--primary btn--sm" + (uploading ? " btn--loading" : "")}>
             {uploading ? "מעלה..." : "+ העלה תמונה"}
             <input
@@ -357,7 +371,7 @@ export default function ImagesTab() {
         ) : files.length === 0 ? (
           <p className="images-empty">אין תמונות כאן עדיין</p>
         ) : (
-          <div className="images-grid">
+          <div className={"images-grid images-grid--" + gridSize}>
             {files.map((file) => (
               <div
                 key={file.id}
@@ -377,6 +391,8 @@ export default function ImagesTab() {
                     className="images-grid__thumb"
                     loading="lazy"
                     draggable={false}
+                    onClick={() => setLightboxFile(file)}
+                    style={{ cursor: "zoom-in" }}
                   />
                   <div className="images-grid__overlay">
                     <button
@@ -448,6 +464,24 @@ export default function ImagesTab() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightboxFile && (
+        <div
+          className="images-lightbox"
+          onClick={() => setLightboxFile(null)}
+          onKeyDown={(e) => e.key === "Escape" && setLightboxFile(null)}
+          tabIndex={-1}
+        >
+          <img
+            src={`/uploads/${lightboxFile.image_path}`}
+            alt={lightboxFile.display_name || lightboxFile.original_name || ""}
+            className="images-lightbox__img"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="images-lightbox__close" onClick={() => setLightboxFile(null)}>✕</button>
         </div>
       )}
 
