@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.31.0",
-  "released_at": "2026-06-01T18:41:47Z",
-  "notes": "7767ae5 ui(landing): remove section hover-reveal, keep plain הארונות שלנו heading"
+  "version": "v1.32.0",
+  "released_at": "2026-06-01T20:58:41Z",
+  "notes": "972b238 ui: rename brand from Store to Forma across all nav headers"
 }
