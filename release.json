@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.17.0",
-  "released_at": "2026-06-01T14:31:45Z",
-  "notes": "94fd34f fix(test-remote): remove sudo Chrome install (requires interactive terminal); print setup instructions instead"
+  "version": "v1.18.0",
+  "released_at": "2026-06-01T15:06:44Z",
+  "notes": "f3d2c14 fix(test-remote): use channel:chrome for system Chrome instead of executablePath override"
 }
