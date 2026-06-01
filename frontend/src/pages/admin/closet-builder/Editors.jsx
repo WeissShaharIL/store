@@ -282,14 +282,21 @@ export function AddOnsEditor({ config, setConfig }) {
             step={10}
             onChange={(v) => update(i, (x) => { x.price = v; })}
           />
-          <label className="field field--small">
+          <div className="field field--small">
             <span>אפקט</span>
-            <select value={a.effect} onChange={(e) => update(i, (x) => { x.effect = e.target.value; })}>
+            <div className="closet-builder__door-vis" role="radiogroup" aria-label="אפקט">
               {ADDON_EFFECTS.map((ef) => (
-                <option key={ef.value} value={ef.value}>{ef.label}</option>
+                <button
+                  key={ef.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={a.effect === ef.value}
+                  className={"closet-builder__door-vis-btn" + (a.effect === ef.value ? " closet-builder__door-vis-btn--active" : "")}
+                  onClick={() => update(i, (x) => { x.effect = ef.value; })}
+                >{ef.label}</button>
               ))}
-            </select>
-          </label>
+            </div>
+          </div>
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => remove(i)} title="הסר תוספת">
             <Trash />
           </button>
