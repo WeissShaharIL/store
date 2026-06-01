@@ -297,16 +297,26 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       const zip = new JSZip();
       const shots = [];
 
+      // Closed shot
       setOpenDoorIds([]);
+      setSlidingDoorsHidden(false);
       await delay(450);
       if (captureRef.current) {
         shots.push([`${name}-חזית-סגור.png`, captureRef.current(front)]);
       }
-      setOpenDoorIds(doorList.map((d) => d.id));
+      // "Open" shot — sliding closets: hide doors entirely; hinged: open them
+      if (hasSliding) {
+        setSlidingDoorsHidden(true);
+      } else {
+        setOpenDoorIds(doorList.map((d) => d.id));
+      }
       await delay(750);
       if (captureRef.current) {
         shots.push([`${name}-חזית-פתוח.png`, captureRef.current(front)]);
       }
+      // Restore state
+      setOpenDoorIds([]);
+      setSlidingDoorsHidden(false);
 
       for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
 
