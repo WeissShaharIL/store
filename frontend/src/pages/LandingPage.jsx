@@ -289,12 +289,7 @@ const contactRef = useRef(null);
 
         <section id="categories" data-scroll-section className="landing-scroll-section landing-section landing-categories">
           <header className="landing-section__head">
-            <div className="section-hover-title">
-              <h2 className="section-hover-title__h2 landing-section__title">הארונות שלנו</h2>
-              <Link to="/showroom" className="section-hover-title__reveal">
-                הצג
-              </Link>
-            </div>
+            <h2 className="landing-section__title">הארונות שלנו</h2>
             <p className="landing-section__sub">בחרו מדגם מוכן או עצבו ארון בדיוק לפי הצורך שלכם</p>
           </header>
           <div className="landing-category-grid">
