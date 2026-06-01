@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.25.0",
-  "released_at": "2026-06-01T17:50:15Z",
-  "notes": "de137c4 ui(landing): match reveal font size to section h2; remove arrow from category card CTA"
+  "version": "v1.26.0",
+  "released_at": "2026-06-01T17:55:22Z",
+  "notes": "4f9f829 fix(interior-plan-png): increase PAD_TOP so compartment labels don\u0027t overlap title"
 }
