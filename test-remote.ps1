@@ -42,7 +42,7 @@ fi
 cd code/store/frontend
 npm ci --prefer-offline
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$CHROME"
+export PLAYWRIGHT_USE_SYSTEM_CHROME=1
 npx playwright test
 '@
 

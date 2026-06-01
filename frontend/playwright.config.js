@@ -30,8 +30,11 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
-          ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+        // When PLAYWRIGHT_USE_SYSTEM_CHROME=1, use the system-installed Google
+        // Chrome instead of Playwright's bundled headless-shell (needed on OS
+        // versions Playwright doesn't yet bundle a headless-shell build for).
+        ...(process.env.PLAYWRIGHT_USE_SYSTEM_CHROME === "1"
+          ? { channel: "chrome" }
           : {}),
       },
     },
