@@ -384,25 +384,27 @@ export default function ImagesTab() {
                 }}
                 onDragEnd={() => { setDragFileId(null); setDragOverTarget(NO_DRAG); }}
               >
-                <div className="images-grid__thumb-wrap">
+                <div
+                  className="images-grid__thumb-wrap"
+                  onClick={() => setLightboxFile(file)}
+                  style={{ cursor: "zoom-in" }}
+                >
                   <img
                     src={`/uploads/${file.image_path}`}
                     alt={file.display_name || file.original_name || file.image_path}
                     className="images-grid__thumb"
                     loading="lazy"
                     draggable={false}
-                    onClick={() => setLightboxFile(file)}
-                    style={{ cursor: "zoom-in" }}
                   />
                   <div className="images-grid__overlay">
                     <button
                       className="images-grid__edit-btn"
-                      onClick={() => openEdit(file)}
+                      onClick={(e) => { e.stopPropagation(); openEdit(file); }}
                       title="ערוך פרטים"
                     >✏️</button>
                     <button
                       className="images-grid__del"
-                      onClick={() => handleDeleteFileConfirm(file.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDeleteFileConfirm(file.id); }}
                       title="מחק"
                     >×</button>
                   </div>
