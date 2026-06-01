@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.20.0",
-  "released_at": "2026-06-01T17:01:08Z",
-  "notes": "0955545 ui(closet-builder): replace סוג ארון select with pill radio buttons"
+  "version": "v1.21.0",
+  "released_at": "2026-06-01T17:04:27Z",
+  "notes": "a56088f ui(admin): custom number stepper (− input +); remove btn--primary arrow in images tab"
 }
