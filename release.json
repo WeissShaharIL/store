@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.19.0",
-  "released_at": "2026-06-01T16:26:01Z",
-  "notes": "f7c1691 ui(admin): green tint for btn--primary toggle state (מוכן/מכירה מתצוגה) — was indistinguishable from ghost"
+  "version": "v1.20.0",
+  "released_at": "2026-06-01T17:01:08Z",
+  "notes": "0955545 ui(closet-builder): replace סוג ארון select with pill radio buttons"
 }
