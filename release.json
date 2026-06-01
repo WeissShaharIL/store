@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.32.0",
-  "released_at": "2026-06-01T20:58:41Z",
-  "notes": "972b238 ui: rename brand from Store to Forma across all nav headers"
+  "version": "v1.33.0",
+  "released_at": "2026-06-01T21:02:02Z",
+  "notes": "7c296dd feat(admin images): S/M/L grid size toggle + click-to-enlarge lightbox"
 }
