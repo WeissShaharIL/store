@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.42.0",
-  "released_at": "2026-06-01T21:55:27Z",
-  "notes": "81f6da9 ui(closet-builder): replace אפקט select with pill radio buttons"
+  "version": "v1.43.0",
+  "released_at": "2026-06-01T21:59:17Z",
+  "notes": "48f1350 feat(landing): CSS closet design animation on design card; fix: SVG eye icon for password toggle"
 }
