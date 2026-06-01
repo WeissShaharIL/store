@@ -77,26 +77,6 @@ export default function SettingsTab() {
       </div>
       {error && <p className="tab-error">{error}</p>}
 
-      <section>
-        <div className="tab-toolbar" style={{ marginBottom: "0.75rem" }}>
-          <h3 style={{ margin: 0, fontSize: "0.95rem" }}>לוגו</h3>
-        </div>
-        <div className="palette-list">
-          {logos.map((l) => (
-            <div key={l.id} className="palette-row">
-              <img src={`/uploads/${l.image_path}`} alt={l.name} style={{ height: 32, objectFit: "contain" }} />
-              <span className="row-name">{l.name || l.image_path}</span>
-              {l.is_active && <span style={{ fontSize: "0.75rem", color: "#27ae60", fontWeight: 700 }}>פעיל</span>}
-              {!l.is_active && (
-                <button className="lead-action-btn" onClick={() => handleActivate(l.id)}>הפעל</button>
-              )}
-              {!l.is_active && (
-                <button className="row-delete-btn" onClick={() => handleDeleteLogo(l.id)}>✕</button>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
       <section className="settings-section">
         <div className="settings-section__head">
           <h3>שינוי סיסמה</h3>
