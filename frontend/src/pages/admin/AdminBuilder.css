@@ -117,6 +117,42 @@
   border-color: rgba(255, 255, 255, 0.30);
   color: rgba(242, 242, 244, 0.9);
 }
+
+/* ── Variant tabs (ברירת מחדל / variant 2 / …) ────────────────────────────── */
+.closet-builder__variant-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.closet-builder__variant-tab {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 5px 14px;
+  background: transparent;
+  color: rgba(242, 242, 244, 0.55);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+.closet-builder__variant-tab:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.closet-builder__variant-tab--active {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.30);
+  color: rgba(242, 242, 244, 0.9);
+}
+.closet-builder__variant-tab--add {
+  color: rgba(255, 255, 255, 0.25);
+  border-style: dashed;
+}
+.closet-builder__variant-tab--add:hover {
+  color: rgba(255, 255, 255, 0.7);
+  border-style: solid;
+}
 .closet-builder__image-preview {
   display: flex;
   flex-direction: column;
