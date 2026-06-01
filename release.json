@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.33.0",
-  "released_at": "2026-06-01T21:02:02Z",
-  "notes": "7c296dd feat(admin images): S/M/L grid size toggle + click-to-enlarge lightbox"
+  "version": "v1.34.0",
+  "released_at": "2026-06-01T21:13:28Z",
+  "notes": "412cf2d ui(admin images): smooth scale+fade animation on lightbox open"
 }
