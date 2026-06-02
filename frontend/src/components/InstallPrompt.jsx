@@ -54,6 +54,12 @@ export default function InstallPrompt() {
   const [ios, setIos] = useState(false);
 
   useEffect(() => {
+    if (visible) document.body.classList.add("pwa-install-visible");
+    else document.body.classList.remove("pwa-install-visible");
+    return () => document.body.classList.remove("pwa-install-visible");
+  }, [visible]);
+
+  useEffect(() => {
     if (isStandalone() || recentlyDismissed()) return;
 
     // Android / desktop: capture the install event when the browser offers it.
