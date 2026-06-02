@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.57.0",
-  "released_at": "2026-06-01T22:54:25Z",
-  "notes": "b2d730e ui(landing): always show FORMA ארונות text brand in nav instead of uploaded logo image"
+  "version": "v1.58.0",
+  "released_at": "2026-06-02T19:57:32Z",
+  "notes": "0332f25 chore: add ship skill for consistent deploy workflow across sessions"
 }
