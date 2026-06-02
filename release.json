@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.3",
-  "released_at": "2026-06-02T20:08:54Z",
-  "notes": "6684b3e hide edit button for display sale items using displaySaleId check"
+  "version": "v1.58.4",
+  "released_at": "2026-06-02T20:14:21Z",
+  "notes": "46baa68 add whatsapp_message setting to admin; shift floating button right"
 }
