@@ -299,15 +299,6 @@ export default function ComponentPricesTab() {
             </div>
           )}
 
-          <div className="cp-editor__row">
-            <label>סדר הצגה</label>
-            <input
-              type="number"
-              value={form.sort_order}
-              onChange={e => setForm(f => ({ ...f, sort_order: Number(e.target.value) }))}
-            />
-          </div>
-
           {error && <p className="tab-error">{error}</p>}
 
           <div className="cp-editor__actions">
