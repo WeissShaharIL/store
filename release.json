@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.11",
-  "released_at": "2026-06-02T20:55:39Z",
-  "notes": "7c25ee4 style component price inputs: hide spinners, focus state, placeholder color"
+  "version": "v1.58.12",
+  "released_at": "2026-06-02T20:57:30Z",
+  "notes": "6446c43 stack cookie bar above PWA install prompt when both visible"
 }
