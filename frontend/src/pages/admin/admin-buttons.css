@@ -118,7 +118,7 @@
   color: rgba(242, 242, 244, 0.7);
 }
 .admin .pituch-tab__content .btn--sm,
-.admin .settings-section .btn--sm { padding: 5px 14px; }
+.admin .settings-section .btn--sm { padding: 5px 14px; width: fit-content; }
 .admin .pituch-tab__content .btn:hover:not(:disabled),
 .admin .settings-section .btn:hover:not(:disabled) {
   border-color: rgba(255, 255, 255, 0.28);
