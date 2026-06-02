@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.5",
-  "released_at": "2026-06-02T20:21:17Z",
-  "notes": "577833e add component prices tab under פיתוח with name, sku, fixed/dimension pricing"
+  "version": "v1.58.6",
+  "released_at": "2026-06-02T20:22:46Z",
+  "notes": "2e96144 fix btn--sm width in admin to fit content"
 }
