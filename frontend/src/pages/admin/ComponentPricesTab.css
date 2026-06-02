@@ -83,11 +83,26 @@
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
-  color: #fff;
+  color: #f2f2f4;
+  font-family: inherit;
   font-size: var(--text-sm);
   width: 100%;
   max-width: 320px;
+  outline: none;
+  transition: border-color 150ms ease, background 150ms ease;
+  -moz-appearance: textfield;
 }
+.cp-editor__row input::-webkit-outer-spin-button,
+.cp-editor__row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cp-editor__row input:focus,
+.cp-editor__row select:focus {
+  border-color: rgba(255,255,255,0.32);
+  background: rgba(255,255,255,0.09);
+}
+.cp-editor__row input::placeholder { color: rgba(255,255,255,0.25); }
 
 .cp-editor__row select option { background: #1a1a1e; }
 
@@ -130,11 +145,29 @@
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
-  color: #fff;
+  color: #f2f2f4;
   font-size: var(--text-sm);
+  font-family: inherit;
   width: 80px;
   flex-shrink: 0;
   text-align: center;
+  outline: none;
+  transition: border-color 150ms ease, background 150ms ease;
+  /* hide native number spinners */
+  -moz-appearance: textfield;
+}
+.cp-range-row input::-webkit-outer-spin-button,
+.cp-range-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cp-range-row input:focus {
+  border-color: rgba(255,255,255,0.32);
+  background: rgba(255,255,255,0.09);
+}
+.cp-range-row input::placeholder {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.78em;
 }
 
 .cp-add-range {
