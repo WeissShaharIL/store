@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.6",
-  "released_at": "2026-06-02T20:22:46Z",
-  "notes": "2e96144 fix btn--sm width in admin to fit content"
+  "version": "v1.58.7",
+  "released_at": "2026-06-02T20:39:28Z",
+  "notes": "cb441d1 fix component prices tab: text buttons, narrow range inputs, clearer placeholders"
 }
