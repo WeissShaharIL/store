@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.1",
-  "released_at": "2026-06-02T20:05:36Z",
-  "notes": "4824948 show edit button for all cart items, not just custom ones"
+  "version": "v1.58.2",
+  "released_at": "2026-06-02T20:07:18Z",
+  "notes": "07eb58e pre-fill whatsapp message on floating button click"
 }
