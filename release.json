@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.9",
-  "released_at": "2026-06-02T20:48:42Z",
-  "notes": "8195c9b style admin select with custom chevron; move whatsapp button to bottom-left"
+  "version": "v1.58.10",
+  "released_at": "2026-06-02T20:52:06Z",
+  "notes": "217d561 enforce min 2 shelves per cabin; make cookie bar compact pill"
 }
