@@ -6,6 +6,7 @@ export default function PlacedItem({
   yToPx,
   isDragging,
   onPointerDown,
+  canDelete = true,
   onDelete,
 }) {
   const cy = yToPx(item.y);
@@ -116,7 +117,7 @@ export default function PlacedItem({
       style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
     >
       {visual}
-      <g
+      {canDelete && <g
         className="closet-plan__item-delete"
         onPointerDown={(e) => e.stopPropagation()}
         onClick={onDelete}
@@ -132,7 +133,7 @@ export default function PlacedItem({
         <circle cx={deleteCx} cy={labelY} r={13} fill="#fff" stroke="#c44" strokeWidth={1.2} />
         <line x1={deleteCx - 5} y1={labelY - 5} x2={deleteCx + 5} y2={labelY + 5} stroke="#c44" strokeWidth={1.5} />
         <line x1={deleteCx - 5} y1={labelY + 5} x2={deleteCx + 5} y2={labelY - 5} stroke="#c44" strokeWidth={1.5} />
-      </g>
+      </g>}
       <text
         x={labelOffsetX}
         y={labelY + 3}
