@@ -11,7 +11,10 @@ export default function FloatingWhatsApp() {
     getPublicSettings()
       .then((s) => {
         const num = (s?.contact_whatsapp || "").trim();
-        if (num) setHref(`https://wa.me/${num.replace(/[^0-9]/g, "")}`);
+        if (num) {
+          const message = encodeURIComponent("שלום! אני מעוניין/ת לשמוע יותר על ארונות Forma 👋");
+          setHref(`https://wa.me/${num.replace(/[^0-9]/g, "")}?text=${message}`);
+        }
       })
       .catch(() => {});
   }, []);
