@@ -228,7 +228,7 @@ export default function CartPage() {
                       )}
                       {price && <span className="cart-item__price">{price}</span>}
                     </div>
-                    {!item.displaySalePrice && (
+                    {!item.displaySaleId && (
                       <button onClick={() => handleEditItem(item)} className="cart-item__edit" aria-label="ערוך" title="ערוך ארון">✏️</button>
                     )}
                     <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
