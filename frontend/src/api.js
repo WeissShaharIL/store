@@ -156,6 +156,12 @@ export const adminUpdateMediaFileDetails = (id, { displayName, tags }) =>
 export const adminChangePassword = (currentPassword, newPassword) =>
   api.post("/api/auth/change-password", { current_password: currentPassword, new_password: newPassword });
 
+// ── Admin — Component prices ──────────────────────────────────────────────────
+export const adminListComponentPrices = () => api.get("/api/admin/component-prices");
+export const adminCreateComponentPrice = (data) => api.post("/api/admin/component-prices", data);
+export const adminUpdateComponentPrice = (id, data) => api.patch(`/api/admin/component-prices/${id}`, data);
+export const adminDeleteComponentPrice = (id) => api.delete(`/api/admin/component-prices/${id}`);
+
 // ── Admin — Activity log ──────────────────────────────────────────────────────
 export const adminGetActivity = (params = {}) => {
   const qs = new URLSearchParams();

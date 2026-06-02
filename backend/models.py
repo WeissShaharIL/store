@@ -376,3 +376,19 @@ class MediaFile(Base):
     display_name = Column(String(255), nullable=True)   # admin-given name
     tags = Column(Text, nullable=True)                  # comma-separated tags
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+
+
+class ComponentPrice(Base):
+    __tablename__ = "component_prices"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(120), nullable=False)
+    sku = Column(String(64), nullable=False, default="")
+    # "fixed" | "width" | "height" | "depth"
+    price_basis = Column(String(20), nullable=False, default="fixed")
+    # fixed → '{"price": 150}'
+    # dimension → '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]'
+    rules = Column(Text, nullable=False, default="{}")
+    sort_order = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
