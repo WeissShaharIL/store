@@ -97,5 +97,15 @@
   outline: none;
   transition: border-color 150ms ease;
 }
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 0.55rem center;
+  padding-left: 1.75rem;
+  cursor: pointer;
+}
 .field select:focus, .field input:focus { border-color: rgba(255,255,255,0.3); }
+.field select:hover:not(:disabled) { border-color: rgba(255,255,255,0.2); }
 .field--small select { min-width: 160px; }
