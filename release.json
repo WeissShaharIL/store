@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.8",
-  "released_at": "2026-06-02T20:41:36Z",
-  "notes": "406881c remove sort_order field from component prices form"
+  "version": "v1.58.9",
+  "released_at": "2026-06-02T20:48:42Z",
+  "notes": "8195c9b style admin select with custom chevron; move whatsapp button to bottom-left"
 }
