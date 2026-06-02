@@ -258,6 +258,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
   // now lets the user edit every cabin directly without selecting it first.
   function removeItemFrom(doorId, originalIdx) {
     const cur = items?.[doorId] ?? [];
+    const itemToRemove = cur[originalIdx];
+    if (itemToRemove?.type === "shelf") {
+      const shelfCount = cur.filter((it) => it.type === "shelf").length;
+      if (shelfCount <= 2) return;
+    }
     onChange({
       ...items,
       [doorId]: cur
@@ -567,6 +572,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
               : interiorLeftPx;
             const compItems = items?.[door.id] ?? [];
             if (compItems.length === 0) return null;
+            const shelfCount = compItems.filter((it) => it.type === "shelf").length;
             // Every compartment's items are now fully interactive — drag,
             // move between cabins, and delete without selecting a cabin first.
             return (
@@ -586,6 +592,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
                       yToPx={yToPx}
                       isDragging={false}
                       onPointerDown={(e, _) => onItemPointerDown(e, idx, door.id)}
+                      canDelete={item.type !== "shelf" || shelfCount > 2}
                       onDelete={() => removeItemFrom(door.id, idx)}
                     />
                   );
