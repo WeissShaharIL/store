@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.10",
-  "released_at": "2026-06-02T20:52:06Z",
-  "notes": "217d561 enforce min 2 shelves per cabin; make cookie bar compact pill"
+  "version": "v1.58.11",
+  "released_at": "2026-06-02T20:55:39Z",
+  "notes": "7c25ee4 style component price inputs: hide spinners, focus state, placeholder color"
 }
