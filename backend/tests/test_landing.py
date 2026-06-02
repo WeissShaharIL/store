@@ -4,7 +4,7 @@ from main import app
 
 LANDING_KEYS = {
     "welcome_title", "welcome_subtitle", "contact_phone", "contact_whatsapp",
-    "hero_tagline", "about_text", "trust_items",
+    "whatsapp_message", "hero_tagline", "about_text", "trust_items",
 }
 
 

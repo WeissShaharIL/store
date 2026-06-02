@@ -22,6 +22,7 @@ LANDING_KEYS = {
     "welcome_subtitle",
     "contact_phone",
     "contact_whatsapp",
+    "whatsapp_message",
     "hero_tagline",
     "about_text",
     "trust_items",  # JSON array of {title, body} objects

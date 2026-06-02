@@ -109,6 +109,7 @@ def get_public_settings(db: Session = Depends(get_db)):
         "welcome_subtitle",
         "contact_phone",
         "contact_whatsapp",
+        "whatsapp_message",
         "hero_tagline",
         "about_text",
         "default_closet_image",

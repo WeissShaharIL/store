@@ -15,6 +15,7 @@ const FIELDS = [
   { key: "about_text",       label: "טקסט אודות", multiline: true },
   { key: "contact_phone",    label: "טלפון ליצירת קשר" },
   { key: "contact_whatsapp", label: "מספר WhatsApp" },
+  { key: "whatsapp_message", label: "הודעת WhatsApp אוטומטית" },
 ];
 
 const TRUST_DEFAULTS = [

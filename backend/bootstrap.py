@@ -16,6 +16,7 @@ DEFAULT_SETTINGS = {
     "welcome_subtitle": "",
     "contact_phone": "",
     "contact_whatsapp": "",
+    "whatsapp_message": "שלום! אני מעוניין/ת לשמוע יותר על ארונות Forma 👋",
 }
 
 DEFAULT_PALETTE_COLORS = [
