@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.4",
-  "released_at": "2026-06-02T20:14:21Z",
-  "notes": "46baa68 add whatsapp_message setting to admin; shift floating button right"
+  "version": "v1.58.5",
+  "released_at": "2026-06-02T20:21:17Z",
+  "notes": "577833e add component prices tab under פיתוח with name, sku, fixed/dimension pricing"
 }
