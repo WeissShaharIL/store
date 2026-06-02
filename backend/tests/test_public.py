@@ -58,7 +58,7 @@ def test_public_settings_only_exposes_whitelisted_keys(client):
     r = client.get("/api/public/settings")
     allowed = {
         "welcome_title", "welcome_subtitle", "contact_phone", "contact_whatsapp",
-        "hero_tagline", "about_text", "default_closet_image", "trust_items",
+        "whatsapp_message", "hero_tagline", "about_text", "default_closet_image", "trust_items",
     }
     assert set(r.json().keys()) <= allowed
 

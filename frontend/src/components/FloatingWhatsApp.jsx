@@ -12,8 +12,8 @@ export default function FloatingWhatsApp() {
       .then((s) => {
         const num = (s?.contact_whatsapp || "").trim();
         if (num) {
-          const message = encodeURIComponent("שלום! אני מעוניין/ת לשמוע יותר על ארונות Forma 👋");
-          setHref(`https://wa.me/${num.replace(/[^0-9]/g, "")}?text=${message}`);
+          const text = (s?.whatsapp_message || "").trim() || "שלום! אני מעוניין/ת לשמוע יותר על ארונות Forma 👋";
+          setHref(`https://wa.me/${num.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(text)}`);
         }
       })
       .catch(() => {});
