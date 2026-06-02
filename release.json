@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.0",
-  "released_at": "2026-06-02T19:57:32Z",
-  "notes": "0332f25 chore: add ship skill for consistent deploy workflow across sessions"
+  "version": "v1.58.1",
+  "released_at": "2026-06-02T20:05:36Z",
+  "notes": "4824948 show edit button for all cart items, not just custom ones"
 }
