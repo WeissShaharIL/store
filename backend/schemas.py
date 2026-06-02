@@ -298,6 +298,35 @@ class LeadUpdate(BaseModel):
     admin_notes: Optional[str] = None
 
 
+class ComponentPriceOut(BaseModel):
+    id: int
+    name: str
+    sku: str
+    price_basis: str
+    rules: str
+    sort_order: int
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ComponentPriceCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    sku: str = Field(default="", max_length=64)
+    price_basis: str = "fixed"
+    rules: str = "{}"
+    sort_order: int = 0
+
+
+class ComponentPriceUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, max_length=120)
+    sku: Optional[str] = Field(default=None, max_length=64)
+    price_basis: Optional[str] = None
+    rules: Optional[str] = None
+    sort_order: Optional[int] = None
+
+
 class LeadOut(BaseModel):
     id: int
     name: str

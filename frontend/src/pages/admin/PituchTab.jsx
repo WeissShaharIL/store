@@ -5,6 +5,7 @@ import DevClosetBuilder from "./DevClosetBuilder.jsx";
 import DevClosetGallery from "./DevClosetGallery.jsx";
 import PalettesEditor from "./PalettesEditor.jsx";
 import HandlesEditor from "./HandlesEditor.jsx";
+import ComponentPricesTab from "./ComponentPricesTab.jsx";
 import "./AdminTab.css";
 
 /**
@@ -20,10 +21,11 @@ import "./AdminTab.css";
  */
 
 const SUB_TABS = [
-  { id: "builder", label: "בונה" },
-  { id: "gallery", label: "גלריה" },
-  { id: "colors",  label: "צבעים" },
-  { id: "handles", label: "ידיות" },
+  { id: "builder",  label: "בונה" },
+  { id: "gallery",  label: "גלריה" },
+  { id: "colors",   label: "צבעים" },
+  { id: "handles",  label: "ידיות" },
+  { id: "prices",   label: "מחירי רכיבים" },
 ];
 
 export default function PituchTab() {
@@ -50,10 +52,11 @@ export default function PituchTab() {
           </nav>
 
           <div className="pituch-tab__content">
-            {activeTab === "builder" && <DevClosetBuilder />}
-            {activeTab === "gallery" && <DevClosetGallery />}
-            {activeTab === "colors"  && <PalettesEditor />}
-            {activeTab === "handles" && <HandlesEditor />}
+            {activeTab === "builder"  && <DevClosetBuilder />}
+            {activeTab === "gallery"  && <DevClosetGallery />}
+            {activeTab === "colors"   && <PalettesEditor />}
+            {activeTab === "handles"  && <HandlesEditor />}
+            {activeTab === "prices"   && <ComponentPricesTab />}
           </div>
         </div>
       </HandlesProvider>
