@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.2",
-  "released_at": "2026-06-02T20:07:18Z",
-  "notes": "07eb58e pre-fill whatsapp message on floating button click"
+  "version": "v1.58.3",
+  "released_at": "2026-06-02T20:08:54Z",
+  "notes": "6684b3e hide edit button for display sale items using displaySaleId check"
 }
