@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.7",
-  "released_at": "2026-06-02T20:39:28Z",
-  "notes": "cb441d1 fix component prices tab: text buttons, narrow range inputs, clearer placeholders"
+  "version": "v1.58.8",
+  "released_at": "2026-06-02T20:41:36Z",
+  "notes": "406881c remove sort_order field from component prices form"
 }
