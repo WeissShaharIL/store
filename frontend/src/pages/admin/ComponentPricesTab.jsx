@@ -197,8 +197,8 @@ export default function ComponentPricesTab() {
                 <td>{basisLabel(item.price_basis)}</td>
                 <td className="cp-rules"><RulesPreview rulesStr={item.rules} basis={item.price_basis} /></td>
                 <td className="cp-actions">
-                  <button className="btn btn--ghost btn--sm" onClick={() => openEdit(item)} disabled={editingId !== null}>✏️</button>
-                  <button className="btn btn--ghost btn--sm cp-del" onClick={() => handleDelete(item)}>🗑️</button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => openEdit(item)} disabled={editingId !== null}>ערוך</button>
+                  <button className="btn btn--ghost btn--sm cp-del" onClick={() => handleDelete(item)}>מחק</button>
                 </td>
               </tr>
             ))}
@@ -256,8 +256,8 @@ export default function ComponentPricesTab() {
             <div className="cp-editor__ranges">
               <label className="cp-ranges-label">טווחי מחיר לפי {basisLabel(form.price_basis)} (ס״מ)</label>
               <div className="cp-ranges-head">
-                <span>מ-</span>
-                <span>עד (ריק = ∞)</span>
+                <span>מ- (ס״מ)</span>
+                <span>עד (ס״מ)</span>
                 <span>מחיר (₪)</span>
                 <span></span>
               </div>
@@ -266,14 +266,14 @@ export default function ComponentPricesTab() {
                   <input
                     type="number"
                     min="0"
-                    placeholder="0"
+                    placeholder="מ-"
                     value={row.from}
                     onChange={e => updateRange(idx, "from", e.target.value)}
                   />
                   <input
                     type="number"
                     min="0"
-                    placeholder="∞"
+                    placeholder="ריק=∞"
                     value={row.to}
                     onChange={e => updateRange(idx, "to", e.target.value)}
                   />
@@ -281,7 +281,7 @@ export default function ComponentPricesTab() {
                     type="number"
                     min="0"
                     step="0.01"
-                    placeholder="0"
+                    placeholder="₪"
                     value={row.price}
                     onChange={e => updateRange(idx, "price", e.target.value)}
                   />
@@ -290,7 +290,7 @@ export default function ComponentPricesTab() {
                     className="btn btn--ghost btn--sm cp-del"
                     onClick={() => removeRange(idx)}
                     disabled={ranges.length === 1}
-                  >✕</button>
+                  >מחק</button>
                 </div>
               ))}
               <button type="button" className="btn btn--ghost btn--sm cp-add-range" onClick={addRange}>
