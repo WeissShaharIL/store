@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.14",
-  "released_at": "2026-06-03T17:07:45Z",
-  "notes": "aad726f remove emojis from custom closet config section titles"
+  "version": "v1.58.15",
+  "released_at": "2026-06-03T17:10:56Z",
+  "notes": "d4f81bc add תוספות אפשריות section: pick component prices as user add-ons"
 }
