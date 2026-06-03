@@ -85,10 +85,15 @@ const BG_DARK  = "#1c1c22"; // light closets need a dark backdrop for contrast
 // BG_LIGHT and BG_DARK based on the closet's wood color luminance.
 function AdaptiveBackground({ woodHex }) {
   const { scene } = useThree();
-  const current = useRef(new Color(BG_LIGHT));
-  const target   = useRef(new Color(BG_LIGHT));
+  // Initialise to the correct colour immediately so stage transitions don't
+  // flash back to the default — the lerp only runs when the user actually
+  // changes the closet colour mid-session.
+  const initBg = woodHex && luminance(woodHex) > 0.35 ? BG_DARK : BG_LIGHT;
+  const current = useRef(new Color(initBg));
+  const target   = useRef(new Color(initBg));
 
   useEffect(() => {
+    if (!woodHex) return;
     target.current.set(luminance(woodHex) > 0.35 ? BG_DARK : BG_LIGHT);
   }, [woodHex]);
 
