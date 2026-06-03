@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.13",
-  "released_at": "2026-06-03T17:04:45Z",
-  "notes": "50956a7 add ארון בהתאמה אישית config tab under פיתוח"
+  "version": "v1.58.14",
+  "released_at": "2026-06-03T17:07:45Z",
+  "notes": "aad726f remove emojis from custom closet config section titles"
 }
