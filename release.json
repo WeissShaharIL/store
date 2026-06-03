@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.18",
-  "released_at": "2026-06-03T17:28:02Z",
-  "notes": "352dba2 toggle style for add-ons; admin controls shelf/rod/drawer in stage 2"
+  "version": "v1.58.19",
+  "released_at": "2026-06-03T17:36:41Z",
+  "notes": "3e6d637 add admin guided tour: toggle in הגדרות, spotlight overlay, 15 steps"
 }
