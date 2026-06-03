@@ -37,17 +37,21 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     getPublicComponentPrices().then(setComponentPrices).catch(() => {});
   }, []);
 
-  // Derive allowed palette types from the enabled component prices' item_types.
-  // If no component prices have item_type set, fall back to showing all types.
+  // Derive allowed palette types from enabled components' item_types.
+  // Rules:
+  //   - No components exist → show all (system not configured yet)
+  //   - Components exist but none have item_type → show all (mapping not set up)
+  //   - Components exist with item_type → filter by which ones are enabled
+  //     (empty result = nothing to show in palette)
   const allowedTypes = (() => {
-    if (!closetCfg) return null;
+    if (!closetCfg || componentPrices.length === 0) return null;
+    const mappedComponents = componentPrices.filter(c => c.item_type);
+    if (mappedComponents.length === 0) return null; // no type mapping → show all
     const enabledIds = new Set(closetCfg.addOnComponentIds ?? []);
-    const types = new Set(
-      componentPrices
-        .filter(c => enabledIds.has(c.id) && c.item_type)
-        .map(c => c.item_type)
-    );
-    return types.size > 0 ? [...types] : null; // null = show all
+    const enabledMapped = mappedComponents.filter(c => enabledIds.has(c.id));
+    // Admin enabled some items but none have item_type → can't filter, show all
+    if (enabledIds.size > 0 && enabledMapped.length === 0) return null;
+    return [...new Set(enabledMapped.map(c => c.item_type))];
   })();
 
   const { colors } = usePaletteColors();
