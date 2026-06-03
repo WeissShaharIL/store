@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import FormaLogo from "../components/FormaLogo.jsx";
@@ -10,6 +10,7 @@ import ActivityTab from "./admin/ActivityTab.jsx";
 import OrdersTab from "./admin/OrdersTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
 import { adminGetLeadsUnreadCount } from "../api.js";
+import TourOverlay from "./admin/TourOverlay.jsx";
 import "../styles/chat.css";
 import "./AdminDashboard.css";
 
@@ -30,8 +31,11 @@ export default function AdminDashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("settings");
+  const [pituchSubTab, setPituchSubTab] = useState(null);
+  const [tourActive, setTourActive] = useState(false);
   const [leadsUnread, setLeadsUnread] = useState(0);
   const [ordersRefresh, setOrdersRefresh] = useState(0);
+  const tourEnabled = localStorage.getItem("admin-tour-enabled") !== "false";
 
   const fetchLeadsUnread = useCallback(async () => {
     const r = await adminGetLeadsUnreadCount();
@@ -52,7 +56,14 @@ export default function AdminDashboard() {
           <FormaLogo />
           <span className="admin-title">ניהול</span>
         </div>
-        <button onClick={handleLogout} className="admin-logout-btn">יציאה</button>
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          {tourEnabled && (
+            <button className="admin-logout-btn" style={{ background: "rgba(34,197,94,0.12)", borderColor: "rgba(34,197,94,0.3)", color: "rgb(134,239,172)" }} onClick={() => setTourActive(true)}>
+              סיור
+            </button>
+          )}
+          <button onClick={handleLogout} className="admin-logout-btn">יציאה</button>
+        </div>
       </header>
 
       <nav className="admin-tabs">
@@ -73,12 +84,20 @@ export default function AdminDashboard() {
       <div className="admin-content">
         {activeTab === "images"    && <ImagesTab />}
         {activeTab === "activity"  && <ActivityTab />}
-        {activeTab === "pituch"    && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab /></Suspense>}
+        {activeTab === "pituch"    && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab externalSubTab={pituchSubTab} /></Suspense>}
         {activeTab === "leads"     && <LeadsTab onOrderCreated={() => { setOrdersRefresh((n) => n + 1); setActiveTab("orders"); }} />}
         {activeTab === "orders"    && <OrdersTab key={ordersRefresh} />}
         {activeTab === "landing"   && <LandingSettingsTab />}
-        {activeTab === "settings"  && <SettingsTab />}
+        {activeTab === "settings"  && <SettingsTab onStartTour={() => setTourActive(true)} />}
       </div>
+      {tourActive && (
+        <TourOverlay
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setPituchSubTab={setPituchSubTab}
+          onClose={() => { setTourActive(false); setPituchSubTab(null); }}
+        />
+      )}
     </div>
   );
 }

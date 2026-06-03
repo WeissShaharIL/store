@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PaletteColorsProvider } from "./PaletteContext.jsx";
 import { HandlesProvider } from "./HandlesContext.jsx";
 import DevClosetBuilder from "./DevClosetBuilder.jsx";
@@ -30,8 +30,12 @@ const SUB_TABS = [
   { id: "custom",   label: "ארון בהתאמה אישית" },
 ];
 
-export default function PituchTab() {
+export default function PituchTab({ externalSubTab }) {
   const [activeTab, setActiveTab] = useState("builder");
+
+  useEffect(() => {
+    if (externalSubTab) setActiveTab(externalSubTab);
+  }, [externalSubTab]);
 
   return (
     <PaletteColorsProvider>
