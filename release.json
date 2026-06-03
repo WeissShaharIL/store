@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.21",
-  "released_at": "2026-06-03T17:46:14Z",
-  "notes": "9094a28 adaptive background: dark scene for light-colored closets, animated lerp"
+  "version": "v1.58.22",
+  "released_at": "2026-06-03T17:51:37Z",
+  "notes": "b4ff326 add item_type to components; drive stage2 palette from enabled components; simplify tour to header button only"
 }
