@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.17",
-  "released_at": "2026-06-03T17:19:47Z",
-  "notes": "3bf412a infinite grey floor, no walls, light-grey background on closet 3D scene"
+  "version": "v1.58.18",
+  "released_at": "2026-06-03T17:28:02Z",
+  "notes": "352dba2 toggle style for add-ons; admin controls shelf/rod/drawer in stage 2"
 }
