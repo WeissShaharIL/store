@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.20",
-  "released_at": "2026-06-03T17:41:37Z",
-  "notes": "5fea9d7 tour phase 2: keyboard nav, resize tracking, progress bar, slow-load handling, responsive card"
+  "version": "v1.58.21",
+  "released_at": "2026-06-03T17:46:14Z",
+  "notes": "9094a28 adaptive background: dark scene for light-colored closets, animated lerp"
 }
