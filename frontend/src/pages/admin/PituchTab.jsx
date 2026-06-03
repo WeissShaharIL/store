@@ -6,6 +6,7 @@ import DevClosetGallery from "./DevClosetGallery.jsx";
 import PalettesEditor from "./PalettesEditor.jsx";
 import HandlesEditor from "./HandlesEditor.jsx";
 import ComponentPricesTab from "./ComponentPricesTab.jsx";
+import CustomClosetConfigTab from "./CustomClosetConfigTab.jsx";
 import "./AdminTab.css";
 
 /**
@@ -26,6 +27,7 @@ const SUB_TABS = [
   { id: "colors",   label: "צבעים" },
   { id: "handles",  label: "ידיות" },
   { id: "prices",   label: "מחירי רכיבים" },
+  { id: "custom",   label: "ארון בהתאמה אישית" },
 ];
 
 export default function PituchTab() {
@@ -57,6 +59,7 @@ export default function PituchTab() {
             {activeTab === "colors"   && <PalettesEditor />}
             {activeTab === "handles"  && <HandlesEditor />}
             {activeTab === "prices"   && <ComponentPricesTab />}
+            {activeTab === "custom"   && <CustomClosetConfigTab />}
           </div>
         </div>
       </HandlesProvider>
