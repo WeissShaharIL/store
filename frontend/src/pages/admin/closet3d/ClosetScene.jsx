@@ -262,6 +262,7 @@ export default function ClosetScene({
         camera.lookAt(0, targetY, 0);
       }}
     >
+      <color attach="background" args={["#f0f0f0"]} />
       <Environment files="/hdr/lebombo_1k.hdr" background={false} />
       {/* v1.64.0 — ambient + directional are now warm-tinted to
           sell "indoor showroom" lighting. The Environment
