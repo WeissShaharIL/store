@@ -167,7 +167,7 @@ export default function ComponentPricesTab() {
   return (
     <div className="admin-tab-content">
       <div className="tab-toolbar">
-        <h2>מחירי רכיבים</h2>
+        <h2>תוספות ארון</h2>
         <button className="btn btn--primary btn--sm" onClick={openNew} disabled={editingId !== null}>
           + הוסף רכיב
         </button>
