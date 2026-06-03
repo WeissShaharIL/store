@@ -166,9 +166,9 @@ export default function CustomClosetConfigTab() {
       {/* ── Add-ons ────────────────────────────────────────── */}
       <div className="cc-section">
         <h3 className="cc-section__title">תוספות אפשריות</h3>
-        <p className="cc-section__sub">בחר אילו רכיבים ממחירי רכיבים יוצגו ללקוח כתוספות לארון.</p>
+        <p className="cc-section__sub">בחר אילו פריטים מ"תוספות ארון" יוצגו ללקוח כתוספות.</p>
         {components.length === 0 ? (
-          <p className="cc-empty">אין רכיבים מוגדרים עדיין. הוסף רכיבים בלשונית "מחירי רכיבים".</p>
+          <p className="cc-empty">אין פריטים מוגדרים עדיין. הוסף פריטים בלשונית "תוספות ארון".</p>
         ) : (
           <div className="cc-addons">
             {components.map((comp) => {

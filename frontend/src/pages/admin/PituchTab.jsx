@@ -26,7 +26,7 @@ const SUB_TABS = [
   { id: "gallery",  label: "גלריה" },
   { id: "colors",   label: "צבעים" },
   { id: "handles",  label: "ידיות" },
-  { id: "prices",   label: "מחירי רכיבים" },
+  { id: "prices",   label: "תוספות ארון" },
   { id: "custom",   label: "ארון בהתאמה אישית" },
 ];
 
