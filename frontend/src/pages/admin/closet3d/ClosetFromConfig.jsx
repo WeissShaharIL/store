@@ -1,4 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Color } from "three";
 import {
   Plank, AluminumStrip, Shelf, HangingRod, Drawer,
   SlidingDoor, HingedDoor, SidePerimeter,
@@ -66,6 +68,37 @@ import {
  *   ments stay routed through `onSelectItem` since they share
  *   the click target with shelves and rods.
  */
+
+// Relative luminance (0 = black, 1 = white). Threshold > 0.35 = light color.
+function luminance(hex) {
+  if (!hex || hex.length < 7) return 0.5;
+  const toLinear = (c) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  return 0.2126 * toLinear(parseInt(hex.slice(1, 3), 16) / 255)
+       + 0.7152 * toLinear(parseInt(hex.slice(3, 5), 16) / 255)
+       + 0.0722 * toLinear(parseInt(hex.slice(5, 7), 16) / 255);
+}
+
+const BG_LIGHT = "#f0f0f0"; // default — dark closets read well against this
+const BG_DARK  = "#1c1c22"; // light closets need a dark backdrop for contrast
+
+// Runs inside <Canvas>. Smoothly lerps the scene background between
+// BG_LIGHT and BG_DARK based on the closet's wood color luminance.
+function AdaptiveBackground({ woodHex }) {
+  const { scene } = useThree();
+  const current = useRef(new Color(BG_LIGHT));
+  const target   = useRef(new Color(BG_LIGHT));
+
+  useEffect(() => {
+    target.current.set(luminance(woodHex) > 0.35 ? BG_DARK : BG_LIGHT);
+  }, [woodHex]);
+
+  useFrame(() => {
+    current.current.lerp(target.current, 0.028);
+    scene.background = current.current;
+  });
+
+  return null;
+}
 
 export default function ClosetFromConfig({
   config,
@@ -586,6 +619,7 @@ export default function ClosetFromConfig({
           its own component. v1.67.0 removed the backdrop wall;
           the cabinet floats over the marble floor with the
           Environment preset as the only visible background. */}
+      <AdaptiveBackground woodHex={palette.wood} />
       <CabinetBase W={W} D={D} />
 
       {/* Exterior dimension callouts (v1.48.0). Anchored in
