@@ -57,18 +57,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
   const RIGHT_PAD = 8;
   const drawableH = VIEW_HEIGHT - VIEW_TOP_PAD - VIEW_BOTTOM_PAD;
   const drawableW = VIEW_WIDTH - LEFT_GUTTER - RIGHT_PAD;
-  const aspectRatio = widthCm / heightCm;
-
-  const widthIfFillH = drawableH * aspectRatio;
-  let CABINET_WIDTH_PX;
-  let CABINET_HEIGHT_PX;
-  if (widthIfFillH <= drawableW) {
-    CABINET_WIDTH_PX = widthIfFillH;
-    CABINET_HEIGHT_PX = drawableH;
-  } else {
-    CABINET_WIDTH_PX = drawableW;
-    CABINET_HEIGHT_PX = drawableW / aspectRatio;
-  }
+  // Interior plan is an interactive design tool — always fill the full drawable
+  // area regardless of the closet's real aspect ratio. Cm labels show the true
+  // dimensions; the proportional view would leave wasted space for narrow closets.
+  const CABINET_WIDTH_PX = drawableW;
+  const CABINET_HEIGHT_PX = drawableH;
   const cmPerPx = heightCm / CABINET_HEIGHT_PX;
 
   const verticalSlack = drawableH - CABINET_HEIGHT_PX;
