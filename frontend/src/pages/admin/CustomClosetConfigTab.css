@@ -131,6 +131,56 @@
   color: rgba(255,255,255,0.65);
 }
 
+/* Section subtitle */
+.cc-section__sub {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.35);
+  margin: -8px 0 var(--space-4);
+}
+
+.cc-empty {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.35);
+}
+
+/* Add-ons checklist */
+.cc-addons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cc-addon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 150ms;
+  user-select: none;
+}
+.cc-addon:hover { background: rgba(255,255,255,0.04); }
+
+.cc-addon input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: rgb(134,239,172);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cc-addon__name {
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,0.8);
+}
+
+.cc-addon__sku {
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.35);
+  margin-right: auto;
+}
+
 /* Actions */
 .cc-actions {
   display: flex;

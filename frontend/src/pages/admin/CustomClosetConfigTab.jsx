@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig } from "../../api.js";
+import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices } from "../../api.js";
 import "./AdminTab.css";
 import "./CustomClosetConfigTab.css";
 
@@ -10,6 +10,7 @@ const DEFAULT = {
   depth:            { min: 40,  max: 80,  step: 5, default: 60 },
   allowDivider: true, allowHinged: true, allowSliding: true,
   minShelvesPerCabin: 2,
+  addOnComponentIds: [],
 };
 
 function NumInput({ value, onChange, min = 0, max, step = 1 }) {
@@ -69,17 +70,31 @@ function Toggle({ checked, onChange, label }) {
 
 export default function CustomClosetConfigTab() {
   const [cfg, setCfg] = useState(DEFAULT);
+  const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    adminGetCustomClosetConfig()
-      .then((data) => setCfg({ ...DEFAULT, ...data }))
+    Promise.all([adminGetCustomClosetConfig(), adminListComponentPrices()])
+      .then(([data, comps]) => {
+        setCfg({ ...DEFAULT, ...data, addOnComponentIds: data.addOnComponentIds ?? [] });
+        setComponents(comps);
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
+
+  function toggleAddOn(id) {
+    setCfg((c) => {
+      const ids = c.addOnComponentIds ?? [];
+      return {
+        ...c,
+        addOnComponentIds: ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id],
+      };
+    });
+  }
 
   const set = (field) => (v) => setCfg((c) => ({ ...c, [field]: v }));
 
@@ -146,6 +161,28 @@ export default function CustomClosetConfigTab() {
         <div className="cc-toggles">
           <Toggle checked={cfg.allowDivider} onChange={set("allowDivider")} label="אפשר מחיצה פנימית" />
         </div>
+      </div>
+
+      {/* ── Add-ons ────────────────────────────────────────── */}
+      <div className="cc-section">
+        <h3 className="cc-section__title">תוספות אפשריות</h3>
+        <p className="cc-section__sub">בחר אילו רכיבים ממחירי רכיבים יוצגו ללקוח כתוספות לארון.</p>
+        {components.length === 0 ? (
+          <p className="cc-empty">אין רכיבים מוגדרים עדיין. הוסף רכיבים בלשונית "מחירי רכיבים".</p>
+        ) : (
+          <div className="cc-addons">
+            {components.map((comp) => {
+              const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
+              return (
+                <label key={comp.id} className="cc-addon">
+                  <input type="checkbox" checked={checked} onChange={() => toggleAddOn(comp.id)} />
+                  <span className="cc-addon__name">{comp.name}</span>
+                  {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+                </label>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="cc-actions">
