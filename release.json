@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.23",
-  "released_at": "2026-06-03T18:01:49Z",
-  "notes": "60ef412 stage2: fill full canvas area; fix allowedTypes derivation from enabled components"
+  "version": "v1.58.24",
+  "released_at": "2026-06-03T18:03:55Z",
+  "notes": "424a929 fix adaptive bg: init at correct color on mount so stage transitions don\u0027t flash white"
 }
