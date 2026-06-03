@@ -1,9 +1,4 @@
-import { getMarbleFloorTexture } from "../textures.js";
 import {
-  BACKDROP_FLOOR_W,
-  BACKDROP_FLOOR_D,
-  BACKDROP_FLOOR_ROUGHNESS,
-  BACKDROP_FLOOR_METALNESS,
   LEG_HEIGHT,
   STAGE_HEIGHT,
   LEG_SIZE,
@@ -45,20 +40,11 @@ export default function CabinetBase({ W, D }) {
 
   return (
     <group>
-      {/* Marble floor under the cabinet. */}
-      <mesh
-        position={[0, -0.001, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[BACKDROP_FLOOR_W, BACKDROP_FLOOR_D]} />
-        <meshStandardMaterial
-          map={getMarbleFloorTexture()}
-          color="#ffffff"
-          roughness={BACKDROP_FLOOR_ROUGHNESS}
-          metalness={BACKDROP_FLOOR_METALNESS}
-          envMapIntensity={1.0}
-        />
+      {/* Infinite-looking floor — large neutral-grey plane that fades
+          into the light-grey canvas background at the horizon. */}
+      <mesh position={[0, -0.001, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[200, 200]} />
+        <meshStandardMaterial color="#e8e8e8" roughness={0.65} metalness={0.0} />
       </mesh>
 
       {/* 4 silver corner legs + silver stage slab the cabinet

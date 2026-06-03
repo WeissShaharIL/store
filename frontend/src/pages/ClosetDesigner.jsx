@@ -369,7 +369,6 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         minDistance={3}
         maxDistance={25}
         introAnimation={step === availableSteps[0].id}
-        hall
         showDimToggle
         captureRef={captureRef}
       >

@@ -153,7 +153,6 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
               minDistance={3}
               maxDistance={25}
               introAnimation
-              hall
               showDimToggle
             >
               <ClosetFromConfig
