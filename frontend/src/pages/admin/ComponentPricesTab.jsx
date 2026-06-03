@@ -15,8 +15,15 @@ const BASIS_OPTIONS = [
   { value: "depth",  label: "עומק הארון" },
 ];
 
+const ITEM_TYPE_OPTIONS = [
+  { value: "",       label: "— ללא מיפוי —" },
+  { value: "shelf",  label: "מדף" },
+  { value: "rod",    label: "מוט תליה" },
+  { value: "drawer", label: "מגירה" },
+];
+
 function emptyForm() {
-  return { name: "", sku: "", price_basis: "fixed", sort_order: 0 };
+  return { name: "", sku: "", price_basis: "fixed", sort_order: 0, item_type: "" };
 }
 
 function emptyFixed() { return { price: "" }; }
@@ -93,7 +100,7 @@ export default function ComponentPricesTab() {
   }
 
   function openEdit(item) {
-    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order });
+    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order, item_type: item.item_type ?? "" });
     const parsed = parseRules(item.rules, item.price_basis);
     if (item.price_basis === "fixed") {
       setFixedPrice(String(parsed.fixedPrice));
@@ -229,6 +236,15 @@ export default function ComponentPricesTab() {
               value={form.sku}
               onChange={e => setForm(f => ({ ...f, sku: e.target.value }))}
             />
+          </div>
+
+          <div className="cp-editor__row">
+            <label>סוג פריט (פנים ארון)</label>
+            <select value={form.item_type ?? ""} onChange={e => setForm(f => ({ ...f, item_type: e.target.value || null }))}>
+              {ITEM_TYPE_OPTIONS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
           </div>
 
           <div className="cp-editor__row">

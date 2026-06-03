@@ -163,6 +163,7 @@ export const getPublicCustomClosetConfig = () => api.get("/api/public/custom-clo
 
 // ── Admin — Component prices ──────────────────────────────────────────────────
 export const adminListComponentPrices = () => api.get("/api/admin/component-prices");
+export const getPublicComponentPrices = () => api.get("/api/public/component-prices");
 export const adminCreateComponentPrice = (data) => api.post("/api/admin/component-prices", data);
 export const adminUpdateComponentPrice = (id, data) => api.patch(`/api/admin/component-prices/${id}`, data);
 export const adminDeleteComponentPrice = (id) => api.delete(`/api/admin/component-prices/${id}`);
