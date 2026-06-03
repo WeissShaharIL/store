@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./TourOverlay.css";
 
-const PAD = 10; // spotlight padding around the target element
+const PAD = 10;
+const CARD_W = 360;
+const CARD_H = 210;
 
 export const TOUR_STEPS = [
   {
@@ -51,7 +53,8 @@ export const TOUR_STEPS = [
     subTab: "builder",
     selector: ".pituch-tab__nav",
     title: "פיתוח ארונות",
-    body: "הלשונית הזו היא הלב הטכני. היא מכילה כלים לבניית קטלוג הארונות, ניהול צבעים, ידיות ותמחור.",
+    body: "הלשונית הזו היא הלב הטכני. כאן בונים קטלוג ארונות, מנהלים צבעים, ידיות ותמחור.",
+    slowLoad: true,
   },
   {
     tab: "pituch",
@@ -59,6 +62,7 @@ export const TOUR_STEPS = [
     selector: ".closet-builder__toolbar",
     title: "בונה ארונות",
     body: "צור תבניות ארון חדשות: הגדר מידות, מספר דלתות, סוג דלתות, ידיות וצבעים. שמור ופרסם ללקוחות.",
+    slowLoad: true,
   },
   {
     tab: "pituch",
@@ -93,12 +97,12 @@ export const TOUR_STEPS = [
     subTab: "custom",
     selector: ".admin-tab-content",
     title: "ארון בהתאמה אישית",
-    body: "הגדרות גלובליות לתכונת הארון המותאם: מידות מינימום ומקסימום, סוגי דלתות, ופריטים פנימיים מותרים.",
+    body: "הגדרות גלובליות לתכונת הארון המותאם: מידות, סוגי דלתות, ופריטים פנימיים מותרים.",
   },
   {
     tab: "settings",
     selector: "#tour-section",
-    title: "סיום — עכשיו אתה בקיא!",
+    title: "הסיור הסתיים!",
     body: "עברת על כל חלקי לוח הניהול. תמיד אפשר להפעיל שוב את הסיור מלשונית הגדרות. בהצלחה!",
   },
 ];
@@ -107,33 +111,79 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
   const [stepIdx, setStepIdx] = useState(0);
   const [spotRect, setSpotRect] = useState(null);
   const timerRef = useRef(null);
+  const findRef = useRef(null); // stable findElement fn for resize/scroll
 
   const step = TOUR_STEPS[stepIdx];
   const total = TOUR_STEPS.length;
 
-  // When step changes — switch tabs then find the element
+  // Find the target element and update spotRect
+  const findElement = useCallback(() => {
+    if (!step) return;
+    const el = document.querySelector(step.selector);
+    if (el) {
+      const r = el.getBoundingClientRect();
+      setSpotRect({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
+    }
+  }, [step]);
+
+  findRef.current = findElement;
+
+  // Re-find on resize or scroll (handles layout shifts)
+  useEffect(() => {
+    function onResize() { findRef.current?.(); }
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onResize, true);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onResize, true);
+    };
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        // ArrowLeft = next in RTL context (forward), ArrowRight = prev
+        if (e.key === "ArrowLeft") {
+          setStepIdx((i) => i < total - 1 ? i + 1 : i);
+          if (stepIdx === total - 1) onClose();
+        } else {
+          setStepIdx((i) => i > 0 ? i - 1 : i);
+        }
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [stepIdx, total, onClose]);
+
+  // On step change: switch tabs, then poll for the element
   useEffect(() => {
     if (!step) return;
     clearTimeout(timerRef.current);
+    setSpotRect(null);
 
     if (step.tab) setActiveTab(step.tab);
     if (step.subTab) setPituchSubTab(step.subTab);
 
-    // Wait for the tab switch to render before querying the DOM
+    // slowLoad steps (builder with Three.js) get a longer initial delay
+    const initialDelay = step.slowLoad ? 700 : 280;
+    const maxAttempts = step.slowLoad ? 25 : 15;
     let attempts = 0;
+
     function tryFind() {
       const el = document.querySelector(step.selector);
       if (el) {
         const r = el.getBoundingClientRect();
         setSpotRect({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
-      } else if (attempts < 12) {
+      } else if (attempts < maxAttempts) {
         attempts++;
         timerRef.current = setTimeout(tryFind, 150);
-      } else {
-        setSpotRect(null);
       }
+      // If still not found after maxAttempts, leave spotRect null → full-screen backdrop
     }
-    timerRef.current = setTimeout(tryFind, 250);
+
+    timerRef.current = setTimeout(tryFind, initialDelay);
     return () => clearTimeout(timerRef.current);
   }, [stepIdx]); // eslint-disable-line
 
@@ -147,10 +197,10 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
 
   if (!step) return null;
 
-  // Position the tooltip card near the spotlight
-  const CARD_W = 360;
-  const CARD_H = 200;
-  const cardStyle = {};
+  // Card positioning — responsive width
+  const cardMaxW = Math.min(CARD_W, window.innerWidth - 32);
+  const cardStyle = { width: cardMaxW };
+
   if (spotRect) {
     const spaceBelow = window.innerHeight - (spotRect.top + spotRect.height + PAD);
     const spaceAbove = spotRect.top - PAD;
@@ -160,12 +210,14 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
       cardStyle.top = Math.max(16, spotRect.top - CARD_H - 14);
     }
     const centerX = spotRect.left + spotRect.width / 2;
-    cardStyle.left = Math.max(16, Math.min(centerX - CARD_W / 2, window.innerWidth - CARD_W - 16));
+    cardStyle.left = Math.max(16, Math.min(centerX - cardMaxW / 2, window.innerWidth - cardMaxW - 16));
   } else {
     cardStyle.top = "50%";
     cardStyle.left = "50%";
     cardStyle.transform = "translate(-50%, -50%)";
   }
+
+  const progress = ((stepIdx + 1) / total) * 100;
 
   return (
     <>
@@ -179,6 +231,11 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
       )}
 
       <div className="tour-card" style={cardStyle}>
+        {/* Progress bar */}
+        <div className="tour-progress">
+          <div className="tour-progress__fill" style={{ width: `${progress}%` }} />
+        </div>
+
         <div className="tour-card__header">
           <span className="tour-card__counter">{stepIdx + 1} / {total}</span>
           <button className="tour-card__close" onClick={onClose} aria-label="סגור סיור">✕</button>
@@ -187,11 +244,7 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
         <p className="tour-card__body">{step.body}</p>
         <div className="tour-card__actions">
           <button className="tour-btn tour-btn--ghost" onClick={goPrev} disabled={stepIdx === 0}>הקודם</button>
-          <div className="tour-dots">
-            {TOUR_STEPS.map((_, i) => (
-              <span key={i} className={"tour-dot" + (i === stepIdx ? " tour-dot--active" : "")} />
-            ))}
-          </div>
+          <span className="tour-card__hint">Esc לסגירה</span>
           <button className="tour-btn tour-btn--primary" onClick={goNext}>
             {stepIdx === total - 1 ? "סיים" : "הבא"}
           </button>
