@@ -22,12 +22,24 @@ import {
   loadDesignerState,
   saveDesignerState,
 } from "./admin/designer/persistence.js";
+import { getPublicCustomClosetConfig } from "../api.js";
 import "../styles/showroom/05-designer.css";
 
 export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false, editCartItemId = null }) {
   const navigate = useNavigate();
   const cfg = item.config;
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
+
+  const [closetCfg, setClosetCfg] = useState(null);
+  useEffect(() => {
+    getPublicCustomClosetConfig().then(setClosetCfg).catch(() => {});
+  }, []);
+
+  const allowedTypes = closetCfg ? [
+    ...(closetCfg.allowShelf  !== false ? ["shelf"]  : []),
+    ...(closetCfg.allowRod    !== false ? ["rod"]    : []),
+    ...(closetCfg.allowDrawer !== false ? ["drawer"] : []),
+  ] : null;
 
   const { colors } = usePaletteColors();
   const { handles } = useHandles();
@@ -451,6 +463,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
               cfg={customConfig}
               items={customItems}
               onChange={setCustomItems}
+              allowedTypes={allowedTypes}
             />
           </div>
         )}

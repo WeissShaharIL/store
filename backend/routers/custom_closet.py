@@ -25,6 +25,9 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "allowDivider": True,
     "allowHinged":  True,
     "allowSliding": True,
+    "allowShelf":   True,
+    "allowRod":     True,
+    "allowDrawer":  True,
     "minShelvesPerCabin": 2,
 }
 
