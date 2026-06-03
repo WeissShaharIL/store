@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.19",
-  "released_at": "2026-06-03T17:36:41Z",
-  "notes": "3e6d637 add admin guided tour: toggle in הגדרות, spotlight overlay, 15 steps"
+  "version": "v1.58.20",
+  "released_at": "2026-06-03T17:41:37Z",
+  "notes": "5fea9d7 tour phase 2: keyboard nav, resize tracking, progress bar, slow-load handling, responsive card"
 }
