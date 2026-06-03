@@ -79,6 +79,9 @@ def run_migrations(_db: Session) -> None:
     _add_col("media_files", "display_name", "VARCHAR(255)", "NULL")
     _add_col("media_files", "tags", "TEXT", "NULL")
 
+    # component_prices — item_type added to map component to closet palette slot
+    _add_col("component_prices", "item_type", "VARCHAR(20)", "NULL")
+
 
 def seed_admin(db: Session) -> None:
     customer_id = os.environ.get("ADMIN_CUSTOMER_ID", "admin").strip()

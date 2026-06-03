@@ -386,6 +386,8 @@ class ComponentPrice(Base):
     sku = Column(String(64), nullable=False, default="")
     # "fixed" | "width" | "height" | "depth"
     price_basis = Column(String(20), nullable=False, default="fixed")
+    # "shelf" | "rod" | "drawer" | null — maps this component to a closet interior slot
+    item_type = Column(String(20), nullable=True)
     # fixed → '{"price": 150}'
     # dimension → '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]'
     rules = Column(Text, nullable=False, default="{}")

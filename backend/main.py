@@ -102,6 +102,7 @@ app.include_router(media_router.router, prefix="/api/admin/media", tags=["admin-
 app.include_router(activity_router.router, prefix="/api/admin/activity", tags=["admin-activity"])
 app.include_router(orders_router.router, prefix="/api/admin/orders", tags=["admin-orders"])
 app.include_router(component_prices_router.router, prefix="/api/admin/component-prices", tags=["admin-component-prices"])
+app.include_router(component_prices_router.public_router, prefix="/api/public/component-prices", tags=["public-component-prices"])
 app.include_router(custom_closet_router.router, prefix="/api/admin/custom-closet-config", tags=["admin-custom-closet"])
 app.include_router(custom_closet_router.public_router, prefix="/api/public/custom-closet-config", tags=["public-custom-closet"])
 

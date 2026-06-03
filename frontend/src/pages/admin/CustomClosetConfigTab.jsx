@@ -160,9 +160,6 @@ export default function CustomClosetConfigTab() {
           </label>
         </div>
         <div className="cc-toggles">
-          <Toggle checked={cfg.allowShelf}   onChange={set("allowShelf")}   label="אפשר מדפים" />
-          <Toggle checked={cfg.allowRod}     onChange={set("allowRod")}     label="אפשר מוט תליה" />
-          <Toggle checked={cfg.allowDrawer}  onChange={set("allowDrawer")}  label="אפשר מגירות" />
           <Toggle checked={cfg.allowDivider} onChange={set("allowDivider")} label="אפשר מחיצה פנימית" />
         </div>
       </div>

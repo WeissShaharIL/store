@@ -3,18 +3,10 @@ import { adminActivateLogo, adminDeleteLogo, adminGetLogos, adminUploadLogo, adm
 import { useConfirm } from "./useConfirm.jsx";
 import "./AdminTab.css";
 
-const TOUR_KEY = "admin-tour-enabled";
-
 export default function SettingsTab({ onStartTour }) {
   const { confirm, dialog } = useConfirm();
   const [logos, setLogos] = useState([]);
   const [error, setError] = useState("");
-  const [tourEnabled, setTourEnabled] = useState(() => localStorage.getItem(TOUR_KEY) !== "false");
-
-  function toggleTour(val) {
-    setTourEnabled(val);
-    localStorage.setItem(TOUR_KEY, val ? "true" : "false");
-  }
 
   const [cpCurrent, setCpCurrent] = useState("");
   const [cpNew, setCpNew] = useState("");
@@ -108,46 +100,6 @@ export default function SettingsTab({ onStartTour }) {
             {cpLoading ? "שומר..." : "שמור סיסמה"}
           </button>
         </form>
-      </section>
-
-      <section id="tour-section" className="settings-section">
-        <div className="settings-section__head">
-          <h3>סיור מודרך</h3>
-          <p className="settings-section__sub" style={{ marginTop: 4, fontSize: "0.82rem", color: "rgba(255,255,255,0.4)" }}>
-            הפעל כדי שכפתור "סיור" יופיע בכותרת לוח הניהול.
-          </p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer", userSelect: "none" }}>
-            <span style={{ position: "relative", display: "inline-block", width: 36, height: 20 }}>
-              <input type="checkbox" checked={tourEnabled} onChange={(e) => toggleTour(e.target.checked)} style={{ display: "none" }} />
-              <span style={{
-                display: "block", width: 36, height: 20, borderRadius: 999,
-                background: tourEnabled ? "rgba(34,197,94,0.3)" : "rgba(255,255,255,0.12)",
-                border: `1px solid ${tourEnabled ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`,
-                transition: "background 200ms",
-                position: "relative",
-              }}>
-                <span style={{
-                  position: "absolute", top: 2,
-                  right: tourEnabled ? 2 : undefined,
-                  left: tourEnabled ? undefined : 2,
-                  width: 14, height: 14, borderRadius: "50%",
-                  background: tourEnabled ? "rgb(134,239,172)" : "rgba(255,255,255,0.4)",
-                  transition: "left 200ms, right 200ms, background 200ms",
-                }} />
-              </span>
-            </span>
-            <span style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.65)" }}>
-              {tourEnabled ? "מופעל" : "כבוי"}
-            </span>
-          </label>
-          {tourEnabled && (
-            <button className="btn btn--ghost btn--sm" onClick={onStartTour}>
-              התחל סיור עכשיו
-            </button>
-          )}
-        </div>
       </section>
 
       {dialog}

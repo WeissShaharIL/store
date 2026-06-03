@@ -22,7 +22,7 @@ import {
   loadDesignerState,
   saveDesignerState,
 } from "./admin/designer/persistence.js";
-import { getPublicCustomClosetConfig } from "../api.js";
+import { getPublicCustomClosetConfig, getPublicComponentPrices } from "../api.js";
 import "../styles/showroom/05-designer.css";
 
 export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false, editCartItemId = null }) {
@@ -31,15 +31,24 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const nDoors = Math.max(1, cfg.doors?.length ?? 1);
 
   const [closetCfg, setClosetCfg] = useState(null);
+  const [componentPrices, setComponentPrices] = useState([]);
   useEffect(() => {
     getPublicCustomClosetConfig().then(setClosetCfg).catch(() => {});
+    getPublicComponentPrices().then(setComponentPrices).catch(() => {});
   }, []);
 
-  const allowedTypes = closetCfg ? [
-    ...(closetCfg.allowShelf  !== false ? ["shelf"]  : []),
-    ...(closetCfg.allowRod    !== false ? ["rod"]    : []),
-    ...(closetCfg.allowDrawer !== false ? ["drawer"] : []),
-  ] : null;
+  // Derive allowed palette types from the enabled component prices' item_types.
+  // If no component prices have item_type set, fall back to showing all types.
+  const allowedTypes = (() => {
+    if (!closetCfg) return null;
+    const enabledIds = new Set(closetCfg.addOnComponentIds ?? []);
+    const types = new Set(
+      componentPrices
+        .filter(c => enabledIds.has(c.id) && c.item_type)
+        .map(c => c.item_type)
+    );
+    return types.size > 0 ? [...types] : null; // null = show all
+  })();
 
   const { colors } = usePaletteColors();
   const { handles } = useHandles();

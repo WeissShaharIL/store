@@ -35,7 +35,6 @@ export default function AdminDashboard() {
   const [tourActive, setTourActive] = useState(false);
   const [leadsUnread, setLeadsUnread] = useState(0);
   const [ordersRefresh, setOrdersRefresh] = useState(0);
-  const tourEnabled = localStorage.getItem("admin-tour-enabled") !== "false";
 
   const fetchLeadsUnread = useCallback(async () => {
     const r = await adminGetLeadsUnreadCount();
@@ -57,11 +56,9 @@ export default function AdminDashboard() {
           <span className="admin-title">ניהול</span>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          {tourEnabled && (
-            <button className="admin-logout-btn" style={{ background: "rgba(34,197,94,0.12)", borderColor: "rgba(34,197,94,0.3)", color: "rgb(134,239,172)" }} onClick={() => setTourActive(true)}>
-              סיור
-            </button>
-          )}
+          <button className="admin-logout-btn" style={{ background: "rgba(34,197,94,0.12)", borderColor: "rgba(34,197,94,0.3)", color: "rgb(134,239,172)" }} onClick={() => setTourActive(true)}>
+            סיור
+          </button>
           <button onClick={handleLogout} className="admin-logout-btn">יציאה</button>
         </div>
       </header>
