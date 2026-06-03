@@ -109,7 +109,7 @@ export default function CustomClosetConfigTab() {
 
       {/* ── Dimensions ─────────────────────────────────────── */}
       <div className="cc-section">
-        <h3 className="cc-section__title">📐 מידות</h3>
+        <h3 className="cc-section__title">מידות</h3>
         <DimSection label="גובה" value={cfg.height}           onChange={set("height")} />
         <DimSection label="עומק" value={cfg.depth}            onChange={set("depth")} />
         <DimSection label="רוחב תא" value={cfg.compartmentWidth} onChange={set("compartmentWidth")} />
@@ -117,7 +117,7 @@ export default function CustomClosetConfigTab() {
 
       {/* ── Doors ──────────────────────────────────────────── */}
       <div className="cc-section">
-        <h3 className="cc-section__title">🚪 דלתות</h3>
+        <h3 className="cc-section__title">דלתות</h3>
         <div className="cc-row">
           <label className="cc-dim__field">
             <span>מינימום דלתות</span>
@@ -136,7 +136,7 @@ export default function CustomClosetConfigTab() {
 
       {/* ── Interior ───────────────────────────────────────── */}
       <div className="cc-section">
-        <h3 className="cc-section__title">📦 פנים הארון</h3>
+        <h3 className="cc-section__title">פנים הארון</h3>
         <div className="cc-row">
           <label className="cc-dim__field">
             <span>מינימום מדפים לתא</span>
