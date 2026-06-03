@@ -156,6 +156,11 @@ export const adminUpdateMediaFileDetails = (id, { displayName, tags }) =>
 export const adminChangePassword = (currentPassword, newPassword) =>
   api.post("/api/auth/change-password", { current_password: currentPassword, new_password: newPassword });
 
+// ── Admin — Custom closet config ─────────────────────────────────────────────
+export const adminGetCustomClosetConfig = () => api.get("/api/admin/custom-closet-config");
+export const adminUpdateCustomClosetConfig = (data) => api.patch("/api/admin/custom-closet-config", data);
+export const getPublicCustomClosetConfig = () => api.get("/api/public/custom-closet-config");
+
 // ── Admin — Component prices ──────────────────────────────────────────────────
 export const adminListComponentPrices = () => api.get("/api/admin/component-prices");
 export const adminCreateComponentPrice = (data) => api.post("/api/admin/component-prices", data);
