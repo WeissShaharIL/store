@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.15",
-  "released_at": "2026-06-03T17:10:56Z",
-  "notes": "d4f81bc add תוספות אפשריות section: pick component prices as user add-ons"
+  "version": "v1.58.16",
+  "released_at": "2026-06-03T17:14:56Z",
+  "notes": "c1225be rename מחירי רכיבים to תוספות ארון; wire admin config into ScratchStart"
 }
