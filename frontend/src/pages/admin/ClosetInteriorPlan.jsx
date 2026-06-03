@@ -38,7 +38,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-export default function ClosetInteriorPlan({ cfg, items, onChange }) {
+export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes = null }) {
   const doors = cfg.doors ?? [];
   const nDoors = Math.max(1, doors.length);
   const hasDivider = !!cfg.hasInternalDivider;
@@ -390,7 +390,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange }) {
     <div className="closet-plan">
       <div className="closet-plan__palette">
         <h5 className="closet-plan__palette-title">גררו פריט לארון</h5>
-        {PALETTE.map((p) => (
+        {(allowedTypes ? PALETTE.filter(p => allowedTypes.includes(p.type)) : PALETTE).map((p) => (
           <button
             key={p.type}
             type="button"

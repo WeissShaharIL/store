@@ -9,6 +9,7 @@ const DEFAULT = {
   height:           { min: 150, max: 280, step: 5, default: 220 },
   depth:            { min: 40,  max: 80,  step: 5, default: 60 },
   allowDivider: true, allowHinged: true, allowSliding: true,
+  allowShelf: true, allowRod: true, allowDrawer: true,
   minShelvesPerCabin: 2,
   addOnComponentIds: [],
 };
@@ -159,6 +160,9 @@ export default function CustomClosetConfigTab() {
           </label>
         </div>
         <div className="cc-toggles">
+          <Toggle checked={cfg.allowShelf}   onChange={set("allowShelf")}   label="אפשר מדפים" />
+          <Toggle checked={cfg.allowRod}     onChange={set("allowRod")}     label="אפשר מוט תליה" />
+          <Toggle checked={cfg.allowDrawer}  onChange={set("allowDrawer")}  label="אפשר מגירות" />
           <Toggle checked={cfg.allowDivider} onChange={set("allowDivider")} label="אפשר מחיצה פנימית" />
         </div>
       </div>
@@ -174,11 +178,10 @@ export default function CustomClosetConfigTab() {
             {components.map((comp) => {
               const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
               return (
-                <label key={comp.id} className="cc-addon">
-                  <input type="checkbox" checked={checked} onChange={() => toggleAddOn(comp.id)} />
-                  <span className="cc-addon__name">{comp.name}</span>
+                <div key={comp.id} className="cc-addon">
+                  <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
                   {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-                </label>
+                </div>
               );
             })}
           </div>
