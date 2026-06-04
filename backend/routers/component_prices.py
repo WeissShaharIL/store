@@ -24,6 +24,7 @@ def _to_out(row: ComponentPrice) -> ComponentPriceOut:
         sort_order=row.sort_order,
         item_type=row.item_type,
         color=row.color,
+        min_per_cabin=row.min_per_cabin,
         updated_at=row.updated_at,
     )
 
