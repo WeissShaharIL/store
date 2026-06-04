@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices, adminUpdateComponentPrice } from "../../api.js";
+import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices } from "../../api.js";
 import "./AdminTab.css";
 import "./CustomClosetConfigTab.css";
 
@@ -86,15 +86,6 @@ export default function CustomClosetConfigTab() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
-
-  async function updateComponentType(id, itemType) {
-    try {
-      const updated = await adminUpdateComponentPrice(id, { item_type: itemType || null });
-      setComponents((prev) => prev.map((c) => c.id === id ? { ...c, item_type: updated.item_type } : c));
-    } catch (e) {
-      setError(e.message);
-    }
-  }
 
   function toggleAddOn(id) {
     setCfg((c) => {
@@ -189,16 +180,6 @@ export default function CustomClosetConfigTab() {
                 <div key={comp.id} className="cc-addon">
                   <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
                   {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-                  <select
-                    className="cc-addon__type-select"
-                    value={comp.item_type ?? ""}
-                    onChange={(e) => updateComponentType(comp.id, e.target.value)}
-                  >
-                    <option value="">— ללא מיפוי —</option>
-                    <option value="shelf">מדף</option>
-                    <option value="rod">מוט תליה</option>
-                    <option value="drawer">מגירה</option>
-                  </select>
                 </div>
               );
             })}
