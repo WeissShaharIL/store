@@ -178,9 +178,6 @@ export default function CustomClosetConfigTab() {
             <NumInput value={cfg.minShelvesPerCabin} onChange={set("minShelvesPerCabin")} min={0} max={10} />
           </label>
         </div>
-        <div className="cc-toggles">
-          <Toggle checked={cfg.allowDivider} onChange={set("allowDivider")} label="אפשר מחיצה פנימית" />
-        </div>
       </div>
 
       {/* ── Add-ons ────────────────────────────────────────── */}
