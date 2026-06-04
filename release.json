@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.61.0",
-  "released_at": "2026-06-04T23:55:25Z",
-  "notes": "4ae1af2 fix: align step-nav pill to left edge of controls panel"
+  "version": "v1.62.0",
+  "released_at": "2026-06-05T00:04:14Z",
+  "notes": "8ec2f6b style: compact min-per-cabin input to match mini-select style"
 }
