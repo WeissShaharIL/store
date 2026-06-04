@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices } from "../../api.js";
+import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices, adminUpdateComponentPrice } from "../../api.js";
 import "./AdminTab.css";
 import "./CustomClosetConfigTab.css";
 
@@ -87,6 +87,15 @@ export default function CustomClosetConfigTab() {
       .finally(() => setLoading(false));
   }, []);
 
+  async function updateComponentType(id, itemType) {
+    try {
+      const updated = await adminUpdateComponentPrice(id, { item_type: itemType || null });
+      setComponents((prev) => prev.map((c) => c.id === id ? { ...c, item_type: updated.item_type } : c));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   function toggleAddOn(id) {
     setCfg((c) => {
       const ids = c.addOnComponentIds ?? [];
@@ -168,8 +177,7 @@ export default function CustomClosetConfigTab() {
       <div className="cc-section">
         <h3 className="cc-section__title">תוספות אפשריות</h3>
         <p className="cc-section__sub">
-          פריטים מופעלים יופיעו ללקוח בשלב 2 של עיצוב הארון.
-          כדי שפריט יופיע, חובה שיהיה לו "סוג פריט" מוגדר בלשונית "תוספות ארון".
+          הפעל פריטים ובחר לאיזה כלי בשלב 2 הם ימופו. פריט ללא מיפוי לא יופיע ללקוח.
         </p>
         {components.length === 0 ? (
           <p className="cc-empty">אין פריטים מוגדרים עדיין. הוסף פריטים בלשונית "תוספות ארון".</p>
@@ -177,16 +185,20 @@ export default function CustomClosetConfigTab() {
           <div className="cc-addons">
             {components.map((comp) => {
               const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
-              const typeLabel = { shelf: "מדף", rod: "מוט תליה", drawer: "מגירה" }[comp.item_type];
               return (
                 <div key={comp.id} className="cc-addon">
                   <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
                   {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-                  {typeLabel ? (
-                    <span className="cc-addon__type cc-addon__type--ok">→ {typeLabel}</span>
-                  ) : (
-                    <span className="cc-addon__type cc-addon__type--warn">סוג לא מוגדר</span>
-                  )}
+                  <select
+                    className="cc-addon__type-select"
+                    value={comp.item_type ?? ""}
+                    onChange={(e) => updateComponentType(comp.id, e.target.value)}
+                  >
+                    <option value="">— ללא מיפוי —</option>
+                    <option value="shelf">מדף</option>
+                    <option value="rod">מוט תליה</option>
+                    <option value="drawer">מגירה</option>
+                  </select>
                 </div>
               );
             })}
