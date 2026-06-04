@@ -23,6 +23,7 @@ import {
   saveDesignerState,
 } from "./admin/designer/persistence.js";
 import { getPublicCustomClosetConfig, getPublicComponentPrices } from "../api.js";
+import { SNAP_POSITIONS, findFreeSlotIndex } from "./admin/interior-plan/slots.js";
 import "../styles/showroom/05-designer.css";
 
 export default function ClosetDesigner({ item, onClose, initialColor, mode = "full", fromScratch = false, editCartItemId = null }) {
@@ -142,6 +143,36 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
   const [interiorError, setInteriorError] = useState("");
+
+  // Pre-seed cabins with required minimum items when palette loads
+  useEffect(() => {
+    const required = paletteComponents.filter(c => c.min_per_cabin > 0);
+    if (!required.length) return;
+    const doors = cfg.doors ?? [];
+    const cabinIds = customDivider && doors.length > 1
+      ? doors.map(d => d.id)
+      : doors.length > 0 ? [doors[0].id] : [];
+    setCustomItems(prev => {
+      let updated = { ...prev };
+      let anyChange = false;
+      for (const cabinId of cabinIds) {
+        let cabinItems = [...(updated[cabinId] ?? [])];
+        for (const comp of required) {
+          const typeKey = `c:${comp.id}`;
+          const count = cabinItems.filter(it => it.type === typeKey).length;
+          const needed = comp.min_per_cabin - count;
+          for (let i = 0; i < needed; i++) {
+            const idx = findFreeSlotIndex(cabinItems, comp.item_type ?? 'shelf');
+            if (idx === null) break;
+            cabinItems = [...cabinItems, { type: typeKey, y: SNAP_POSITIONS[idx] }];
+            anyChange = true;
+          }
+        }
+        if (anyChange) updated[cabinId] = cabinItems;
+      }
+      return anyChange ? updated : prev;
+    });
+  }, [paletteComponents, customDivider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalW = customDims.compartmentWidth * nDoors;
   const setTotalW = (w) =>

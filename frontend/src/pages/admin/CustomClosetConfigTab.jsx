@@ -207,12 +207,7 @@ export default function CustomClosetConfigTab() {
                       return (
                         <div key={comp.id} className="cc-addon">
                           <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
-                          {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-                          <select className="cc-addon__mini-select" value={comp.item_type ?? ""} onChange={e => updateComponentType(comp.id, e.target.value)}>
-                            <option value="shelf">מדף</option>
-                            <option value="rod">מוט תליה</option>
-                            <option value="drawer">מגירה</option>
-                          </select>
+                          {comp.sku && <span className="cc-addon__sku" style={{marginRight: 'auto'}}>{comp.sku}</span>}
                           <input
                             type="number"
                             className="cc-addon__min-input"
