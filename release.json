@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.30",
-  "released_at": "2026-06-04T20:38:06Z",
-  "notes": "d64f7fb move item_type out of תוספות ארון; manage stage-2 type inline in תוספות אפשריות"
+  "version": "v1.59.0",
+  "released_at": "2026-06-04T20:48:45Z",
+  "notes": "cf8c494 option B: generic colored bars in stage 2; color picker on components; dynamic palette from DB"
 }
