@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.27",
-  "released_at": "2026-06-04T20:12:26Z",
-  "notes": "d21b741 inline item_type selector in תוספות אפשריות — no more tab-switching needed"
+  "version": "v1.58.28",
+  "released_at": "2026-06-04T20:29:09Z",
+  "notes": "deab572 remove redundant item_type dropdown from תוספות אפשריות"
 }
