@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.63.0",
-  "released_at": "2026-06-05T00:09:01Z",
-  "notes": "b633639 feat: pre-seed cabins with min items; remove type dropdown from interior addons"
+  "version": "v1.64.0",
+  "released_at": "2026-06-05T00:40:43Z",
+  "notes": "85c73f5 remove allowDivider toggle - divider always enabled"
 }
