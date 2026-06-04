@@ -167,17 +167,26 @@ export default function CustomClosetConfigTab() {
       {/* ── Add-ons ────────────────────────────────────────── */}
       <div className="cc-section">
         <h3 className="cc-section__title">תוספות אפשריות</h3>
-        <p className="cc-section__sub">בחר אילו פריטים מ"תוספות ארון" יוצגו ללקוח כתוספות.</p>
+        <p className="cc-section__sub">
+          פריטים מופעלים יופיעו ללקוח בשלב 2 של עיצוב הארון.
+          כדי שפריט יופיע, חובה שיהיה לו "סוג פריט" מוגדר בלשונית "תוספות ארון".
+        </p>
         {components.length === 0 ? (
           <p className="cc-empty">אין פריטים מוגדרים עדיין. הוסף פריטים בלשונית "תוספות ארון".</p>
         ) : (
           <div className="cc-addons">
             {components.map((comp) => {
               const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
+              const typeLabel = { shelf: "מדף", rod: "מוט תליה", drawer: "מגירה" }[comp.item_type];
               return (
                 <div key={comp.id} className="cc-addon">
                   <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
                   {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+                  {typeLabel ? (
+                    <span className="cc-addon__type cc-addon__type--ok">→ {typeLabel}</span>
+                  ) : (
+                    <span className="cc-addon__type cc-addon__type--warn">סוג לא מוגדר</span>
+                  )}
                 </div>
               );
             })}
