@@ -11,13 +11,22 @@ import {
   DimensionLineH,
 } from "./interior-plan/DimensionLines.jsx";
 
-// Draggable item palette (right side). Users drag these chips onto a cabin
-// instead of clicking a "+" button — the drop height decides the slot.
-const PALETTE = [
-  { type: "shelf", label: "מדף", color: "#8b6f47" },
-  { type: "rod", label: "מוט תליה", color: "#9a9a9f" },
-  { type: "drawer", label: "מגירה", color: "#6f7787" },
-];
+// Legacy fallback colours for items placed before component-based palette.
+const LEGACY = {
+  shelf:  { color: "#a98865", label: "מדף" },
+  rod:    { color: "#9aa0a6", label: "מוט תליה" },
+  drawer: { color: "#6f7787", label: "מגירה" },
+};
+
+function resolveMeta(type, paletteComponents) {
+  if (LEGACY[type]) return LEGACY[type];
+  const compId = type?.startsWith("c:") ? parseInt(type.slice(2)) : null;
+  if (compId) {
+    const comp = paletteComponents?.find(c => c.id === compId);
+    if (comp) return { color: comp.color || "#a98865", label: comp.name };
+  }
+  return { color: "#888", label: type || "?" };
+}
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() => {
@@ -38,7 +47,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes = null }) {
+export default function ClosetInteriorPlan({ cfg, items, onChange, paletteComponents = null }) {
   const doors = cfg.doors ?? [];
   const nDoors = Math.max(1, doors.length);
   const hasDivider = !!cfg.hasInternalDivider;
@@ -252,8 +261,13 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
   function removeItemFrom(doorId, originalIdx) {
     const cur = items?.[doorId] ?? [];
     const itemToRemove = cur[originalIdx];
-    if (itemToRemove?.type === "shelf") {
-      const shelfCount = cur.filter((it) => it.type === "shelf").length;
+    const isShelf = (type) => {
+      if (type === "shelf") return true;
+      const compId = type?.startsWith("c:") ? parseInt(type.slice(2)) : null;
+      return compId ? (paletteComponents?.find(c => c.id === compId)?.item_type === "shelf") : false;
+    };
+    if (isShelf(itemToRemove?.type)) {
+      const shelfCount = cur.filter((it) => isShelf(it.type)).length;
       if (shelfCount <= 2) return;
     }
     onChange({
@@ -383,22 +397,26 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
     <div className="closet-plan">
       <div className="closet-plan__palette">
         <h5 className="closet-plan__palette-title">גררו פריט לארון</h5>
-        {(allowedTypes ? PALETTE.filter(p => allowedTypes.includes(p.type)) : PALETTE).map((p) => (
-          <button
-            key={p.type}
-            type="button"
-            className="closet-plan__add-btn closet-plan__drag-chip"
-            style={{ touchAction: "none" }}
-            onPointerDown={(e) => onPalettePointerDown(e, p.type)}
-          >
-            <span
-              className="closet-plan__chip-swatch"
-              style={{ background: p.color }}
-              aria-hidden="true"
-            />
-            {p.label}
-          </button>
-        ))}
+        {(paletteComponents ?? []).map((comp) => {
+          const type = `c:${comp.id}`;
+          const chipColor = comp.color || "#a98865";
+          return (
+            <button
+              key={type}
+              type="button"
+              className="closet-plan__add-btn closet-plan__drag-chip"
+              style={{ touchAction: "none" }}
+              onPointerDown={(e) => onPalettePointerDown(e, type)}
+            >
+              <span
+                className="closet-plan__chip-swatch"
+                style={{ background: chipColor }}
+                aria-hidden="true"
+              />
+              {comp.name}
+            </button>
+          );
+        })}
         <p className="closet-plan__hint">
           גררו מדף, מוט או מגירה אל התא הרצוי בארון, לגובה שתבחרו. אפשר גם לגרור פריט קיים מעלה/מטה או בין התאים. לחיצה על × מסירה פריט.
         </p>
@@ -565,7 +583,12 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
               : interiorLeftPx;
             const compItems = items?.[door.id] ?? [];
             if (compItems.length === 0) return null;
-            const shelfCount = compItems.filter((it) => it.type === "shelf").length;
+            const isShelf = (type) => {
+              if (type === "shelf") return true;
+              const cid = type?.startsWith("c:") ? parseInt(type.slice(2)) : null;
+              return cid ? (paletteComponents?.find(c => c.id === cid)?.item_type === "shelf") : false;
+            };
+            const shelfCount = compItems.filter((it) => isShelf(it.type)).length;
             // Every compartment's items are now fully interactive — drag,
             // move between cabins, and delete without selecting a cabin first.
             return (
@@ -575,6 +598,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
                     dragPreview?.sourceDoorId === door.id &&
                     dragPreview?.sourceIndex === idx
                   ) return null;
+                  const meta = resolveMeta(item.type, paletteComponents);
                   return (
                     <PlacedItem
                       key={`${door.id}-${idx}`}
@@ -584,8 +608,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
                       widthPx={slice}
                       yToPx={yToPx}
                       isDragging={false}
+                      color={meta.color}
+                      label={meta.label}
                       onPointerDown={(e, _) => onItemPointerDown(e, idx, door.id)}
-                      canDelete={item.type !== "shelf" || shelfCount > 2}
+                      canDelete={!isShelf(item.type) || shelfCount > 2}
                       onDelete={() => removeItemFrom(door.id, idx)}
                     />
                   );
@@ -601,6 +627,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
             const previewLeft = hasDivider
               ? interiorLeftPx + di * slice
               : interiorLeftPx;
+            const previewMeta = resolveMeta(dragPreview.type, paletteComponents);
             return (
               <PlacedItem
                 key="drag-preview"
@@ -610,6 +637,8 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
                 widthPx={slice}
                 yToPx={yToPx}
                 isDragging={true}
+                color={previewMeta.color}
+                label={previewMeta.label}
                 onPointerDown={() => {}}
                 onDelete={() => {}}
               />
@@ -682,7 +711,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, allowedTypes 
           className="closet-plan__drag-ghost"
           style={{ left: newDrag.clientX, top: newDrag.clientY }}
         >
-          {PALETTE.find((p) => p.type === newDrag.type)?.label}
+          {resolveMeta(newDrag.type, paletteComponents).label}
         </div>
       )}
     </div>

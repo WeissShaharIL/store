@@ -1,3 +1,5 @@
+// Generic colored-bar renderer — all interior items look the same,
+// distinguished only by color and label (set on the component in admin).
 export default function PlacedItem({
   item,
   originalIdx,
@@ -8,145 +10,68 @@ export default function PlacedItem({
   onPointerDown,
   canDelete = true,
   onDelete,
+  color = "#a98865",
+  label = "",
 }) {
   const cy = yToPx(item.y);
-  const innerInset = 4;
-  const innerLeft = leftPx + innerInset;
-  const innerWidth = Math.max(20, widthPx - innerInset * 2);
-  const innerRight = innerLeft + innerWidth;
+  const inset = 4;
+  const barLeft   = leftPx + inset;
+  const barWidth  = Math.max(20, widthPx - inset * 2);
+  const barRight  = barLeft + barWidth;
+  const barH      = 18;
+  const barTop    = cy - barH / 2;
+  const deleteCy  = barTop - 10;
+  const deleteCx  = barRight - 6;
 
-  let visual;
-  if (item.type === "shelf") {
-    visual = (
-      <rect
-        x={innerLeft}
-        y={cy - 4}
-        width={innerWidth}
-        height={8}
-        fill="#a98865"
-        stroke="#7a5f43"
-        strokeWidth={1}
-        rx={2}
-      />
-    );
-  } else if (item.type === "rod") {
-    visual = (
-      <g>
-        <rect
-          x={innerLeft}
-          y={cy - 11}
-          width={innerWidth}
-          height={22}
-          fill="transparent"
-          pointerEvents="all"
-        />
-        <line
-          x1={innerLeft + 6}
-          y1={cy}
-          x2={innerRight - 6}
-          y2={cy}
-          stroke="#9aa0a6"
-          strokeWidth={5}
-          strokeLinecap="round"
-          pointerEvents="none"
-        />
-        <circle
-          cx={innerLeft + innerWidth / 2}
-          cy={cy}
-          r={5}
-          fill="#9aa0a6"
-          pointerEvents="none"
-        />
-        <rect
-          x={innerLeft + 2}
-          y={cy - 7}
-          width={6}
-          height={14}
-          fill="#a98865"
-          rx={1}
-          pointerEvents="none"
-        />
-        <rect
-          x={innerRight - 8}
-          y={cy - 7}
-          width={6}
-          height={14}
-          fill="#a98865"
-          rx={1}
-          pointerEvents="none"
-        />
-      </g>
-    );
-  } else if (item.type === "drawer") {
-    visual = (
-      <g>
-        <rect
-          x={innerLeft}
-          y={cy - 22}
-          width={innerWidth}
-          height={44}
-          fill="#c4a373"
-          stroke="#7a5f43"
-          strokeWidth={1}
-          rx={3}
-        />
-        <rect
-          x={innerLeft + innerWidth / 2 - 18}
-          y={cy + 12}
-          width={36}
-          height={4}
-          fill="#9aa0a6"
-          rx={2}
-        />
-      </g>
-    );
-  }
-
-  const labelOffsetX = innerLeft + 2;
-  const labelY = cy - (item.type === "drawer" ? 28 : 14);
-  const deleteCx = innerRight - 4;
+  // Slightly darker border: blend toward black
+  const borderColor = "rgba(0,0,0,0.35)";
 
   return (
     <g
-      className={
-        "closet-plan__item" +
-        (isDragging ? " closet-plan__item--dragging" : "")
-      }
+      className={"closet-plan__item" + (isDragging ? " closet-plan__item--dragging" : "")}
       onPointerDown={(e) => onPointerDown(e, originalIdx)}
       onDragStart={(e) => e.preventDefault()}
       style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
     >
-      {visual}
-      {canDelete && <g
-        className="closet-plan__item-delete"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={onDelete}
-        style={{ cursor: "pointer" }}
-      >
-        <circle
-          cx={deleteCx}
-          cy={labelY}
-          r={18}
-          fill="transparent"
-          pointerEvents="all"
-        />
-        <circle cx={deleteCx} cy={labelY} r={13} fill="#fff" stroke="#c44" strokeWidth={1.2} />
-        <line x1={deleteCx - 5} y1={labelY - 5} x2={deleteCx + 5} y2={labelY + 5} stroke="#c44" strokeWidth={1.5} />
-        <line x1={deleteCx - 5} y1={labelY + 5} x2={deleteCx + 5} y2={labelY - 5} stroke="#c44" strokeWidth={1.5} />
-      </g>}
+      {/* Colored bar */}
+      <rect
+        x={barLeft}
+        y={barTop}
+        width={barWidth}
+        height={barH}
+        fill={color}
+        stroke={borderColor}
+        strokeWidth={1}
+        rx={3}
+        pointerEvents="all"
+      />
+      {/* Label centered in bar */}
       <text
-        x={labelOffsetX}
-        y={labelY + 3}
-        fontSize="11"
-        fill="#94959a"
+        x={barLeft + barWidth / 2}
+        y={cy + 4}
+        fontSize="10"
+        fill="rgba(255,255,255,0.85)"
+        textAnchor="middle"
         pointerEvents="none"
+        style={{ userSelect: "none" }}
       >
-        {item.type === "shelf"
-          ? "מדף"
-          : item.type === "rod"
-          ? "מוט"
-          : "מגירה"}
+        {label}
       </text>
+
+      {/* Delete button above the bar */}
+      {canDelete && (
+        <g
+          className="closet-plan__item-delete"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={onDelete}
+          style={{ cursor: "pointer" }}
+        >
+          <circle cx={deleteCx} cy={deleteCy} r={18} fill="transparent" pointerEvents="all" />
+          <circle cx={deleteCx} cy={deleteCy} r={11} fill="#fff" stroke="#c44" strokeWidth={1.2} />
+          <line x1={deleteCx - 4} y1={deleteCy - 4} x2={deleteCx + 4} y2={deleteCy + 4} stroke="#c44" strokeWidth={1.5} />
+          <line x1={deleteCx - 4} y1={deleteCy + 4} x2={deleteCx + 4} y2={deleteCy - 4} stroke="#c44" strokeWidth={1.5} />
+        </g>
+      )}
     </g>
   );
 }

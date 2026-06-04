@@ -23,6 +23,7 @@ def _to_out(row: ComponentPrice) -> ComponentPriceOut:
         rules=row.rules,
         sort_order=row.sort_order,
         item_type=row.item_type,
+        color=row.color,
         updated_at=row.updated_at,
     )
 

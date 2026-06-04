@@ -37,20 +37,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     getPublicComponentPrices().then(setComponentPrices).catch(() => {});
   }, []);
 
-  // Derive allowed palette types from enabled components' item_types.
-  // Rules:
-  //   - No components exist → show all (system not configured yet)
-  //   - Components exist but none have item_type → show all (mapping not set up)
-  //   - Components exist with item_type → filter by which ones are enabled
-  //     (empty result = nothing to show in palette)
-  const allowedTypes = (() => {
-    if (!closetCfg) return []; // still loading — show nothing rather than flash all
-    const mappedComponents = componentPrices.filter(c => c.item_type);
+  // Build the stage-2 palette: enabled components that have item_type set.
+  // Each entry has id, name, color, item_type → rendered as a colored draggable chip.
+  const paletteComponents = (() => {
+    if (!closetCfg) return [];
     const enabledIds = new Set(closetCfg.addOnComponentIds ?? []);
-    const enabledMapped = mappedComponents.filter(c => enabledIds.has(c.id));
-    // Return only the item types whose component is enabled.
-    // Empty array = nothing in the palette (admin must enable תוספות to populate it).
-    return [...new Set(enabledMapped.map(c => c.item_type))];
+    return componentPrices.filter(c => enabledIds.has(c.id) && c.item_type);
   })();
 
   const { colors } = usePaletteColors();
@@ -475,7 +467,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
               cfg={customConfig}
               items={customItems}
               onChange={setCustomItems}
-              allowedTypes={allowedTypes}
+              paletteComponents={paletteComponents}
             />
           </div>
         )}

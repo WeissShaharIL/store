@@ -306,6 +306,7 @@ class ComponentPriceOut(BaseModel):
     rules: str
     sort_order: int
     item_type: Optional[str] = None
+    color: Optional[str] = None
     updated_at: datetime
 
     class Config:
@@ -319,6 +320,7 @@ class ComponentPriceCreate(BaseModel):
     rules: str = "{}"
     sort_order: int = 0
     item_type: Optional[str] = None
+    color: Optional[str] = None
 
 
 class ComponentPriceUpdate(BaseModel):
@@ -328,6 +330,7 @@ class ComponentPriceUpdate(BaseModel):
     rules: Optional[str] = None
     sort_order: Optional[int] = None
     item_type: Optional[str] = None
+    color: Optional[str] = None
 
 
 class LeadOut(BaseModel):

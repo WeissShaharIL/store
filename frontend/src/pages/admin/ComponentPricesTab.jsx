@@ -16,7 +16,7 @@ const BASIS_OPTIONS = [
 ];
 
 function emptyForm() {
-  return { name: "", sku: "", price_basis: "fixed", sort_order: 0 };
+  return { name: "", sku: "", price_basis: "fixed", sort_order: 0, color: "#a98865" };
 }
 
 function emptyFixed() { return { price: "" }; }
@@ -93,7 +93,7 @@ export default function ComponentPricesTab() {
   }
 
   function openEdit(item) {
-    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order });
+    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order, color: item.color || "#a98865" });
     const parsed = parseRules(item.rules, item.price_basis);
     if (item.price_basis === "fixed") {
       setFixedPrice(String(parsed.fixedPrice));
@@ -229,6 +229,19 @@ export default function ComponentPricesTab() {
               value={form.sku}
               onChange={e => setForm(f => ({ ...f, sku: e.target.value }))}
             />
+          </div>
+
+          <div className="cp-editor__row">
+            <label>צבע (שלב 2)</label>
+            <div className="cp-color-row">
+              <input
+                type="color"
+                value={form.color || "#a98865"}
+                onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
+                className="cp-color-input"
+              />
+              <span className="cp-color-hex">{form.color || "#a98865"}</span>
+            </div>
           </div>
 
           <div className="cp-editor__row">
