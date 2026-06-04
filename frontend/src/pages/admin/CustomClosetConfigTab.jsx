@@ -213,17 +213,16 @@ export default function CustomClosetConfigTab() {
                             <option value="rod">מוט תליה</option>
                             <option value="drawer">מגירה</option>
                           </select>
-                          <label className="cc-addon__min-label">
-                            <span>מינ׳ לתא</span>
-                            <input
-                              type="number"
-                              className="cc-addon__min-input"
-                              min={0}
-                              max={20}
-                              value={comp.min_per_cabin ?? 0}
-                              onChange={e => updateComponentMin(comp.id, e.target.value)}
-                            />
-                          </label>
+                          <input
+                            type="number"
+                            className="cc-addon__min-input"
+                            min={0}
+                            max={20}
+                            value={comp.min_per_cabin ?? 0}
+                            title="מינ׳ לתא"
+                            aria-label="מינימום פריטים לתא"
+                            onChange={e => updateComponentMin(comp.id, e.target.value)}
+                          />
                         </div>
                       );
                     })}
