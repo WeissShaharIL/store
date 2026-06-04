@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.29",
-  "released_at": "2026-06-04T20:32:57Z",
-  "notes": "1ccd9d9 split תוספות אפשריות into stage-2 interior vs general sections"
+  "version": "v1.58.30",
+  "released_at": "2026-06-04T20:38:06Z",
+  "notes": "d64f7fb move item_type out of תוספות ארון; manage stage-2 type inline in תוספות אפשריות"
 }
