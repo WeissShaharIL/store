@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.25",
-  "released_at": "2026-06-04T20:02:57Z",
-  "notes": "e188b5b empty palette by default in stage 2 — only show item types enabled via תוספות אפשריות"
+  "version": "v1.58.26",
+  "released_at": "2026-06-04T20:08:04Z",
+  "notes": "3e99955 show item_type badge in תוספות אפשריות with warning when type not configured"
 }
