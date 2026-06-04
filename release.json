@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.59.0",
-  "released_at": "2026-06-04T20:48:45Z",
-  "notes": "cf8c494 option B: generic colored bars in stage 2; color picker on components; dynamic palette from DB"
+  "version": "v1.59.1",
+  "released_at": "2026-06-04T21:35:47Z",
+  "notes": "4efc9ac respect allowDivider config in stage 1 divider toggle"
 }
