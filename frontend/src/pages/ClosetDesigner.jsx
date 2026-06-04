@@ -446,7 +446,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
                 step={depthC.step}
                 onChange={(v) => setCustomDims((d) => ({ ...d, D: v }))}
               />
-              {nDoors > 1 && (
+              {nDoors > 1 && closetCfg?.allowDivider !== false && (
                 <div className="closet-designer__color-block">
                   <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
                   <ToggleField
