@@ -220,7 +220,7 @@
   position: absolute;
   top: 80px;
   bottom: 80px;
-  right: clamp(210px, 22%, 260px);
+  right: 205px;
   z-index: 5;
   padding: 14px 8px;
   background: rgba(8, 8, 14, 0.72);
