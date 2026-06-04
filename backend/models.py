@@ -388,6 +388,8 @@ class ComponentPrice(Base):
     price_basis = Column(String(20), nullable=False, default="fixed")
     # "shelf" | "rod" | "drawer" | null — maps this component to a closet interior slot
     item_type = Column(String(20), nullable=True)
+    # hex color shown in the stage-2 interior plan (e.g. "#a98865")
+    color = Column(String(16), nullable=True)
     # fixed → '{"price": 150}'
     # dimension → '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]'
     rules = Column(Text, nullable=False, default="{}")
