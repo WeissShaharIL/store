@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.58.24",
-  "released_at": "2026-06-03T18:03:55Z",
-  "notes": "424a929 fix adaptive bg: init at correct color on mount so stage transitions don\u0027t flash white"
+  "version": "v1.58.25",
+  "released_at": "2026-06-04T20:02:57Z",
+  "notes": "e188b5b empty palette by default in stage 2 — only show item types enabled via תוספות אפשריות"
 }
