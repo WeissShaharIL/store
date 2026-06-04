@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.62.0",
-  "released_at": "2026-06-05T00:04:14Z",
-  "notes": "8ec2f6b style: compact min-per-cabin input to match mini-select style"
+  "version": "v1.63.0",
+  "released_at": "2026-06-05T00:09:01Z",
+  "notes": "b633639 feat: pre-seed cabins with min items; remove type dropdown from interior addons"
 }
