@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.60.0",
-  "released_at": "2026-06-04T23:29:47Z",
-  "notes": "40b7087 feat: add min_per_cabin column to component_prices\n174e738 feat: add min_per_cabin to closet addon config and enforce in designer"
+  "version": "v1.61.0",
+  "released_at": "2026-06-04T23:55:25Z",
+  "notes": "4ae1af2 fix: align step-nav pill to left edge of controls panel"
 }
