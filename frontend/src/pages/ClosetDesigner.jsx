@@ -141,6 +141,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
+  const [interiorError, setInteriorError] = useState("");
 
   const totalW = customDims.compartmentWidth * nDoors;
   const setTotalW = (w) =>
@@ -223,7 +224,31 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     navigate("/cart");
   }
 
+  function checkInteriorMinimums() {
+    const required = paletteComponents.filter(c => c.min_per_cabin > 0);
+    if (!required.length) return null;
+    const doors = customConfig.doors ?? [];
+    const cabinIds = customDivider && doors.length > 1
+      ? doors.map(d => d.id)
+      : doors.length > 0 ? [doors[0].id] : [];
+    for (const comp of required) {
+      const typeKey = `c:${comp.id}`;
+      for (const doorId of cabinIds) {
+        const count = (customItems?.[doorId] ?? []).filter(it => it.type === typeKey).length;
+        if (count < comp.min_per_cabin) {
+          return `יש להוסיף לפחות ${comp.min_per_cabin} ${comp.name} בכל תא`;
+        }
+      }
+    }
+    return null;
+  }
+
   function handleContinue() {
+    if (step === 2) {
+      const err = checkInteriorMinimums();
+      if (err) { setInteriorError(err); return; }
+    }
+    setInteriorError("");
     const i = availableSteps.findIndex((s) => s.id === step);
     if (i >= 0 && i < availableSteps.length - 1) {
       setStep(availableSteps[i + 1].id);
@@ -463,10 +488,13 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
         {step === 2 && (
           <div className="closet-designer__body closet-designer__body--step2">
+            {interiorError && (
+              <div className="closet-designer__interior-error">{interiorError}</div>
+            )}
             <ClosetInteriorPlan
               cfg={customConfig}
               items={customItems}
-              onChange={setCustomItems}
+              onChange={(v) => { setCustomItems(v); setInteriorError(""); }}
               paletteComponents={paletteComponents}
             />
           </div>
@@ -565,7 +593,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           <button
             type="button"
             className="closet-designer__mobile-nav__btn closet-designer__mobile-nav__btn--primary"
-            onClick={() => nextId != null ? setStep(nextId) : handleAddToCart()}
+            onClick={handleContinue}
           >
             {nextId != null ? "הבא" : editCartItemId ? "שמור שינויים" : "הוסף לעגלה"} <ArrowLeft />
           </button>

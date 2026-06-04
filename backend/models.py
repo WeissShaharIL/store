@@ -390,6 +390,8 @@ class ComponentPrice(Base):
     item_type = Column(String(20), nullable=True)
     # hex color shown in the stage-2 interior plan (e.g. "#a98865")
     color = Column(String(16), nullable=True)
+    # minimum number of this item required in each cabin (0 = no minimum)
+    min_per_cabin = Column(Integer, nullable=False, default=0)
     # fixed → '{"price": 150}'
     # dimension → '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]'
     rules = Column(Text, nullable=False, default="{}")

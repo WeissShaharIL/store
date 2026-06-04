@@ -82,6 +82,7 @@ def run_migrations(_db: Session) -> None:
     # component_prices — item_type added to map component to closet palette slot
     _add_col("component_prices", "item_type", "VARCHAR(20)", "NULL")
     _add_col("component_prices", "color", "VARCHAR(16)", "NULL")
+    _add_col("component_prices", "min_per_cabin", "INTEGER", "0")
 
 
 def seed_admin(db: Session) -> None:

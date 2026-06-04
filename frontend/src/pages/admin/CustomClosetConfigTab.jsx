@@ -96,6 +96,16 @@ export default function CustomClosetConfigTab() {
     }
   }
 
+  async function updateComponentMin(id, min) {
+    const val = Math.max(0, Number(min) || 0);
+    try {
+      const updated = await adminUpdateComponentPrice(id, { min_per_cabin: val });
+      setComponents(prev => prev.map(c => c.id === id ? { ...c, min_per_cabin: updated.min_per_cabin } : c));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   function toggleAddOn(id) {
     setCfg((c) => {
       const ids = c.addOnComponentIds ?? [];
@@ -203,6 +213,17 @@ export default function CustomClosetConfigTab() {
                             <option value="rod">מוט תליה</option>
                             <option value="drawer">מגירה</option>
                           </select>
+                          <label className="cc-addon__min-label">
+                            <span>מינ׳ לתא</span>
+                            <input
+                              type="number"
+                              className="cc-addon__min-input"
+                              min={0}
+                              max={20}
+                              value={comp.min_per_cabin ?? 0}
+                              onChange={e => updateComponentMin(comp.id, e.target.value)}
+                            />
+                          </label>
                         </div>
                       );
                     })}
