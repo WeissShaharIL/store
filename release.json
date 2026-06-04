@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.59.3",
-  "released_at": "2026-06-04T22:13:13Z",
-  "notes": "5fbc06b position step nav at right edge of left canvas (right: 205px)"
+  "version": "v1.60.0",
+  "released_at": "2026-06-04T23:29:47Z",
+  "notes": "40b7087 feat: add min_per_cabin column to component_prices\n174e738 feat: add min_per_cabin to closet addon config and enforce in designer"
 }
