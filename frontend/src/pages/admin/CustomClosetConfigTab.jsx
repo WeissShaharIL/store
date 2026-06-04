@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices } from "../../api.js";
+import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices, adminUpdateComponentPrice } from "../../api.js";
 import "./AdminTab.css";
 import "./CustomClosetConfigTab.css";
 
@@ -86,6 +86,15 @@ export default function CustomClosetConfigTab() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
+
+  async function updateComponentType(id, itemType) {
+    try {
+      const updated = await adminUpdateComponentPrice(id, { item_type: itemType || null });
+      setComponents(prev => prev.map(c => c.id === id ? { ...c, item_type: updated.item_type } : c));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
 
   function toggleAddOn(id) {
     setCfg((c) => {
@@ -176,27 +185,50 @@ export default function CustomClosetConfigTab() {
         ) : (() => {
           const interiorItems = components.filter(c => c.item_type);
           const generalItems  = components.filter(c => !c.item_type);
-          const renderRow = (comp) => {
-            const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
-            return (
-              <div key={comp.id} className="cc-addon">
-                <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
-                {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-              </div>
-            );
-          };
+          const TYPE_LABELS = { shelf: "מדף", rod: "מוט תליה", drawer: "מגירה" };
           return (
             <>
               {interiorItems.length > 0 && (
                 <>
-                  <p className="cc-addons-group-label">פנים הארון — שלב 2 (ניתן לגרור לתאים)</p>
-                  <div className="cc-addons">{interiorItems.map(renderRow)}</div>
+                  <p className="cc-addons-group-label">פנים הארון — שלב 2</p>
+                  <div className="cc-addons">
+                    {interiorItems.map(comp => {
+                      const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
+                      return (
+                        <div key={comp.id} className="cc-addon">
+                          <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
+                          {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+                          <select className="cc-addon__mini-select" value={comp.item_type ?? ""} onChange={e => updateComponentType(comp.id, e.target.value)}>
+                            <option value="shelf">מדף</option>
+                            <option value="rod">מוט תליה</option>
+                            <option value="drawer">מגירה</option>
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </>
               )}
               {generalItems.length > 0 && (
                 <>
-                  <p className="cc-addons-group-label cc-addons-group-label--general">תוספות כלליות (אינן קשורות לשלב 2)</p>
-                  <div className="cc-addons">{generalItems.map(renderRow)}</div>
+                  <p className="cc-addons-group-label cc-addons-group-label--general">תוספות כלליות</p>
+                  <div className="cc-addons">
+                    {generalItems.map(comp => {
+                      const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
+                      return (
+                        <div key={comp.id} className="cc-addon">
+                          <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
+                          {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+                          <select className="cc-addon__mini-select cc-addon__mini-select--promote" value="" onChange={e => e.target.value && updateComponentType(comp.id, e.target.value)}>
+                            <option value="">הוסף לשלב 2...</option>
+                            <option value="shelf">כ-מדף</option>
+                            <option value="rod">כ-מוט תליה</option>
+                            <option value="drawer">כ-מגירה</option>
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </>
               )}
             </>
