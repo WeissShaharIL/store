@@ -168,23 +168,40 @@ export default function CustomClosetConfigTab() {
       <div className="cc-section">
         <h3 className="cc-section__title">תוספות אפשריות</h3>
         <p className="cc-section__sub">
-          הפעל פריטים ובחר לאיזה כלי בשלב 2 הם ימופו. פריט ללא מיפוי לא יופיע ללקוח.
+          הפעלת פריט כאן מאפשרת ללקוח לבחור אותו בתהליך ההזמנה.
+          סוג הפריט (מדף / מוט / מגירה) נקבע בלשונית "תוספות ארון".
         </p>
         {components.length === 0 ? (
           <p className="cc-empty">אין פריטים מוגדרים עדיין. הוסף פריטים בלשונית "תוספות ארון".</p>
-        ) : (
-          <div className="cc-addons">
-            {components.map((comp) => {
-              const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
-              return (
-                <div key={comp.id} className="cc-addon">
-                  <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
-                  {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        ) : (() => {
+          const interiorItems = components.filter(c => c.item_type);
+          const generalItems  = components.filter(c => !c.item_type);
+          const renderRow = (comp) => {
+            const checked = (cfg.addOnComponentIds ?? []).includes(comp.id);
+            return (
+              <div key={comp.id} className="cc-addon">
+                <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
+                {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+              </div>
+            );
+          };
+          return (
+            <>
+              {interiorItems.length > 0 && (
+                <>
+                  <p className="cc-addons-group-label">פנים הארון — שלב 2 (ניתן לגרור לתאים)</p>
+                  <div className="cc-addons">{interiorItems.map(renderRow)}</div>
+                </>
+              )}
+              {generalItems.length > 0 && (
+                <>
+                  <p className="cc-addons-group-label cc-addons-group-label--general">תוספות כלליות (אינן קשורות לשלב 2)</p>
+                  <div className="cc-addons">{generalItems.map(renderRow)}</div>
+                </>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       <div className="cc-actions">
