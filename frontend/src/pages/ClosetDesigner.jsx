@@ -44,13 +44,12 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   //   - Components exist with item_type → filter by which ones are enabled
   //     (empty result = nothing to show in palette)
   const allowedTypes = (() => {
-    if (!closetCfg || componentPrices.length === 0) return null;
+    if (!closetCfg) return []; // still loading — show nothing rather than flash all
     const mappedComponents = componentPrices.filter(c => c.item_type);
-    if (mappedComponents.length === 0) return null; // no type mapping → show all
     const enabledIds = new Set(closetCfg.addOnComponentIds ?? []);
     const enabledMapped = mappedComponents.filter(c => enabledIds.has(c.id));
-    // Admin enabled some items but none have item_type → can't filter, show all
-    if (enabledIds.size > 0 && enabledMapped.length === 0) return null;
+    // Return only the item types whose component is enabled.
+    // Empty array = nothing in the palette (admin must enable תוספות to populate it).
     return [...new Set(enabledMapped.map(c => c.item_type))];
   })();
 
