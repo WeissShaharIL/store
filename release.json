@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.0",
-  "released_at": "2026-06-05T00:40:43Z",
-  "notes": "85c73f5 remove allowDivider toggle - divider always enabled"
+  "version": "v1.64.1",
+  "released_at": "2026-06-08T21:27:47Z",
+  "notes": "966ea8b feat: external drawer (מגירה חיצונית) custom component"
 }
