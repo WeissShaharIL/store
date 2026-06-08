@@ -113,6 +113,12 @@ export default function ClosetFromConfig({
   onSelectDoor,
   onSelectDrawer,
   showDimensions = false,
+  // v2.x — component catalog (entries with {id, item_type}) so
+  // customer-placed custom components (stored as `c:<id>` item types)
+  // resolve to a renderable base type (shelf/rod/drawer/external_drawer).
+  // Null in template-only contexts (admin builder / gallery / showroom)
+  // where items already carry legacy base types.
+  components = null,
 }) {
   const dims = config.dimensions;
   // v1.34.0 — dimensions are stored in cm; convert to world units
@@ -159,6 +165,24 @@ export default function ClosetFromConfig({
     handleMaterialFor(
       handles[key] ?? handles[DEFAULT_HANDLE] ?? DEFAULT_HANDLES[DEFAULT_HANDLE],
     );
+
+  // Map a stored item type to a renderable base type. Template items
+  // already use base types (shelf/rod/drawer); customer-placed custom
+  // components use `c:<id>` and resolve via the component catalog's
+  // item_type. Unresolved (no catalog / unknown id) → null, which
+  // renders nothing — same as the pre-resolution behaviour.
+  const componentTypeById = useMemo(() => {
+    const map = {};
+    for (const c of components ?? []) map[c.id] = c.item_type;
+    return map;
+  }, [components]);
+  const resolveRenderType = (type) => {
+    if (typeof type === "string" && type.startsWith("c:")) {
+      const id = parseInt(type.slice(2), 10);
+      return componentTypeById[id] ?? null;
+    }
+    return type;
+  };
   const palette = useMemo(() => {
     const id = resolveColorKey(config.color, colors) ?? "almond";
     const c = colors[id] ?? colors.almond ?? Object.values(colors)[0];
@@ -261,6 +285,7 @@ export default function ClosetFromConfig({
     return variant.items.map((item, i) => {
       const y = toYInCompartment(item.y);
       const key = `d${doorIndex}-i${i}`;
+      const renderType = resolveRenderType(item.type);
       const isSelected =
         selectedItem &&
         selectedItem.doorIndex === doorIndex &&
@@ -291,7 +316,7 @@ export default function ClosetFromConfig({
           </group>
         );
       };
-      if (item.type === "shelf") {
+      if (renderType === "shelf") {
         return wrap(
           <Shelf
             key={key}
@@ -304,7 +329,7 @@ export default function ClosetFromConfig({
           />
         );
       }
-      if (item.type === "rod") {
+      if (renderType === "rod") {
         return wrap(
           <HangingRod
             key={key}
@@ -314,7 +339,7 @@ export default function ClosetFromConfig({
           />
         );
       }
-      if (item.type === "drawer") {
+      if (renderType === "drawer") {
         /* v1.99.13 — compartment-internal drawers (placed via
            the stage-2 interior planner) are now clickable +
            animate forward when open, matching the
@@ -371,6 +396,61 @@ export default function ClosetFromConfig({
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectDrawer(drawerId);
+              }}
+            >
+              {node}
+            </group>
+          );
+        }
+        return node;
+      }
+      if (renderType === "external_drawer") {
+        /* External / under-closet drawer (מגירה חיצונית). Unlike an
+           interior drawer (which sits inside the compartment behind
+           the door), this renders BELOW the cabinet body — in the
+           leg/base zone — front-mounted and always visible. Reads as
+           a base drawer the closet sits on, per the product spec:
+           "like a drawer but it comes underneath the closet."
+
+           renderCompartment runs inside the body group (offset up by
+           STAGE_LEG_TOTAL_H), so a body-local NEGATIVE Y places the
+           drawer between the floor underside (0) and the ground
+           (-STAGE_LEG_TOTAL_H). The item's planner `y` is ignored —
+           an external drawer always sits at the base.
+
+           Click id is namespaced `extdrawer-` so it toggles
+           independently of interior (`item-`) and shortened-door
+           (`stack-`) drawer stacks. */
+        // Fill almost the whole base gap (~9.5 cm of the 10 cm leg
+        // zone) so the drawer face reads as a real plinth/base unit
+        // rather than a thin sliver. Face is pushed a touch proud of
+        // the silver stage front so it isn't visually swallowed by it.
+        const EXT_DRAWER_H = STAGE_LEG_TOTAL_H - 0.005;
+        const extDrawerId = `extdrawer-${door.id}-${i}`;
+        const isExtOpen = state.openDrawerIds?.includes(extDrawerId) ?? false;
+        let node = wrap(
+          <Drawer
+            key={key}
+            position={[
+              cx,
+              -STAGE_LEG_TOTAL_H / 2,
+              D / 2 + T + 0.012 + (isExtOpen ? DRAWER_OPEN_SHIFT : 0),
+            ]}
+            width={itemWidth}
+            depth={innerCompartmentDepth}
+            height={EXT_DRAWER_H}
+            color={palette.wood}
+            texture={palette.texture}
+            handleMaterial={compartmentHandleMaterial}
+          />
+        );
+        if (!onSelectItem && onSelectDrawer) {
+          node = (
+            <group
+              key={key}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectDrawer(extDrawerId);
               }}
             >
               {node}

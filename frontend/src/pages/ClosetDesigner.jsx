@@ -447,6 +447,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         <ClosetFromConfig
           config={customConfig}
           state={commonState}
+          components={componentPrices}
           onSelectDoor={toggleDoor}
           onSelectDrawer={toggleDrawer}
           showDimensions={step === 1 || isLastStep}

@@ -192,7 +192,7 @@ export default function CustomClosetConfigTab() {
         ) : (() => {
           const interiorItems = components.filter(c => c.item_type);
           const generalItems  = components.filter(c => !c.item_type);
-          const TYPE_LABELS = { shelf: "מדף", rod: "מוט תליה", drawer: "מגירה" };
+          const TYPE_LABELS = { shelf: "מדף", rod: "מוט תליה", drawer: "מגירה", external_drawer: "מגירה חיצונית" };
           return (
             <>
               {interiorItems.length > 0 && (
@@ -236,6 +236,7 @@ export default function CustomClosetConfigTab() {
                             <option value="shelf">כ-מדף</option>
                             <option value="rod">כ-מוט תליה</option>
                             <option value="drawer">כ-מגירה</option>
+                            <option value="external_drawer">כ-מגירה חיצונית</option>
                           </select>
                         </div>
                       );

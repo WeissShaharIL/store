@@ -44,6 +44,8 @@ vi.mock("../api.js", () => {
     getActiveLogo: ok(null),
     getDoorTypeCovers: ok([]),
     submitLead: ok({ ok: true }),
+    getPublicCustomClosetConfig: ok({}),
+    getPublicComponentPrices: ok([]),
   };
 });
 
