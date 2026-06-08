@@ -60,6 +60,8 @@ vi.mock("../api.js", () => {
     adminDeleteOrder: ok({}), adminExportOrdersCsv: ok(undefined),
     // activity / media / settings used by other tabs
     adminGetActivity: ok([]),
+    // component catalog — LeadClosetPreview resolves custom components for 3D
+    getPublicComponentPrices: ok([]),
   };
 });
 

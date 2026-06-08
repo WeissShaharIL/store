@@ -5,7 +5,8 @@ export const SNAP_POSITIONS = Array.from(
 
 export const SLOT_EPS = 0.001;
 
-export const DEFAULT_SLOT = { shelf: 0.55, rod: 0.85, drawer: 0.15 };
+// external_drawer sits below the closet — seed it at the lowest slot.
+export const DEFAULT_SLOT = { shelf: 0.55, rod: 0.85, drawer: 0.15, external_drawer: 0.05 };
 
 export function slotIndexFor(yNorm) {
   let bestIdx = 0;

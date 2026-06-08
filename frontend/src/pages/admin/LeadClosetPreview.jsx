@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Eye, EyeOff, Download } from "../../components/Icons.jsx";
 import { parseConfig } from "../../lib/parseConfig.js";
+import { getPublicComponentPrices } from "../../api.js";
 import { totalWidth } from "./closet3d/schema.js";
 import ClosetScene from "./closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./closet3d/ClosetFromConfig.jsx";
@@ -22,6 +23,14 @@ export default function LeadClosetPreview({ item, onClose }) {
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
   const [downloading, setDownloading] = useState(false);
+  // Component catalog so customer-placed custom components (`c:<id>`
+  // item types) resolve to renderable base types in the 3D preview,
+  // matching exactly what the customer saw in the designer.
+  const [components, setComponents] = useState([]);
+
+  useEffect(() => {
+    getPublicComponentPrices().then(setComponents).catch(() => {});
+  }, []);
 
   useEffect(() => {
     function onKey(e) { if (e.key === "Escape") onClose(); }
@@ -180,6 +189,7 @@ export default function LeadClosetPreview({ item, onClose }) {
               <ClosetFromConfig
                 config={config}
                 state={state}
+                components={components}
                 onSelectDoor={toggleDoor}
                 onSelectDrawer={toggleDrawer}
                 showDimensions
