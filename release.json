@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.9",
-  "released_at": "2026-06-09T19:30:36Z",
-  "notes": "058f0b6 refactor(designer): extract wizard step bodies into DesignerSteps component"
+  "version": "v1.64.10",
+  "released_at": "2026-06-09T20:16:42Z",
+  "notes": "0bb8f4e feat(components): max items per cabin + clear min/max labels\ndce7fb7 fix(renderer): merge adjacent doors into one cabin when the divider is off\n9058b23 refactor(builder): extract BuilderToolbar from DevClosetBuilder"
 }
