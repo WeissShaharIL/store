@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.6",
-  "released_at": "2026-06-09T18:40:58Z",
-  "notes": "90d7cd2 feat: from-scratch stage-1 structure controls (base + per-2-door-unit dividers) + upload hints"
+  "version": "v1.64.7",
+  "released_at": "2026-06-09T19:05:35Z",
+  "notes": "9eed3c4 refactor(css): split 05-designer.css and AdminBuilder.css into ordered partials"
 }
