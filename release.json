@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.4",
-  "released_at": "2026-06-09T18:12:11Z",
-  "notes": "d7a7137 fix: external drawer shortens door (drawerStack); fit all uploaded images; intuitive item-height control"
+  "version": "v1.64.5",
+  "released_at": "2026-06-09T18:31:37Z",
+  "notes": "858a586 feat/fix: re-assignable component types, builder cabin walls + compact inputs, dedup interior minimum"
 }
