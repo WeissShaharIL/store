@@ -54,15 +54,25 @@ export default function LeadClosetPreview({ item, onClose }) {
     }
     return t;
   };
-  const mergedDoors = (base.doors ?? []).map((door) => {
+  // From-scratch orders store per-2-door-unit dividers (customDividers) +
+  // base (customBase). Reconstruct the same divider rule the designer used.
+  const unitDividers = snap.customDividers;
+  const mergedDoors = (base.doors ?? []).map((door, i) => {
+    let divider = door.divider;
+    if (unitDividers) {
+      if (i === 0) divider = false;
+      else if (i % 2 === 1) divider = unitDividers[i] ?? true;
+      else divider = true;
+    }
     const placed = snap.customItems?.[door.id];
-    if (!placed) return door;
+    if (!placed) return { ...door, divider };
     // External drawers shorten the door + render below it (drawerStack);
     // pull them out of the interior items and count into drawerStack.
     const interior = placed.filter((it) => resolveType(it.type) !== "external_drawer");
     const extCount = placed.length - interior.length;
     return {
       ...door,
+      divider,
       drawerStack: (door.drawerStack ?? 0) + extCount,
       compartment: {
         defaultVariant: "custom",
@@ -76,6 +86,7 @@ export default function LeadClosetPreview({ item, onClose }) {
     dimensions: { ...base.dimensions, ...(snap.customDims || {}) },
     color: snap.customColor ?? base.color,
     hasInternalDivider: snap.customDivider ?? base.hasInternalDivider,
+    hasBase: snap.customBase ?? base.hasBase ?? false,
   };
   const doors = config.doors ?? [];
   const allOpen = doors.length > 0 && openDoorIds.length === doors.length;
