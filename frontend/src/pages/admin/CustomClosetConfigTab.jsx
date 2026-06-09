@@ -106,6 +106,16 @@ export default function CustomClosetConfigTab() {
     }
   }
 
+  async function updateComponentMax(id, max) {
+    const val = Math.max(0, Number(max) || 0);
+    try {
+      const updated = await adminUpdateComponentPrice(id, { max_per_cabin: val });
+      setComponents(prev => prev.map(c => c.id === id ? { ...c, max_per_cabin: updated.max_per_cabin } : c));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   function toggleAddOn(id) {
     setCfg((c) => {
       const ids = c.addOnComponentIds ?? [];
@@ -214,16 +224,30 @@ export default function CustomClosetConfigTab() {
                             <option value="external_drawer">מגירה חיצונית</option>
                             <option value="">תוספת כללית</option>
                           </select>
-                          <input
-                            type="number"
-                            className="cc-addon__min-input"
-                            min={0}
-                            max={20}
-                            value={comp.min_per_cabin ?? 0}
-                            title="מינ׳ לתא"
-                            aria-label="מינימום פריטים לתא"
-                            onChange={e => updateComponentMin(comp.id, e.target.value)}
-                          />
+                          <label className="cc-addon__minmax" title="מינימום פריטים מסוג זה בכל תא">
+                            <span>מינ׳ לתא</span>
+                            <input
+                              type="number"
+                              className="cc-addon__min-input"
+                              min={0}
+                              max={20}
+                              value={comp.min_per_cabin ?? 0}
+                              aria-label="מינימום פריטים לתא"
+                              onChange={e => updateComponentMin(comp.id, e.target.value)}
+                            />
+                          </label>
+                          <label className="cc-addon__minmax" title="מקסימום פריטים מסוג זה בכל תא (0 = ללא הגבלה)">
+                            <span>מקס׳ לתא</span>
+                            <input
+                              type="number"
+                              className="cc-addon__min-input"
+                              min={0}
+                              max={20}
+                              value={comp.max_per_cabin ?? 0}
+                              aria-label="מקסימום פריטים לתא"
+                              onChange={e => updateComponentMax(comp.id, e.target.value)}
+                            />
+                          </label>
                         </div>
                       );
                     })}

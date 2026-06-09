@@ -291,18 +291,21 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   }
 
   function checkInteriorMinimums() {
-    const required = paletteComponents.filter(c => c.min_per_cabin > 0);
-    if (!required.length) return null;
+    const limited = paletteComponents.filter(c => c.min_per_cabin > 0 || c.max_per_cabin > 0);
+    if (!limited.length) return null;
     const doors = customConfig.doors ?? [];
     const cabinIds = customDivider && doors.length > 1
       ? doors.map(d => d.id)
       : doors.length > 0 ? [doors[0].id] : [];
-    for (const comp of required) {
+    for (const comp of limited) {
       const typeKey = `c:${comp.id}`;
       for (const doorId of cabinIds) {
         const count = (customItems?.[doorId] ?? []).filter(it => it.type === typeKey).length;
-        if (count < comp.min_per_cabin) {
+        if (comp.min_per_cabin > 0 && count < comp.min_per_cabin) {
           return `יש להוסיף לפחות ${comp.min_per_cabin} ${comp.name} בכל תא`;
+        }
+        if (comp.max_per_cabin > 0 && count > comp.max_per_cabin) {
+          return `ניתן להוסיף עד ${comp.max_per_cabin} ${comp.name} בכל תא`;
         }
       }
     }
