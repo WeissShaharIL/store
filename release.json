@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.3",
-  "released_at": "2026-06-09T07:11:33Z",
-  "notes": "10b1184 fix: interior white only on hinged closets; sliding fully colored"
+  "version": "v1.64.4",
+  "released_at": "2026-06-09T18:12:11Z",
+  "notes": "d7a7137 fix: external drawer shortens door (drawerStack); fit all uploaded images; intuitive item-height control"
 }
