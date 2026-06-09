@@ -7,15 +7,10 @@ import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
 import { totalPrice, estimatePrice } from "./admin/closet3d/schema.js";
 import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import { useHandles } from "./admin/HandlesContext.jsx";
-import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
-import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
 import { usePhotoExport } from "./admin/designer/usePhotoExport.js";
-import RoomPlanner from "./admin/RoomPlanner.jsx";
+import DesignerSteps from "./admin/designer/DesignerSteps.jsx";
 import { WIZARD_STEPS } from "./admin/designer/wizardSteps.js";
 import StepNav from "./admin/designer/StepNav.jsx";
-import DimensionSlider from "./admin/designer/DimensionSlider.jsx";
-import DoorHandlesPicker from "./admin/designer/DoorHandlesPicker.jsx";
-import DoorMaterialsPicker from "./admin/designer/DoorMaterialsPicker.jsx";
 import {
   clearDesignerState,
   loadDesignerState,
@@ -467,176 +462,24 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
           <StepNav steps={availableSteps} activeStep={step} onStepChange={setStep} />
         </div>
 
-        {step === 1 && (
-          <div className="closet-designer__body">
-            <div className="closet-designer__controls">
-              <h4 className="closet-designer__step-title">מימדים</h4>
-              <p className="closet-designer__step-hint">התאם את גודל הארון. התצוגה מתעדכנת בזמן אמת.</p>
-              <DimensionSlider
-                label="רוחב כללי"
-                value={totalW}
-                min={widthC.min}
-                max={widthC.max}
-                step={widthC.step}
-                onChange={setTotalW}
-                hint={nDoors > 1 ? `${nDoors} מדורים × ${customDims.compartmentWidth} ס״מ` : null}
-              />
-              <DimensionSlider
-                label="גובה"
-                value={customDims.H}
-                min={heightC.min}
-                max={heightC.max}
-                step={heightC.step}
-                onChange={(v) => setCustomDims((d) => ({ ...d, H: v }))}
-              />
-              <DimensionSlider
-                label="עומק"
-                value={customDims.D}
-                min={depthC.min}
-                max={depthC.max}
-                step={depthC.step}
-                onChange={(v) => setCustomDims((d) => ({ ...d, D: v }))}
-              />
-              {fromScratch ? (
-                <>
-                  <div className="closet-designer__color-block">
-                    <h5 className="closet-designer__color-title">בסיס</h5>
-                    <ToggleField
-                      label="במה — הארון עומד על רגליים"
-                      checked={customBase}
-                      onChange={setCustomBase}
-                    />
-                  </div>
-                  {nDoors > 1 && (
-                    <div className="closet-designer__color-block">
-                      <h5 className="closet-designer__color-title">מחיצות פנים</h5>
-                      <p className="closet-designer__step-hint">
-                        כל זוג דלתות חולק תא; ניתן להסיר את המחיצה בכל זוג.
-                      </p>
-                      {Array.from({ length: Math.floor(nDoors / 2) }).map((_, u) => {
-                        const secondDoorIdx = u * 2 + 1; // odd index = unit's 2nd door
-                        const on = customDividers[secondDoorIdx] ?? true;
-                        return (
-                          <ToggleField
-                            key={u}
-                            label={`מחיצה בין דלת ${u * 2 + 1} ל-${u * 2 + 2}`}
-                            checked={on}
-                            onChange={(v) =>
-                              setCustomDividers((m) => ({ ...m, [secondDoorIdx]: v }))
-                            }
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              ) : (
-                nDoors > 1 && closetCfg?.allowDivider !== false && (
-                  <div className="closet-designer__color-block">
-                    <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
-                    <ToggleField
-                      label="דופן פנימי בין תאים"
-                      checked={customDivider}
-                      onChange={setCustomDivider}
-                    />
-                  </div>
-                )
-              )}
-            </div>
-            {Preview}
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="closet-designer__body closet-designer__body--step2">
-            {interiorError && (
-              <div className="closet-designer__interior-error">{interiorError}</div>
-            )}
-            <ClosetInteriorPlan
-              cfg={customConfig}
-              items={customItems}
-              onChange={(v) => { setCustomItems(v); setInteriorError(""); }}
-              paletteComponents={paletteComponents}
-            />
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="closet-designer__body">
-            <div className="closet-designer__controls">
-              <h4 className="closet-designer__step-title">צבע וידיות</h4>
-              <p className="closet-designer__step-hint">הצבע והידיות חלים על הארון שמולך.</p>
-              <div className="closet-designer__color-block">
-                <h5 className="closet-designer__color-title">צבע הארון</h5>
-                <ColorPicker value={customColor} onChange={setCustomColor} />
-              </div>
-              <div className="closet-designer__color-block">
-                <h5 className="closet-designer__color-title">ידיות לפי דלת</h5>
-                <DoorHandlesPicker
-                  doors={customConfig.doors ?? []}
-                  values={customDoorHandles}
-                  onChange={setDoorHandle}
-                />
-              </div>
-            </div>
-            {Preview}
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="closet-designer__body">
-            <div className="closet-designer__controls">
-              <h4 className="closet-designer__step-title">תוספות</h4>
-              <p className="closet-designer__step-hint">
-                בחר אם להחליף דלתות לזכוכית והאם להוסיף מראה בצד הפנימי. ניתן לבחור לכל דלת בנפרד.
-              </p>
-              <div className="closet-designer__color-block">
-                <h5 className="closet-designer__color-title">חומרי דלת ומראות</h5>
-                <DoorMaterialsPicker
-                  doors={customConfig.doors ?? []}
-                  values={customDoorMaterials}
-                  onChange={setDoorMaterial}
-                />
-              </div>
-            </div>
-            {Preview}
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="closet-designer__body closet-designer__body--room">
-            <RoomPlanner
-              room={customRoom}
-              onChange={setCustomRoom}
-              closetWidthCm={totalW}
-              closetDepthCm={customDims.D}
-            />
-          </div>
-        )}
-
-        {step === 6 && (
-          <div className="closet-designer__body">
-            <div className="closet-designer__controls">
-              <h4 className="closet-designer__step-title">אישור הזמנה</h4>
-              <p className="closet-designer__step-hint">בדוק את הפרטים שבחרת. אם הכל מתאים, הוסף לעגלה.</p>
-              <dl className="closet-designer__summary">
-                <dt>דגם</dt><dd>{item.name}</dd>
-                <dt>גובה</dt><dd>{Math.round(customDims.H)} ס״מ</dd>
-                <dt>רוחב כולל</dt><dd>{Math.round(totalW)} ס״מ ({nDoors} דלתות)</dd>
-                <dt>עומק</dt><dd>{Math.round(customDims.D)} ס״מ</dd>
-                <dt>צבע</dt><dd>{colorName(customColor)}</dd>
-                {uniformMaterial && <><dt>חומר דלתות</dt><dd>{MATERIAL_LABELS[uniformMaterial] || uniformMaterial}</dd></>}
-                {uniformHandle && <><dt>ידיות</dt><dd>{handleName(uniformHandle)}</dd></>}
-                {interiorCounts && <><dt>פנים הארון</dt><dd>{interiorCounts}</dd></>}
-                {priceLabel && <><dt>הערכת מחיר</dt><dd className="closet-designer__summary-price">{priceLabel}</dd></>}
-              </dl>
-              <p className="closet-designer__price-note">
-                * המחיר הוא הערכה בלבד. ההצעה הסופית תישלח לאחר יצירת קשר.
-              </p>
-            </div>
-            {Preview}
-          </div>
-        )}
+        <DesignerSteps
+          step={step}
+          preview={Preview}
+          totalW={totalW} widthC={widthC} setTotalW={setTotalW} nDoors={nDoors}
+          customDims={customDims} setCustomDims={setCustomDims} heightC={heightC} depthC={depthC}
+          fromScratch={fromScratch} customBase={customBase} setCustomBase={setCustomBase}
+          customDividers={customDividers} setCustomDividers={setCustomDividers}
+          customDivider={customDivider} setCustomDivider={setCustomDivider} closetCfg={closetCfg}
+          interiorError={interiorError} customConfig={customConfig} customItems={customItems}
+          setCustomItems={setCustomItems} setInteriorError={setInteriorError} paletteComponents={paletteComponents}
+          customColor={customColor} setCustomColor={setCustomColor}
+          customDoorHandles={customDoorHandles} setDoorHandle={setDoorHandle}
+          customDoorMaterials={customDoorMaterials} setDoorMaterial={setDoorMaterial}
+          customRoom={customRoom} setCustomRoom={setCustomRoom}
+          item={item} colorName={colorName} uniformMaterial={uniformMaterial}
+          MATERIAL_LABELS={MATERIAL_LABELS} uniformHandle={uniformHandle} handleName={handleName}
+          interiorCounts={interiorCounts} priceLabel={priceLabel}
+        />
 
         <div className="closet-designer__mobile-nav">
           <button
