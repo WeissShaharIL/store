@@ -615,6 +615,11 @@
   color: #fff;
 }
 
+/* v2.x — editor inputs stay compact instead of stretching the full
+   column width: name (text) + price/dimensions (number fields). */
+.closet-builder__form .number-field { max-width: 132px; }
+.closet-builder__form .field > input[type="text"] { max-width: 260px; }
+
 /* ── dim-label (3D annotation HTML overlay) ─────────────────────────────────── */
 .dim-label {
   background: rgba(0,0,0,0.55);

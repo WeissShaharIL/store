@@ -169,16 +169,9 @@ export default function CustomClosetConfigTab() {
         </div>
       </div>
 
-      {/* ── Interior ───────────────────────────────────────── */}
-      <div className="cc-section">
-        <h3 className="cc-section__title">פנים הארון</h3>
-        <div className="cc-row">
-          <label className="cc-dim__field">
-            <span>מינימום מדפים לתא</span>
-            <NumInput value={cfg.minShelvesPerCabin} onChange={set("minShelvesPerCabin")} min={0} max={10} />
-          </label>
-        </div>
-      </div>
+      {/* Interior minimums are set per-component below ("מינ׳ לתא"),
+          so the old closet-wide "מינימום מדפים לתא" field was removed
+          to avoid duplication. */}
 
       {/* ── Add-ons ────────────────────────────────────────── */}
       <div className="cc-section">
@@ -205,6 +198,22 @@ export default function CustomClosetConfigTab() {
                         <div key={comp.id} className="cc-addon">
                           <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
                           {comp.sku && <span className="cc-addon__sku" style={{marginRight: 'auto'}}>{comp.sku}</span>}
+                          {/* Change the item's type (or reset to a general
+                              add-on). This is the only place to RE-assign a
+                              component that already has a type. */}
+                          <select
+                            className="cc-addon__mini-select"
+                            value={comp.item_type ?? ""}
+                            title="סוג הפריט"
+                            aria-label="סוג הפריט"
+                            onChange={e => updateComponentType(comp.id, e.target.value)}
+                          >
+                            <option value="shelf">מדף</option>
+                            <option value="rod">מוט תליה</option>
+                            <option value="drawer">מגירה</option>
+                            <option value="external_drawer">מגירה חיצונית</option>
+                            <option value="">תוספת כללית</option>
+                          </select>
                           <input
                             type="number"
                             className="cc-addon__min-input"

@@ -356,7 +356,10 @@ export function DoorsSection({
     // for older templates without `config.kind`.
     const kind = config.kind ?? config.doors?.[0]?.kind ?? "hinged";
     setConfig(withClone(config, (d) => {
-      d.doors.push(newDoor(d.doors.length, kind));
+      // A freshly added cabin defaults to having a דופן (a wall between
+      // it and the previous cabin) so adding doors visibly creates
+      // separate cabins. Admin can switch it to "ללא דופן" per cabin.
+      d.doors.push({ ...newDoor(d.doors.length, kind), divider: true });
     }));
   }
   const allOpen =
