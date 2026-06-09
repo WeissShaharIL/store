@@ -209,6 +209,18 @@ export default function ClosetFromConfig({
   const SHELL_WHITE = "#f3f2ef";
   const neutralTexture = useMemo(() => getTextureForKey(null), []);
 
+  // v2.x — interior coloring depends on the closet kind:
+  //   • hinged (פתיחה): interior is always WHITE.
+  //   • sliding (הזזה): the whole closet is colored, inside included.
+  // The back panel is white on BOTH kinds (handled separately below).
+  const closetKind = config.kind ?? config.doors?.[0]?.kind ?? "hinged";
+  const interiorWhite = closetKind !== "sliding";
+  const innerCarcassColor = interiorWhite ? SHELL_WHITE : palette.trim;
+  const innerCarcassTex   = interiorWhite ? neutralTexture : palette.texture;
+  const innerShelfColor   = interiorWhite ? SHELL_WHITE : palette.wood;
+  const innerShelfTex     = interiorWhite ? neutralTexture : palette.texture;
+  const innerBracketColor = interiorWhite ? SHELL_WHITE : palette.trim;
+
   // v2.x — base ("במה"): the silver legs+stage only show when the
   // closet opts in, OR when it carries an external drawer (which needs
   // the gap beneath the body to sit in). With no base the body group
@@ -346,8 +358,8 @@ export default function ClosetFromConfig({
           <Shelf
             key={key}
             position={[cx, y, 0]}
-            color={SHELL_WHITE}
-            texture={neutralTexture}
+            color={innerShelfColor}
+            texture={innerShelfTex}
             withAluminum={effects.aluminumOnShelves}
             depth={innerCompartmentDepth}
             width={itemWidth}
@@ -360,7 +372,7 @@ export default function ClosetFromConfig({
             key={key}
             position={[cx, y, 0]}
             length={itemRodLength}
-            bracketColor={SHELL_WHITE}
+            bracketColor={innerBracketColor}
           />
         );
       }
@@ -409,8 +421,8 @@ export default function ClosetFromConfig({
             width={itemWidth}
             depth={innerCompartmentDepth}
             height={INTERIOR_DRAWER_H}
-            color={SHELL_WHITE}
-            texture={neutralTexture}
+            color={innerShelfColor}
+            texture={innerShelfTex}
             handleMaterial={compartmentHandleMaterial}
           />
         );
@@ -759,22 +771,22 @@ export default function ClosetFromConfig({
         color={SHELL_WHITE}
         texture={neutralTexture}
       />
-      {/* Top: white structural panel (interior ceiling) + a thin
-          colored crown skin on top so the exterior reads as the
-          chosen color while the inside stays white. */}
-      <Plank position={[0, H - T / 2, 0]} args={[W, T, D]} color={SHELL_WHITE} texture={neutralTexture} />
+      {/* Top: structural panel (interior ceiling — white on hinged,
+          colored on sliding) + a thin colored crown skin on top so
+          the exterior always reads as the chosen color. */}
+      <Plank position={[0, H - T / 2, 0]} args={[W, T, D]} color={innerCarcassColor} texture={innerCarcassTex} />
       <Plank
         position={[0, H + 0.005, TOP_CROWN_OVERHANG / 2]}
         args={[W + 2 * TOP_CROWN_OVERHANG, 0.01, D + TOP_CROWN_OVERHANG]}
         color={palette.trim}
         texture={palette.texture}
       />
-      {/* Bottom (interior floor) — white. */}
-      <Plank position={[0, T / 2,     0]} args={[W, T, D]} color={SHELL_WHITE} texture={neutralTexture} />
-      {/* Sides: white structural panels (interior) + thin colored
-          outer skins (exterior). */}
-      <Plank position={[-W / 2 + T / 2, H / 2, 0]} args={[T, H, D]} color={SHELL_WHITE} texture={neutralTexture} />
-      <Plank position={[ W / 2 - T / 2, H / 2, 0]} args={[T, H, D]} color={SHELL_WHITE} texture={neutralTexture} />
+      {/* Bottom (interior floor) — white on hinged, colored on sliding. */}
+      <Plank position={[0, T / 2,     0]} args={[W, T, D]} color={innerCarcassColor} texture={innerCarcassTex} />
+      {/* Sides: structural panels (interior color) + thin colored
+          outer skins (always the exterior color). */}
+      <Plank position={[-W / 2 + T / 2, H / 2, 0]} args={[T, H, D]} color={innerCarcassColor} texture={innerCarcassTex} />
+      <Plank position={[ W / 2 - T / 2, H / 2, 0]} args={[T, H, D]} color={innerCarcassColor} texture={innerCarcassTex} />
       <Plank position={[-W / 2 - 0.004, H / 2, 0]} args={[0.008, H, D]} color={palette.trim} texture={palette.texture} />
       <Plank position={[ W / 2 + 0.004, H / 2, 0]} args={[0.008, H, D]} color={palette.trim} texture={palette.texture} />
 
@@ -799,8 +811,8 @@ export default function ClosetFromConfig({
             key={`div-${k}`}
             position={[x, H / 2, 0]}
             args={[T, H - 2 * T, D - T]}
-            color={SHELL_WHITE}
-            texture={neutralTexture}
+            color={innerCarcassColor}
+            texture={innerCarcassTex}
           />
         );
       })}
