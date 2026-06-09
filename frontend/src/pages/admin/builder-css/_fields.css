@@ -1,0 +1,149 @@
+/* ── Constraint accordion ────────────────────────────────────────────────────── */
+.constraint-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.constraint-item {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #111113;
+}
+.constraint-item--open {
+  border-color: rgba(255,255,255,0.18);
+}
+.constraint-item__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: right;
+  color: rgba(255,255,255,0.85);
+}
+.constraint-item__header:hover { background: rgba(255,255,255,0.04); }
+.constraint-item__label {
+  font-weight: 600;
+  min-width: 72px;
+  flex-shrink: 0;
+}
+.constraint-item__summary {
+  flex: 1;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  direction: ltr;
+  text-align: left;
+}
+.constraint-item__chevron {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.constraint-item__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── Color picker (sliding-colors) ──────────────────────────────────────────── */
+.sliding-colors {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sliding-colors__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px 5px 5px;
+  background: #1e1e20;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.65);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.sliding-colors__btn:hover { border-color: rgba(255,255,255,0.3); }
+.sliding-colors__btn--active {
+  border-color: rgba(255,255,255,0.8);
+  background: #2a2a2c;
+  color: rgba(255,255,255,0.95);
+}
+.sliding-colors__swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.35);
+  flex-shrink: 0;
+}
+
+/* ── Toggle checkbox ─────────────────────────────────────────────────────────── */
+.dev-closet__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  user-select: none;
+}
+.dev-closet__toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Handle picker ───────────────────────────────────────────────────────────── */
+.closet-builder__handle-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.closet-builder__handle-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #1e1e20;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.8rem;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.closet-builder__handle-swatch:hover { border-color: rgba(255,255,255,0.3); }
+.closet-builder__handle-swatch--active {
+  border-color: rgba(255,255,255,0.8);
+  background: #2a2a2c;
+  color: rgba(255,255,255,0.9);
+}
+.closet-builder__handle-bar {
+  display: block;
+  width: 6px;
+  height: 38px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
+}
+.closet-builder__handle-name {
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+

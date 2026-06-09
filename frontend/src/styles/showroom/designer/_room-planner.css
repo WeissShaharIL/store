@@ -1,0 +1,234 @@
+/* ── Room planner (step 5) ─────────────────────────────────── */
+
+.closet-designer__body--room {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 2.2fr);
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+}
+
+.room-planner { display: contents; }
+
+.room-planner__controls {
+  padding: var(--space-4);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.07);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.room-planner__dim-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.room-planner__palette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+}
+
+.room-planner__selected {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: var(--radius-md);
+  min-height: 76px;
+  justify-content: center;
+}
+
+.room-planner__selected--empty {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.room-planner__selected-placeholder {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: rgba(242, 242, 244, 0.4);
+}
+
+.room-planner__selected-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: rgba(242, 242, 244, 0.9);
+}
+
+.room-planner__selected-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.room-planner__canvas-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f8f7f3 0%, #ece8de 100%);
+  padding: var(--space-3);
+  min-height: 0;
+}
+
+.room-planner__svg {
+  background: transparent;
+  user-select: none;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Rotate/remove buttons in the room planner (customer designer, not .admin) */
+.room-planner__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(242, 242, 244, 0.85);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms;
+}
+.room-planner__btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+@media (max-width: 900px) {
+  .closet-designer__body--room { grid-template-columns: 1fr; }
+  .room-planner__controls {
+    border-inline-start: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* ── Cookie consent bar ─────────────────────────────────────── */
+
+.cookie-bar {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: 0 1.25rem;
+  background: #111113;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  animation: cookie-bar-in 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes cookie-bar-in {
+  from { transform: translateX(-50%) translateY(120%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);   opacity: 1; }
+}
+.cookie-bar--closing {
+  animation: cookie-bar-out 650ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes cookie-bar-out {
+  from { transform: translateX(-50%) translateY(0);   opacity: 1; }
+  to   { transform: translateX(-50%) translateY(120%); opacity: 0; }
+}
+.cookie-bar__content {
+  animation: cookie-content-in 380ms ease both;
+  animation-delay: 220ms;
+}
+.cookie-bar__accept {
+  animation: cookie-content-in 380ms ease both;
+  animation-delay: 300ms;
+}
+@keyframes cookie-content-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cookie-bar--closing .cookie-bar__content,
+.cookie-bar--closing .cookie-bar__accept {
+  animation: cookie-content-out 160ms ease both;
+}
+@keyframes cookie-content-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+.cookie-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 46px;
+}
+.cookie-bar__content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+.cookie-bar__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(242, 242, 244, 0.4);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.cookie-bar__close:hover { color: rgba(242, 242, 244, 0.85); }
+.cookie-bar__close svg { width: 14px; height: 14px; }
+.cookie-bar__text {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(242, 242, 244, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cookie-bar__accept {
+  flex-shrink: 0;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(242, 242, 244, 0.85);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  white-space: nowrap;
+}
+.cookie-bar__accept:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #f2f2f4;
+}
+
+/* Shift cookie pill above the PWA install prompt when both appear */
+body.pwa-install-visible .cookie-bar {
+  bottom: calc(160px + 1rem);
+  transition: bottom 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 480px) {
+  .cookie-bar__text { white-space: normal; font-size: 0.78rem; }
+  .cookie-bar__inner { min-height: auto; padding: 0.65rem 0; flex-wrap: wrap; gap: 0.5rem; }
+  .cookie-bar__accept { align-self: flex-end; margin-inline-start: auto; }
+}
