@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.7",
-  "released_at": "2026-06-09T19:05:35Z",
-  "notes": "9eed3c4 refactor(css): split 05-designer.css and AdminBuilder.css into ordered partials"
+  "version": "v1.64.8",
+  "released_at": "2026-06-09T19:12:50Z",
+  "notes": "48ddb85 refactor(designer): extract photo-export (ZIP download) into usePhotoExport hook"
 }
