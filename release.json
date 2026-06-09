@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.2",
-  "released_at": "2026-06-09T07:06:33Z",
-  "notes": "9701bca feat: white interior + colored exterior, per-cabin דופן, optional base, image-fit, duplicate model"
+  "version": "v1.64.3",
+  "released_at": "2026-06-09T07:11:33Z",
+  "notes": "10b1184 fix: interior white only on hinged closets; sliding fully colored"
 }
