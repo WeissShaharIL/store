@@ -232,7 +232,6 @@ export default function ClosetFromConfig({
   // k+1 is drawn when door[k+1].divider is set; legacy templates with
   // no per-door flag fall back to the closet-wide hasInternalDivider.
   const dividerAt = (k) => doors[k + 1]?.divider ?? (config.hasInternalDivider ?? false);
-  const anyDivider = Array.from({ length: Math.max(0, N - 1) }, (_, k) => dividerAt(k)).some(Boolean);
 
   // Resolve add-on effects into a single flags object.
   const effects = useMemo(() => {
@@ -283,23 +282,30 @@ export default function ClosetFromConfig({
 
   const hingedAngle = state.hingedOpenAngle ?? 0;
 
-  // v1.62.0 — when the cabinet has no internal divider, the
-  // interior is one open box. Only compartment 0 contributes items
-  // (the "primary" compartment), and each item is sized to the FULL
-  // inner cabinet width instead of per-compartment width. Skipping
-  // compartments 1+ avoids the floating half-width shelves with a
-  // gap in the middle that the v1.60.0 dividerless mode produced.
-  const cabinetIsOpen = !anyDivider;
-  const innerCabinetWidth = Math.max(0.05, W - 2 * T - 0.02);
-  const fullRodLength = innerCabinetWidth - 0.04;
+  // v2.x — a "cabin" is a maximal run of adjacent doors with no דופן
+  // between them. Interior items render ONCE per cabin, spanning the
+  // full merged width, so removing a divider yields one continuous
+  // shelf/rod instead of two half-width pieces with a gap. This
+  // generalises the old binary "open cabinet" mode: no dividers → a
+  // single cabin spanning every door; all dividers → one cabin per door.
+  const isCabinStart = (i) => i === 0 || dividerAt(i - 1);
+  const cabinSizeFrom = (i) => {
+    let n = 1;
+    while (i + n <= N - 1 && !dividerAt(i + n - 1)) n++;
+    return n;
+  };
 
-  // Render the contents of one compartment (shelves + rods + drawers).
+  // Render the contents of one cabin (shelves + rods + drawers), keyed
+  // off the cabin's FIRST door; non-start doors render nothing here so
+  // a merged cabin shows one set of full-width items.
   function renderCompartment(door, doorIndex) {
-    if (cabinetIsOpen && doorIndex > 0) return null;
+    if (!isCabinStart(doorIndex)) return null;
     const variant = resolveVariant(door.compartment, state.compartmentVariants?.[door.id]);
-    const cx = cabinetIsOpen ? 0 : compartmentCenterX(doorIndex);
-    const itemWidth = cabinetIsOpen ? innerCabinetWidth : innerCompartmentWidth;
-    const itemRodLength = cabinetIsOpen ? fullRodLength : rodLength;
+    const cabinSize = cabinSizeFrom(doorIndex);
+    const cabinWidth = cabinSize * compartmentWidth;
+    const cx = -W / 2 + compartmentWidth * doorIndex + cabinWidth / 2;
+    const itemWidth = Math.max(0.05, cabinWidth - 2 * T - 0.02);
+    const itemRodLength = itemWidth - 0.04;
     // Variant drawer items inside this compartment share the door's
     // resolved handle option — same fallback chain renderDoor uses.
     const compartmentHandleKey =

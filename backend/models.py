@@ -392,6 +392,8 @@ class ComponentPrice(Base):
     color = Column(String(16), nullable=True)
     # minimum number of this item required in each cabin (0 = no minimum)
     min_per_cabin = Column(Integer, nullable=False, default=0)
+    # maximum number of this item allowed in each cabin (0 = unlimited)
+    max_per_cabin = Column(Integer, nullable=False, default=0)
     # fixed → '{"price": 150}'
     # dimension → '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]'
     rules = Column(Text, nullable=False, default="{}")

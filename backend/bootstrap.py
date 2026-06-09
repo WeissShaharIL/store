@@ -83,6 +83,7 @@ def run_migrations(_db: Session) -> None:
     _add_col("component_prices", "item_type", "VARCHAR(20)", "NULL")
     _add_col("component_prices", "color", "VARCHAR(16)", "NULL")
     _add_col("component_prices", "min_per_cabin", "INTEGER", "0")
+    _add_col("component_prices", "max_per_cabin", "INTEGER", "0")
 
 
 def seed_admin(db: Session) -> None:

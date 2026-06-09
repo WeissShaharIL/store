@@ -308,6 +308,7 @@ class ComponentPriceOut(BaseModel):
     item_type: Optional[str] = None
     color: Optional[str] = None
     min_per_cabin: int = 0
+    max_per_cabin: int = 0
     updated_at: datetime
 
     class Config:
@@ -333,6 +334,7 @@ class ComponentPriceUpdate(BaseModel):
     item_type: Optional[str] = None
     color: Optional[str] = None
     min_per_cabin: Optional[int] = None
+    max_per_cabin: Optional[int] = None
 
 
 class LeadOut(BaseModel):

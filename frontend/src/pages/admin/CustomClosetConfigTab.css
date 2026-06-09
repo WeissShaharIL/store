@@ -241,6 +241,19 @@
   background: rgba(34,197,94,0.12);
 }
 
+/* Labeled min/max-per-cabin stacks */
+.cc-addon__minmax {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.cc-addon__minmax > span {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+}
+
 
 /* Actions */
 .cc-actions {
