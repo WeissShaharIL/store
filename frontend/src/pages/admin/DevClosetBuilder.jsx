@@ -619,6 +619,10 @@ export default function DevClosetBuilder() {
                       תמונה אמיתית של המוצר. תופיע בגלריה במקום תצוגת
                       התלת-מימד הסטטית.
                     </div>
+                    <div className="muted small">
+                      לתצוגה מיטבית: יחס 4:3 (לדוגמה 1200×900 פיקסלים).
+                      התמונה תוצג במלואה גם אם הגודל שונה.
+                    </div>
                     {!currentId && (
                       <div className="muted small closet-builder__image-hint">
                         שמור את המודל לפני העלאת תמונה.

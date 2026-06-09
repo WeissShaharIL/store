@@ -125,6 +125,10 @@ function HeroBannerManager() {
 
       {error && <p className="tab-error">{error}</p>}
 
+      <p className="muted small">
+        מומלץ תמונת רוחב (אופקית), יחס ~16:9, לדוגמה 1920×1080 פיקסלים, לתצוגה מיטבית בבאנר.
+      </p>
+
       <div className="hero-banners-grid">
         {banners.map((b) => (
           <div key={b.id} className="hero-banner-thumb">

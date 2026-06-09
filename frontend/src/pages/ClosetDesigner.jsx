@@ -83,6 +83,18 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     saved?.customDivider ?? cfg.hasInternalDivider ?? false,
   );
 
+  // v2.x — from-scratch stage-1 structure controls.
+  // customBase: stand the closet on the silver base/legs (במה). Default off.
+  const [customBase, setCustomBase] = useState(
+    saved?.customBase ?? cfg.hasBase ?? false,
+  );
+  // customDividers: per-2-door-unit מחיצה, keyed by the unit's SECOND door
+  // index (odd index 1,3,5). Absent → ON (default). Between-unit boundaries
+  // are always solid walls and aren't represented here.
+  const [customDividers, setCustomDividers] = useState(
+    saved?.customDividers ?? {},
+  );
+
   const [customItems, setCustomItems] = useState(() => {
     if (saved?.customItems) return saved.customItems;
     // Seed the stage-2 interior plan from each door's default compartment
@@ -193,9 +205,20 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       }
       return t;
     };
-    const doors = (cfg.doors ?? []).map((door) => {
+    const doors = (cfg.doors ?? []).map((door, i) => {
+      // Divider (דופן) to the LEFT of this door. From-scratch uses the
+      // 2-door-unit rule: door 0 has no left divider; the unit's second
+      // door (odd index) carries the toggleable מחיצה (default on); the
+      // between-unit boundary (even index ≥ 2) is always a solid wall.
+      // Templates keep their admin-authored per-cabin divider.
+      let divider = door.divider;
+      if (fromScratch) {
+        if (i === 0) divider = false;
+        else if (i % 2 === 1) divider = customDividers[i] ?? true;
+        else divider = true;
+      }
       const placed = customItems?.[door.id];
-      if (!placed) return door;
+      if (!placed) return { ...door, divider };
       // External drawers (מגירה חיצונית) aren't interior items — each one
       // shortens the door and renders as a front drawer below it. Pull
       // them out of the interior list and fold their count into the
@@ -204,6 +227,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       const extCount = placed.length - interior.length;
       return {
         ...door,
+        divider,
         drawerStack: (door.drawerStack ?? 0) + extCount,
         compartment: {
           defaultVariant: "custom",
@@ -217,15 +241,16 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       dimensions: { ...cfg.dimensions, ...customDims },
       color: customColor,
       hasInternalDivider: customDivider,
+      hasBase: customBase,
     };
-  }, [cfg, customDims, customColor, customDivider, customItems, componentPrices]);
+  }, [cfg, customDims, customColor, customDivider, customBase, customDividers, customItems, componentPrices, fromScratch]);
 
   useEffect(() => {
     saveDesignerState(item.id, {
-      customDims, customColor, customDivider, customDoorHandles,
+      customDims, customColor, customDivider, customBase, customDividers, customDoorHandles,
       customDoorMaterials, customItems, customRoom, step,
     });
-  }, [item.id, customDims, customColor, customDivider, customDoorHandles,
+  }, [item.id, customDims, customColor, customDivider, customBase, customDividers, customDoorHandles,
     customDoorMaterials, customItems, customRoom, step]);
 
   useEffect(() => {
@@ -246,7 +271,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   function handleAddToCart() {
     const snapshot = {
-      customDims, customColor, customDivider,
+      customDims, customColor, customDivider, customBase, customDividers,
       customDoorHandles, customDoorMaterials,
       customItems, customRoom,
       priceEstimate,
@@ -519,15 +544,50 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
                 step={depthC.step}
                 onChange={(v) => setCustomDims((d) => ({ ...d, D: v }))}
               />
-              {nDoors > 1 && closetCfg?.allowDivider !== false && (
-                <div className="closet-designer__color-block">
-                  <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
-                  <ToggleField
-                    label="דופן פנימי בין תאים"
-                    checked={customDivider}
-                    onChange={setCustomDivider}
-                  />
-                </div>
+              {fromScratch ? (
+                <>
+                  <div className="closet-designer__color-block">
+                    <h5 className="closet-designer__color-title">בסיס</h5>
+                    <ToggleField
+                      label="במה — הארון עומד על רגליים"
+                      checked={customBase}
+                      onChange={setCustomBase}
+                    />
+                  </div>
+                  {nDoors > 1 && (
+                    <div className="closet-designer__color-block">
+                      <h5 className="closet-designer__color-title">מחיצות פנים</h5>
+                      <p className="closet-designer__step-hint">
+                        כל זוג דלתות חולק תא; ניתן להסיר את המחיצה בכל זוג.
+                      </p>
+                      {Array.from({ length: Math.floor(nDoors / 2) }).map((_, u) => {
+                        const secondDoorIdx = u * 2 + 1; // odd index = unit's 2nd door
+                        const on = customDividers[secondDoorIdx] ?? true;
+                        return (
+                          <ToggleField
+                            key={u}
+                            label={`מחיצה בין דלת ${u * 2 + 1} ל-${u * 2 + 2}`}
+                            checked={on}
+                            onChange={(v) =>
+                              setCustomDividers((m) => ({ ...m, [secondDoorIdx]: v }))
+                            }
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : (
+                nDoors > 1 && closetCfg?.allowDivider !== false && (
+                  <div className="closet-designer__color-block">
+                    <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
+                    <ToggleField
+                      label="דופן פנימי בין תאים"
+                      checked={customDivider}
+                      onChange={setCustomDivider}
+                    />
+                  </div>
+                )
               )}
             </div>
             {Preview}
