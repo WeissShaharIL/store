@@ -51,7 +51,23 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
   const doors = cfg.doors ?? [];
   const nDoors = Math.max(1, doors.length);
   const hasDivider = !!cfg.hasInternalDivider;
-  const compartmentCount = hasDivider ? nDoors : 1;
+  // Per-unit divider model: a "cabin" is a maximal run of adjacent doors with
+  // no דופן between them. The planner's columns are CABINS (matching the 3D
+  // renderer), so a merged unit shows one wide column keyed off its first door.
+  const dividerBetween = (k) => doors[k + 1]?.divider ?? hasDivider;
+  const cabins = useMemo(() => {
+    const out = [];
+    let i = 0;
+    while (i < nDoors) {
+      let size = 1;
+      while (i + size <= nDoors - 1 && !dividerBetween(i + size - 1)) size++;
+      out.push({ doorId: doors[i]?.id, startDoor: i, size });
+      i += size;
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doors, nDoors, hasDivider]);
+  const compartmentCount = cabins.length;
 
   const widthCm = (cfg.dimensions.compartmentWidth ?? 80) * nDoors;
   const heightCm = cfg.dimensions.H ?? 240;
@@ -84,7 +100,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
   const interiorTopPx = bodyTopPx + wallPx;
   const interiorBottomPx = bodyBottomPx - wallPx;
   const interiorWidthPx = interiorRightPx - interiorLeftPx;
-  const compartmentWidthPx = interiorWidthPx / compartmentCount;
+  const doorWidthPx = interiorWidthPx / nDoors;
+  const cabinLeftPx = (c) => interiorLeftPx + c.startDoor * doorWidthPx;
+  const cabinWidthPx = (c) => c.size * doorWidthPx;
+  const cabinCenterPx = (c) => cabinLeftPx(c) + cabinWidthPx(c) / 2;
 
   const yToPx = useCallback(
     (yNorm) => interiorBottomPx - yNorm * (interiorBottomPx - interiorTopPx),
@@ -98,23 +117,16 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
     [interiorBottomPx, interiorTopPx],
   );
 
+  // Boundaries BETWEEN cabins — these are the real internal walls (דופן).
   const doorBoundariesPx = useMemo(() => {
-    const out = [];
-    const doorWidthPx = interiorWidthPx / nDoors;
-    for (let i = 1; i < nDoors; i++) {
-      out.push(interiorLeftPx + i * doorWidthPx);
-    }
-    return out;
-  }, [interiorLeftPx, interiorWidthPx, nDoors]);
+    const dwp = interiorWidthPx / nDoors;
+    return cabins.slice(1).map((c) => interiorLeftPx + c.startDoor * dwp);
+  }, [interiorLeftPx, interiorWidthPx, nDoors, cabins]);
 
   const compartmentCentersPx = useMemo(() => {
-    const out = [];
-    const slice = interiorWidthPx / compartmentCount;
-    for (let i = 0; i < compartmentCount; i++) {
-      out.push(interiorLeftPx + slice * (i + 0.5));
-    }
-    return out;
-  }, [interiorLeftPx, interiorWidthPx, compartmentCount]);
+    const dwp = interiorWidthPx / nDoors;
+    return cabins.map((c) => interiorLeftPx + (c.startDoor + c.size / 2) * dwp);
+  }, [interiorLeftPx, interiorWidthPx, nDoors, cabins]);
 
   const interiorHeightCm = Math.max(1, heightCm - 2 * T);
 
@@ -129,11 +141,13 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
   useEffect(() => { allItemsRef.current = items; });
   const onChangeRef = useRef(onChange);
   useEffect(() => { onChangeRef.current = onChange; });
+  const paletteRef = useRef(paletteComponents);
+  useEffect(() => { paletteRef.current = paletteComponents; });
 
   const geoRef = useRef({});
   geoRef.current = {
     interiorLeftPx, interiorRightPx, interiorTopPx, interiorBottomPx,
-    compartmentWidthPx, compartmentCount,
+    compartmentCount, cabins, doorWidthPx,
     doors, nDoors, hasDivider, VIEW_WIDTH, VIEW_HEIGHT,
   };
 
@@ -182,14 +196,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
         const inY =
           svgY >= geo.interiorTopPx - 24 && svgY <= geo.interiorBottomPx + 24;
         if (inX && inY) {
-          let di = 0;
-          if (geo.hasDivider && geo.compartmentCount > 1) {
-            const raw = Math.floor(
-              (svgX - geo.interiorLeftPx) / geo.compartmentWidthPx,
-            );
-            di = Math.max(0, Math.min(geo.compartmentCount - 1, raw));
-          }
-          next.targetDoorId = geo.doors[di]?.id ?? null;
+          const rawDoor = Math.floor((svgX - geo.interiorLeftPx) / geo.doorWidthPx);
+          const di = Math.max(0, Math.min(geo.nDoors - 1, rawDoor));
+          const cabin = geo.cabins.find((c) => di >= c.startDoor && di < c.startDoor + c.size);
+          next.targetDoorId = cabin?.doorId ?? geo.doors[0]?.id ?? null;
           next.overCanvas = !!next.targetDoorId;
           next.y = snapToSlot(pxToY(svgY));
         }
@@ -203,8 +213,14 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
       if (nd && nd.overCanvas && nd.targetDoorId && nd.y != null) {
         const all = allItemsRef.current ?? {};
         const existing = all[nd.targetDoorId] ?? [];
+        // Enforce max-per-cabin at drop time (clearer than blocking later).
+        const cid = typeof nd.type === "string" && nd.type.startsWith("c:") ? parseInt(nd.type.slice(2)) : null;
+        const comp = cid ? (paletteRef.current ?? []).find((c) => c.id === cid) : null;
+        const maxPer = comp?.max_per_cabin ?? 0;
         const conflict = existing.some((it) => Math.abs(it.y - nd.y) < SLOT_EPS);
-        if (conflict) {
+        if (maxPer > 0 && existing.filter((it) => it.type === nd.type).length >= maxPer) {
+          showNotice(`ניתן להוסיף עד ${maxPer} ${comp?.name ?? "פריטים"} בכל תא`);
+        } else if (conflict) {
           // The exact drop slot is taken — fall back to the nearest free slot.
           const idx = findFreeSlotIndex(existing, nd.type);
           if (idx == null) {
@@ -316,12 +332,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
       const svgY = (e.clientY - rect.top) * (geo.VIEW_HEIGHT / rect.height);
 
       let targetDoorId = dragPreviewRef.current.sourceDoorId;
-      if (geo.hasDivider && geo.compartmentCount > 1) {
-        const rawIdx = Math.floor(
-          (svgX - geo.interiorLeftPx) / geo.compartmentWidthPx,
-        );
-        const clampedIdx = Math.max(0, Math.min(geo.compartmentCount - 1, rawIdx));
-        targetDoorId = geo.doors[clampedIdx]?.id ?? targetDoorId;
+      {
+        const rawDoor = Math.floor((svgX - geo.interiorLeftPx) / geo.doorWidthPx);
+        const di = Math.max(0, Math.min(geo.nDoors - 1, rawDoor));
+        const cabin = geo.cabins.find((c) => di >= c.startDoor && di < c.startDoor + c.size);
+        targetDoorId = cabin?.doorId ?? targetDoorId;
       }
 
       const snappedY = snapToSlot(pxToY(svgY));
@@ -462,24 +477,22 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
             />
           ))}
 
-          {hasDivider &&
-            doorBoundariesPx.map((x, i) => (
-              <rect
-                key={`divider-${i}`}
-                x={x - wallPx / 2}
-                y={interiorTopPx}
-                width={wallPx}
-                height={interiorBottomPx - interiorTopPx}
-                fill="#ffffff"
-                stroke="#94959a"
-                strokeWidth={1.5}
-              />
-            ))}
+          {doorBoundariesPx.map((x, i) => (
+            <rect
+              key={`divider-${i}`}
+              x={x - wallPx / 2}
+              y={interiorTopPx}
+              width={wallPx}
+              height={interiorBottomPx - interiorTopPx}
+              fill="#ffffff"
+              stroke="#94959a"
+              strokeWidth={1.5}
+            />
+          ))}
 
           {compartmentCount > 1 &&
-            doors.map((door, i) => {
-              const slice = interiorWidthPx / compartmentCount;
-              const cx = interiorLeftPx + (i + 0.5) * slice;
+            cabins.map((cabin, i) => {
+              const cx = cabinCenterPx(cabin);
               const cy = VIEW_TOP_PAD / 2;
               // Plain black-and-white "תא N" identifier — no active/selected
               // state (every cabin is edited directly by dragging into it).
@@ -487,7 +500,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
               const pillW = isMobile ? 62 : 52;
               const pillH = isMobile ? 26 : 22;
               return (
-                <g key={`compartment-label-${door.id}`} pointerEvents="none">
+                <g key={`compartment-label-${cabin.doorId}`} pointerEvents="none">
                   <rect
                     x={cx - pillW / 2}
                     y={cy - pillH / 2}
@@ -525,21 +538,18 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
             />
           ))}
 
-          {doors.map((door, di) => {
-            // Per-compartment gap measurements: each cabin shows its own
-            // segment sizes (cm) so the user can read every cabin at once,
-            // not only the selected one.
-            if (!hasDivider && di > 0) return null;
-            const dItems = items?.[door.id] ?? [];
+          {cabins.map((cabin) => {
+            // Per-cabin gap measurements: each cabin shows its own segment
+            // sizes (cm) so the user can read every cabin at once.
+            const dItems = items?.[cabin.doorId] ?? [];
             const asc = [...dItems].sort((a, b) => a.y - b.y);
             const segs = [];
             let prevY = 0;
             for (const it of asc) { segs.push({ lowY: prevY, highY: it.y }); prevY = it.y; }
             segs.push({ lowY: prevY, highY: 1 });
-            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
-            const colCenterX = (hasDivider ? interiorLeftPx + di * slice : interiorLeftPx) + slice / 2;
+            const colCenterX = cabinCenterPx(cabin);
             return (
-              <g key={`segs-${door.id}`} pointerEvents="none">
+              <g key={`segs-${cabin.doorId}`} pointerEvents="none">
                 {segs.map((seg, i) => {
                   const centerY = (yToPx(seg.lowY) + yToPx(seg.highY)) / 2;
                   const cm = Math.round((seg.highY - seg.lowY) * interiorHeightCm);
@@ -548,7 +558,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
                   const pillW = Math.max(26, text.length * 8 + 10);
                   const pillH = 17;
                   return (
-                    <g key={`seg-${door.id}-${i}`}>
+                    <g key={`seg-${cabin.doorId}-${i}`}>
                       <rect
                         x={colCenterX - pillW / 2}
                         y={centerY - pillH / 2}
@@ -576,12 +586,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
             );
           })}
 
-          {doors.map((door, di) => {
-            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
-            const sliceLeft = hasDivider
-              ? interiorLeftPx + di * slice
-              : interiorLeftPx;
-            const compItems = items?.[door.id] ?? [];
+          {cabins.map((cabin) => {
+            const slice = cabinWidthPx(cabin);
+            const sliceLeft = cabinLeftPx(cabin);
+            const compItems = items?.[cabin.doorId] ?? [];
             if (compItems.length === 0) return null;
             const isShelf = (type) => {
               if (type === "shelf") return true;
@@ -589,19 +597,19 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
               return cid ? (paletteComponents?.find(c => c.id === cid)?.item_type === "shelf") : false;
             };
             const shelfCount = compItems.filter((it) => isShelf(it.type)).length;
-            // Every compartment's items are now fully interactive — drag,
-            // move between cabins, and delete without selecting a cabin first.
+            // Every cabin's items are fully interactive — drag, move between
+            // cabins, and delete without selecting a cabin first.
             return (
-              <g key={`items-${door.id}`}>
+              <g key={`items-${cabin.doorId}`}>
                 {compItems.map((item, idx) => {
                   if (
-                    dragPreview?.sourceDoorId === door.id &&
+                    dragPreview?.sourceDoorId === cabin.doorId &&
                     dragPreview?.sourceIndex === idx
                   ) return null;
                   const meta = resolveMeta(item.type, paletteComponents);
                   return (
                     <PlacedItem
-                      key={`${door.id}-${idx}`}
+                      key={`${cabin.doorId}-${idx}`}
                       item={item}
                       originalIdx={idx}
                       leftPx={sliceLeft}
@@ -610,9 +618,9 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
                       isDragging={false}
                       color={meta.color}
                       label={meta.label}
-                      onPointerDown={(e, _) => onItemPointerDown(e, idx, door.id)}
+                      onPointerDown={(e, _) => onItemPointerDown(e, idx, cabin.doorId)}
                       canDelete={!isShelf(item.type) || shelfCount > 2}
-                      onDelete={() => removeItemFrom(door.id, idx)}
+                      onDelete={() => removeItemFrom(cabin.doorId, idx)}
                     />
                   );
                 })}
@@ -621,12 +629,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
           })}
 
           {dragPreview && (() => {
-            const di = doors.findIndex((d) => d.id === dragPreview.doorId);
-            if (di < 0) return null;
-            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
-            const previewLeft = hasDivider
-              ? interiorLeftPx + di * slice
-              : interiorLeftPx;
+            const cabin = cabins.find((c) => c.doorId === dragPreview.doorId);
+            if (!cabin) return null;
+            const slice = cabinWidthPx(cabin);
+            const previewLeft = cabinLeftPx(cabin);
             const previewMeta = resolveMeta(dragPreview.type, paletteComponents);
             return (
               <PlacedItem
@@ -646,12 +652,10 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
           })()}
 
           {newDrag?.overCanvas && newDrag.targetDoorId && newDrag.y != null && (() => {
-            const di = doors.findIndex((d) => d.id === newDrag.targetDoorId);
-            if (di < 0) return null;
-            const slice = hasDivider ? interiorWidthPx / nDoors : interiorWidthPx;
-            const previewLeft = hasDivider
-              ? interiorLeftPx + di * slice
-              : interiorLeftPx;
+            const cabin = cabins.find((c) => c.doorId === newDrag.targetDoorId);
+            if (!cabin) return null;
+            const slice = cabinWidthPx(cabin);
+            const previewLeft = cabinLeftPx(cabin);
             return (
               <PlacedItem
                 key="new-drag-preview"
