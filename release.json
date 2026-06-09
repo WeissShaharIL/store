@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.5",
-  "released_at": "2026-06-09T18:31:37Z",
-  "notes": "858a586 feat/fix: re-assignable component types, builder cabin walls + compact inputs, dedup interior minimum"
+  "version": "v1.64.6",
+  "released_at": "2026-06-09T18:40:58Z",
+  "notes": "90d7cd2 feat: from-scratch stage-1 structure controls (base + per-2-door-unit dividers) + upload hints"
 }
