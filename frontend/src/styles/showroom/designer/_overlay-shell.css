@@ -1,0 +1,216 @@
+/* ── Designer overlay ─────────────────────────────────────── */
+
+.closet-designer__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(4, 5, 10, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: designer-overlay-in 180ms ease-out;
+}
+@keyframes designer-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.closet-designer__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(1280px, 100%);
+  max-height: calc(100vh - 2 * var(--space-4));
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  animation: designer-card-in 220ms ease;
+}
+@keyframes designer-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.closet-designer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: #111113;
+  flex-shrink: 0;
+}
+.closet-designer__title-wrap { display: flex; flex-direction: column; gap: 2px; }
+.closet-designer__name {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: #f2f2f4;
+}
+.closet-designer__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  flex-shrink: 0;
+}
+.closet-designer__close-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+
+/* ── Step body ─────────────────────────────────────────────── */
+
+.closet-designer__body {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 2.2fr);
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.closet-designer__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  overflow-y: auto;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.07);
+}
+.closet-designer__step-title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: #f2f2f4;
+}
+.closet-designer__step-hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: rgba(242, 242, 244, 0.5);
+  line-height: 1.5;
+}
+.closet-designer__color-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.closet-designer__color-title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: rgba(242, 242, 244, 0.7);
+}
+
+.closet-designer__preview {
+  position: relative;
+  min-height: 0;
+  background: #0d0d0f;
+}
+.closet-designer__preview > div:first-child,
+.closet-designer__preview canvas {
+  width: 100% !important;
+  height: min(70vh, 640px) !important;
+  cursor: grab;
+}
+.closet-designer__preview canvas:active { cursor: grabbing; }
+
+/* eye-toggle button */
+.closet-preview__eye-btn {
+  position: absolute;
+  top: 12px;
+  left: 64px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(22, 22, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(242, 242, 244, 0.8);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: background 160ms, border-color 160ms;
+}
+.closet-preview__eye-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+/* ── Confirmation summary ──────────────────────────────────── */
+
+.closet-designer__summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px var(--space-4);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.closet-designer__summary dt {
+  color: rgba(242, 242, 244, 0.5);
+  font-weight: 500;
+}
+.closet-designer__summary dd {
+  margin: 0;
+  color: #f2f2f4;
+  font-weight: 600;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+
+.closet-designer__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: #111113;
+  flex-shrink: 0;
+}
+.closet-designer__cancel-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: rgba(242, 242, 244, 0.5);
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 150ms;
+}
+.closet-designer__cancel-btn:hover { color: rgba(242, 242, 244, 0.9); }
+.closet-designer__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 9px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.closet-designer__add-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+

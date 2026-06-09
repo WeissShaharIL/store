@@ -1,0 +1,145 @@
+/* ── Floating step nav pill ────────────────────────────────── */
+
+.closet-designer__step-nav-pill {
+  position: absolute;
+  top: 80px;
+  bottom: 80px;
+  right: max(255px, 26.5%);
+  z-index: 5;
+  padding: 14px 8px;
+  background: rgba(8, 8, 14, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 999px;
+  box-shadow: 0 14px 32px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  opacity: 0.6;
+  transition: opacity 220ms ease;
+}
+.closet-designer__step-nav-pill:hover,
+.closet-designer__step-nav-pill:focus-within { opacity: 1; }
+
+.closet-designer__step-nav-pill .step-nav {
+  padding: 0;
+  background: transparent;
+  border-bottom: none;
+  gap: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+.closet-designer__step-nav-pill .step-nav__step {
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  position: relative;
+}
+.closet-designer__step-nav-pill .step-nav__circle {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+}
+.closet-designer__step-nav-pill .step-nav__step:hover .step-nav__circle { border-color: #fff; }
+.closet-designer__step-nav-pill .step-nav__step--visited .step-nav__circle,
+.closet-designer__step-nav-pill .step-nav__step--active .step-nav__circle {
+  background: #60a5fa;
+  border-color: #60a5fa;
+  color: #fff;
+  opacity: 1;
+}
+.closet-designer__step-nav-pill .step-nav__step--active .step-nav__circle {
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.25);
+}
+.closet-designer__step-nav-pill .step-nav__label {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-inline-end: 10px;
+  padding: 5px 10px;
+  background: rgba(8, 8, 14, 0.95);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease, visibility 0s linear 120ms;
+  z-index: 6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.closet-designer__step-nav-pill .step-nav__step:hover .step-nav__label,
+.closet-designer__step-nav-pill .step-nav__step:focus-visible .step-nav__label {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 120ms ease, visibility 0s linear;
+}
+.closet-designer__step-nav-pill .step-nav__line {
+  width: 2px;
+  height: auto;
+  flex: 1 1 0;
+  min-height: 12px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.18);
+}
+.closet-designer__step-nav-pill .step-nav__line--filled { background: #60a5fa; }
+
+/* The base step-nav (outside the pill) — used for mobile fallback */
+.step-nav {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  background: #111113;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.step-nav__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  color: rgba(242, 242, 244, 0.45);
+  transition: color 180ms;
+}
+.step-nav__step:hover { color: rgba(242, 242, 244, 0.9); }
+.step-nav__circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  color: rgba(242, 242, 244, 0.6);
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 180ms, border-color 180ms, color 180ms;
+}
+.step-nav__step:hover .step-nav__circle { border-color: #60a5fa; }
+.step-nav__step--visited .step-nav__circle { background: #60a5fa; border-color: #60a5fa; color: #fff; opacity: 0.85; }
+.step-nav__step--active .step-nav__circle { background: #60a5fa; border-color: #60a5fa; color: #fff; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.22); }
+.step-nav__label { font-size: 11px; line-height: 1.2; text-align: center; width: 84px; white-space: normal; }
+.step-nav__step--active .step-nav__label { color: #f2f2f4; font-weight: 600; }
+.step-nav__line {
+  flex: 1 1 0;
+  min-width: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  margin-top: 18px;
+  transition: background 220ms;
+}
+.step-nav__line--filled { background: #60a5fa; }
+

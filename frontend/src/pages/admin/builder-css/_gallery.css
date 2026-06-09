@@ -1,0 +1,161 @@
+/* ── Closet gallery ──────────────────────────────────────────────────────────── */
+.closet-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.closet-gallery__card {
+  background: #161618;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 200ms ease;
+}
+.closet-gallery__card:hover { border-color: rgba(255,255,255,0.18); }
+.closet-gallery__card--clickable { cursor: pointer; }
+.closet-gallery__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem 0;
+}
+.closet-gallery__name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+.closet-gallery__price {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.55);
+}
+.closet-gallery__canvas-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: #111113;
+}
+.closet-gallery__canvas-wrap canvas { width: 100% !important; height: 100% !important; }
+.closet-gallery__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.closet-gallery__card-cta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background 200ms ease;
+}
+.closet-gallery__card--clickable:hover .closet-gallery__card-cta,
+.closet-gallery__card--clickable:focus .closet-gallery__card-cta {
+  background: rgba(0,0,0,0.35);
+}
+.closet-gallery__card-cta-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.92);
+  color: #0d0d0f;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.closet-gallery__card--clickable:hover .closet-gallery__card-cta-pill,
+.closet-gallery__card--clickable:focus .closet-gallery__card-cta-pill {
+  opacity: 1;
+  transform: translateY(0);
+}
+.closet-gallery__footer {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.closet-gallery__footer--quiet { color: rgba(255,255,255,0.35); }
+.closet-gallery__empty { padding: 1rem 0; }
+
+/* ── Type picker ─────────────────────────────────────────────────────────────── */
+.closet-gallery__type-picker {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.closet-gallery__type-card {
+  flex: 1;
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 200ms ease;
+  outline: none;
+}
+.closet-gallery__type-card:hover,
+.closet-gallery__type-card:focus { border-color: rgba(255,255,255,0.25); }
+.closet-gallery__type-card--active { border-color: #ffffff; }
+.closet-gallery__type-card-media {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #111113;
+  overflow: hidden;
+}
+.closet-gallery__type-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.closet-gallery__type-card-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 100%;
+  color: rgba(255,255,255,0.2);
+}
+.closet-gallery__type-card-admin {
+  position: absolute;
+  top: 0.4rem;
+  inset-inline-end: 0.4rem;
+  display: flex;
+  gap: 0.25rem;
+}
+.closet-gallery__type-card-admin-btn {
+  background: rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.closet-gallery__type-card-admin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.closet-gallery__type-card-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  background: #161618;
+}
+.closet-gallery__type-count {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.35);
+}
+
