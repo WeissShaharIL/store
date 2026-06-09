@@ -35,6 +35,10 @@ export function newDoor(index, kind = "hinged") {
     defaultMaterial: "wood",
     materialChoices: defaultMaterialChoices(),
     hingeSide: index % 2 === 0 ? "left" : "right",
+    // v2.x — per-cabin divider (דופן) is left unset on a fresh cabin so
+    // it inherits the closet-wide fallback (hasInternalDivider / the
+    // customer's divider toggle). Admin opts a specific cabin in/out
+    // via the "דופן" control in its door card, which sets `divider`.
     compartment: {
       defaultVariant: "default",
       variants: [
@@ -88,6 +92,13 @@ export function migrateConfig(config) {
   // concept. Admin can opt in per-template in the builder.
   if (out.allowDividerToggle === undefined) {
     out.allowDividerToggle = false;
+  }
+  // v2.x — base ("במה") defaults off. Older templates rendered on the
+  // silver legs unconditionally; they now stand flat unless the admin
+  // re-enables the base. Per-door `divider` is intentionally left
+  // undefined here so legacy doors fall back to hasInternalDivider.
+  if (out.hasBase === undefined) {
+    out.hasBase = false;
   }
   // v1.62.0 — old templates inherited T=5 (cm) from the v1.34.0
   // default. Real furniture boards are 1.5-2.5 cm; cap to 2 cm so
@@ -144,6 +155,10 @@ export function newConfig() {
     },
     color: "white",
     hasTrackRails: false,
+    // v2.x — closets default to standing flat on the floor. Admin opts
+    // into the silver leg+stage base ("במה") in the builder. An external
+    // drawer forces the base on so it has a gap to sit in.
+    hasBase: false,
     // v1.60.0 — new templates default to an open interior (no
     // vertical dividers between compartments). Admin can opt in
     // via the AppearanceEditor.
@@ -151,7 +166,7 @@ export function newConfig() {
     // v1.62.0 — customer doesn't see a divider toggle in the
     // designer unless admin explicitly permits it (rare; most
     // product lines are fixed-spec). Admin opts in via the
-    // AppearanceEditor's "אפשר ללקוח לשנות מחיצה" toggle.
+    // AppearanceEditor's "אפשר ללקוח לשנות דופן" toggle.
     allowDividerToggle: false,
     // v1.69.0 — silver (chrome-tone) is the default handle option.
     // Admin can switch to white / black per template, customer can

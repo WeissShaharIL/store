@@ -302,6 +302,27 @@ export default function DevClosetBuilder() {
     }
   }
 
+  // Duplicate the current saved model into a new template carrying
+  // the same config under a "(duplicate)" name, then load the copy so
+  // the admin edits it immediately. The product image isn't copied —
+  // images are per-template uploads; the admin re-adds one if wanted.
+  async function duplicateCurrent() {
+    if (!currentId) return;
+    setStatus("saving");
+    try {
+      const dupName = `${config.name} (duplicate)`;
+      const created = await adminCreateTemplate({
+        name: dupName,
+        config_json: JSON.stringify({ ...config, name: dupName }),
+      });
+      await reloadTemplates();
+      await loadTemplate(created.id);
+      setStatus("saved");
+    } catch (e) {
+      setStatus(`error: ${e.message}`);
+    }
+  }
+
   async function loadTemplate(id) {
     if (!id) return;
     try {
@@ -506,6 +527,11 @@ export default function DevClosetBuilder() {
               maxLength={32}
               title="מחיר תצוגה — מוצג לצד מחיר הבסיס המקורי"
             />
+          )}
+          {currentId && (
+            <button type="button" className="btn btn--ghost btn--sm" onClick={duplicateCurrent} title="צור עותק של המודל עם שם חדש">
+              <Plus /> שכפל
+            </button>
           )}
           {currentId && (
             <button type="button" className="btn btn--ghost btn--sm" onClick={deleteCurrent}>

@@ -203,7 +203,7 @@
  *
  * @property {boolean} [allowDividerToggle]
  *   v1.62.0 — when true, the customer-side designer shows a
- *   "מחיצה פנימית" toggle so the customer can flip the divider
+ *   "דופן פנימי" toggle so the customer can flip the divider
  *   on or off. Admin enables this in the builder when the
  *   product line genuinely supports both configurations. When
  *   false (the default for new templates), the customer just

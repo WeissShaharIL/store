@@ -31,7 +31,7 @@ import {
  *             legs (8 cm) supporting a thin 2 cm silver stage
  *             that the cabinet body sits on.
  */
-export default function CabinetBase({ W, D }) {
+export default function CabinetBase({ W, D, hasBase = false }) {
   // 4 inset corners, slightly inboard from the cabinet edges so
   // they read as feet rather than corner posts of the cabinet
   // itself.
@@ -47,6 +47,10 @@ export default function CabinetBase({ W, D }) {
         <meshStandardMaterial color="#e8e8e8" roughness={0.65} metalness={0.0} />
       </mesh>
 
+      {/* v2.x — legs + stage only render when the closet opts into a
+          base ("במה"). Without it the cabinet body sits flat on the
+          floor (the body group's lift is 0 in that case). */}
+      {hasBase && (<>
       {/* 4 silver corner legs + silver stage slab the cabinet
           body sits on. Polished silver via high metalness + low
           roughness — reads like machined aluminum / chrome. */}
@@ -83,6 +87,7 @@ export default function CabinetBase({ W, D }) {
           metalness={0.75}
         />
       </mesh>
+      </>)}
     </group>
   );
 }

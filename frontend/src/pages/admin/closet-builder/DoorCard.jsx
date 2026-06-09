@@ -192,6 +192,26 @@ function DoorCard({
             </div>
           </div>
         )}
+        {/* v2.x — per-cabin דופן: the wall between this cabin and the
+            previous one. Only meaningful from the 2nd cabin onward
+            (cabin #1 has the cabinet's own left wall). Falls back to
+            the legacy closet-wide flag for older templates. */}
+        {doorIndex > 0 && (() => {
+          const hasDiv = door.divider ?? config.hasInternalDivider ?? false;
+          return (
+            <div className="field field--small">
+              <span>דופן (הפרדה מהתא הקודם)</span>
+              <div className="closet-builder__door-vis" role="radiogroup" aria-label="דופן">
+                {[{v:true,l:"עם דופן"},{v:false,l:"ללא דופן"}].map(({v,l}) => (
+                  <button key={String(v)} type="button" role="radio" aria-checked={hasDiv === v}
+                    className={"closet-builder__door-vis-btn" + (hasDiv === v ? " closet-builder__door-vis-btn--active" : "")}
+                    onClick={() => setDoor((d) => { d.divider = v; })}
+                  >{l}</button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       <div className="closet-builder__row">

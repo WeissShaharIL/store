@@ -60,6 +60,11 @@ export function BasicsEditor({ config, setConfig }) {
           ))}
         </div>
       </div>
+      <ToggleField
+        label="הוסף במה (רגליים תחתונות)"
+        checked={config.hasBase ?? false}
+        onChange={(v) => setConfig(withClone(config, (d) => { d.hasBase = v; }))}
+      />
     </div>
   );
 }
@@ -175,16 +180,8 @@ export function AppearanceEditor({ config, setConfig }) {
         checked={!!config.hasTrackRails}
         onChange={(v) => setConfig(withClone(config, (d) => { d.hasTrackRails = v; }))}
       />
-      <ToggleField
-        label="מחיצה פנימית בין תאים (ברירת מחדל)"
-        checked={config.hasInternalDivider ?? false}
-        onChange={(v) => setConfig(withClone(config, (d) => { d.hasInternalDivider = v; }))}
-      />
-      <ToggleField
-        label="אפשר ללקוח לשנות את המחיצה בעמוד התכנון"
-        checked={config.allowDividerToggle ?? false}
-        onChange={(v) => setConfig(withClone(config, (d) => { d.allowDividerToggle = v; }))}
-      />
+      {/* v2.x — the closet-wide divider toggle was replaced by a
+          per-cabin דופן choice in each door card (DoorsSection). */}
       {/* v1.69.0 — admin sets the template's default handle. Each
           door inherits this value unless its own `door.handleColor`
           is set (no per-door override in the admin yet — customer
