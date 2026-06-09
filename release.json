@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.10",
-  "released_at": "2026-06-09T20:16:42Z",
-  "notes": "0bb8f4e feat(components): max items per cabin + clear min/max labels\ndce7fb7 fix(renderer): merge adjacent doors into one cabin when the divider is off\n9058b23 refactor(builder): extract BuilderToolbar from DevClosetBuilder"
+  "version": "v1.64.11",
+  "released_at": "2026-06-09T21:02:32Z",
+  "notes": "eb00a7e fix(planner): cabin-aware columns + enforce max-per-cabin at drop\nb408c3c chore: untrack plan.md (working notes) + gitignore it"
 }
