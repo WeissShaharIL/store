@@ -29,7 +29,7 @@ export function BasicsEditor({ config, setConfig }) {
   }
   const kind = config.kind ?? config.doors?.[0]?.kind ?? "hinged";
   return (
-    <div className="closet-builder__group">
+    <div className="closet-builder__group closet-builder__group--basics">
       <h4 className="closet-builder__group-title">בסיס</h4>
       <TextField
         label="שם המודל"
