@@ -51,7 +51,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 400ms ease;
 }
 .showroom-card:hover .showroom-card__photo { transform: scale(1.05); }

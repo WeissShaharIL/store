@@ -295,7 +295,7 @@
 .closet-gallery__photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 .closet-gallery__card-cta {
@@ -367,7 +367,7 @@
 .closet-gallery__type-card-media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 .closet-gallery__type-card-placeholder {

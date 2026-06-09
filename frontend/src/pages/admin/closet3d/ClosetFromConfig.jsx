@@ -222,14 +222,9 @@ export default function ClosetFromConfig({
   const innerBracketColor = interiorWhite ? SHELL_WHITE : palette.trim;
 
   // v2.x — base ("במה"): the silver legs+stage only show when the
-  // closet opts in, OR when it carries an external drawer (which needs
-  // the gap beneath the body to sit in). With no base the body group
-  // sits flat on the floor (lift = 0) and uses the full height.
-  const hasExternalDrawer = doors.some((door) => {
-    const v = resolveVariant(door.compartment, state.compartmentVariants?.[door.id]);
-    return (v?.items ?? []).some((it) => resolveRenderType(it.type) === "external_drawer");
-  });
-  const showBase = (config.hasBase ?? false) || hasExternalDrawer;
+  // closet opts in. With no base the body group sits flat on the floor
+  // (lift = 0) and uses the full height.
+  const showBase = config.hasBase ?? false;
   const baseLift = showBase ? STAGE_LEG_TOTAL_H : 0;
   const H = Math.max(0.5, totalH - baseLift);
 
@@ -441,61 +436,10 @@ export default function ClosetFromConfig({
         }
         return node;
       }
-      if (renderType === "external_drawer") {
-        /* External / under-closet drawer (מגירה חיצונית). Unlike an
-           interior drawer (which sits inside the compartment behind
-           the door), this renders BELOW the cabinet body — in the
-           leg/base zone — front-mounted and always visible. Reads as
-           a base drawer the closet sits on, per the product spec:
-           "like a drawer but it comes underneath the closet."
-
-           renderCompartment runs inside the body group (offset up by
-           STAGE_LEG_TOTAL_H), so a body-local NEGATIVE Y places the
-           drawer between the floor underside (0) and the ground
-           (-STAGE_LEG_TOTAL_H). The item's planner `y` is ignored —
-           an external drawer always sits at the base.
-
-           Click id is namespaced `extdrawer-` so it toggles
-           independently of interior (`item-`) and shortened-door
-           (`stack-`) drawer stacks. */
-        // Fill almost the whole base gap (~9.5 cm of the 10 cm leg
-        // zone) so the drawer face reads as a real plinth/base unit
-        // rather than a thin sliver. Face is pushed a touch proud of
-        // the silver stage front so it isn't visually swallowed by it.
-        const EXT_DRAWER_H = STAGE_LEG_TOTAL_H - 0.005;
-        const extDrawerId = `extdrawer-${door.id}-${i}`;
-        const isExtOpen = state.openDrawerIds?.includes(extDrawerId) ?? false;
-        let node = wrap(
-          <Drawer
-            key={key}
-            position={[
-              cx,
-              -STAGE_LEG_TOTAL_H / 2,
-              D / 2 + T + 0.012 + (isExtOpen ? DRAWER_OPEN_SHIFT : 0),
-            ]}
-            width={itemWidth}
-            depth={innerCompartmentDepth}
-            height={EXT_DRAWER_H}
-            color={palette.wood}
-            texture={palette.texture}
-            handleMaterial={compartmentHandleMaterial}
-          />
-        );
-        if (!onSelectItem && onSelectDrawer) {
-          node = (
-            <group
-              key={key}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelectDrawer(extDrawerId);
-              }}
-            >
-              {node}
-            </group>
-          );
-        }
-        return node;
-      }
+      // external_drawer is NOT rendered as a compartment item — the
+      // consuming designer maps each external drawer to door.drawerStack,
+      // which shortens the door and renders the drawer face below it via
+      // renderDrawerStack (same mechanism as the admin "קיצור" feature).
       return null;
     });
   }

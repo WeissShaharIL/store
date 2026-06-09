@@ -297,15 +297,25 @@ function DoorCard({
                     >{l}</button>
                   ))}
                 </div>
-                <input
-                  type="number"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={item.y}
-                  onChange={(e) => updateItem(i, (it) => { it.y = Number(e.target.value); })}
-                  title="גובה יחסי 0..1"
-                />
+                {/* v2.x — admins move an item up/down with arrows instead
+                    of typing an opaque 0..1 height. The 3D preview updates
+                    live so they see exactly where it lands. */}
+                <div className="closet-builder__item-move" style={{ display: "flex", gap: "0.25rem" }}>
+                  <button
+                    type="button"
+                    className="closet-builder__item-type-btn"
+                    title="הזז למעלה"
+                    aria-label="הזז למעלה"
+                    onClick={(e) => { e.stopPropagation(); updateItem(i, (it) => { it.y = Math.min(1, Math.round((it.y + 0.05) * 20) / 20); }); }}
+                  >▲</button>
+                  <button
+                    type="button"
+                    className="closet-builder__item-type-btn"
+                    title="הזז למטה"
+                    aria-label="הזז למטה"
+                    onClick={(e) => { e.stopPropagation(); updateItem(i, (it) => { it.y = Math.max(0, Math.round((it.y - 0.05) * 20) / 20); }); }}
+                  >▼</button>
+                </div>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={(e) => { e.stopPropagation(); removeItem(i); }}>
                   <Trash />
                 </button>

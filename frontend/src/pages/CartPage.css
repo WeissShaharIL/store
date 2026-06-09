@@ -84,7 +84,7 @@
 .cart-item__image {
   width: 68px;
   height: 68px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 6px;
   flex-shrink: 0;
   background: #111113;
