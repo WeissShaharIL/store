@@ -507,7 +507,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
                 <div className="closet-designer__color-block">
                   <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
                   <ToggleField
-                    label="מחיצה פנימית בין תאים"
+                    label="דופן פנימי בין תאים"
                     checked={customDivider}
                     onChange={setCustomDivider}
                   />

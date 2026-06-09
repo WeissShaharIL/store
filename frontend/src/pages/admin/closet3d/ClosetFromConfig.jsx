@@ -132,7 +132,6 @@ export default function ClosetFromConfig({
   // so the existing geometry math doesn't need to know about the
   // stage. The body group is offset upward by STAGE_LEG_TOTAL_H.
   const totalH = dims.H / 100;
-  const H = Math.max(0.5, totalH - STAGE_LEG_TOTAL_H);
   const D = dims.D / 100;
   const T = dims.T / 100;
   const compartmentWidth = dims.compartmentWidth / 100;
@@ -202,6 +201,32 @@ export default function ClosetFromConfig({
     };
   }, [config.color, colors]);
 
+  // v2.x — interior surfaces (carcass walls, back, shelves, rods,
+  // dividers, internal drawers) render white regardless of the chosen
+  // color; only the exterior shell skins + doors + external drawers
+  // carry the color. `neutralTexture` is the universal grain so a
+  // wood-textured palette (e.g. mevuka) doesn't tint the white panels.
+  const SHELL_WHITE = "#f3f2ef";
+  const neutralTexture = useMemo(() => getTextureForKey(null), []);
+
+  // v2.x — base ("במה"): the silver legs+stage only show when the
+  // closet opts in, OR when it carries an external drawer (which needs
+  // the gap beneath the body to sit in). With no base the body group
+  // sits flat on the floor (lift = 0) and uses the full height.
+  const hasExternalDrawer = doors.some((door) => {
+    const v = resolveVariant(door.compartment, state.compartmentVariants?.[door.id]);
+    return (v?.items ?? []).some((it) => resolveRenderType(it.type) === "external_drawer");
+  });
+  const showBase = (config.hasBase ?? false) || hasExternalDrawer;
+  const baseLift = showBase ? STAGE_LEG_TOTAL_H : 0;
+  const H = Math.max(0.5, totalH - baseLift);
+
+  // v2.x — per-cabin divider (דופן). Wall between compartment k and
+  // k+1 is drawn when door[k+1].divider is set; legacy templates with
+  // no per-door flag fall back to the closet-wide hasInternalDivider.
+  const dividerAt = (k) => doors[k + 1]?.divider ?? (config.hasInternalDivider ?? false);
+  const anyDivider = Array.from({ length: Math.max(0, N - 1) }, (_, k) => dividerAt(k)).some(Boolean);
+
   // Resolve add-on effects into a single flags object.
   const effects = useMemo(() => {
     const out = { aluminumOnShelves: false, aluminumPerimeterOnSides: false };
@@ -257,7 +282,7 @@ export default function ClosetFromConfig({
   // inner cabinet width instead of per-compartment width. Skipping
   // compartments 1+ avoids the floating half-width shelves with a
   // gap in the middle that the v1.60.0 dividerless mode produced.
-  const cabinetIsOpen = !(config.hasInternalDivider ?? false);
+  const cabinetIsOpen = !anyDivider;
   const innerCabinetWidth = Math.max(0.05, W - 2 * T - 0.02);
   const fullRodLength = innerCabinetWidth - 0.04;
 
@@ -321,8 +346,8 @@ export default function ClosetFromConfig({
           <Shelf
             key={key}
             position={[cx, y, 0]}
-            color={palette.wood}
-            texture={palette.texture}
+            color={SHELL_WHITE}
+            texture={neutralTexture}
             withAluminum={effects.aluminumOnShelves}
             depth={innerCompartmentDepth}
             width={itemWidth}
@@ -335,7 +360,7 @@ export default function ClosetFromConfig({
             key={key}
             position={[cx, y, 0]}
             length={itemRodLength}
-            bracketColor={palette.trim}
+            bracketColor={SHELL_WHITE}
           />
         );
       }
@@ -384,8 +409,8 @@ export default function ClosetFromConfig({
             width={itemWidth}
             depth={innerCompartmentDepth}
             height={INTERIOR_DRAWER_H}
-            color={palette.wood}
-            texture={palette.texture}
+            color={SHELL_WHITE}
+            texture={neutralTexture}
             handleMaterial={compartmentHandleMaterial}
           />
         );
@@ -705,7 +730,7 @@ export default function ClosetFromConfig({
           the cabinet floats over the marble floor with the
           Environment preset as the only visible background. */}
       <AdaptiveBackground woodHex={palette.wood} />
-      <CabinetBase W={W} D={D} />
+      <CabinetBase W={W} D={D} hasBase={showBase} />
 
       {/* Exterior dimension callouts (v1.48.0). Anchored in
           cabinet-local world space so they rotate with the
@@ -722,38 +747,36 @@ export default function ClosetFromConfig({
         />
       )}
 
-      {/* Cabinet body lifted to rest on the silver stage.
-          Everything below uses H = body height (= totalH -
-          STAGE_LEG_TOTAL_H), and lives at y = STAGE_LEG_TOTAL_H
-          in world coords. */}
-      <group position={[0, STAGE_LEG_TOTAL_H, 0]}>
-      {/* Back panel.
-          v1.90.5 — inset construction (W-2T × H-2T) so it fits
-          BETWEEN the side panels horizontally and BETWEEN the
-          top + bottom panels vertically. This matches real
-          cabinet carpentry (a back board screwed into the back
-          edges of the structural frame from inside) and
-          eliminates the corner overlap entirely. */}
+      {/* Cabinet body. v2.x — lifted by `baseLift` (= STAGE_LEG_TOTAL_H
+          when a base/legs are shown, else 0 so it sits flat on the
+          floor). H already accounts for the lift. */}
+      <group position={[0, baseLift, 0]}>
+      {/* Back panel. v2.x — always white (the back is white on every
+          closet, regardless of the chosen color). */}
       <Plank
         position={[0, H / 2, -D / 2 + T / 2]}
         args={[Math.max(0.05, W - 2 * T), Math.max(0.05, H - 2 * T), T]}
-        color={palette.back}
-        texture={palette.texture}
+        color={SHELL_WHITE}
+        texture={neutralTexture}
       />
-      {/* Top + bottom. v1.61.0 — top panel gets a small "crown"
-          overhang on front + sides (back edge stays flush). The
-          shifted Z + extra D push the panel forward by the
-          overhang amount so the back stays at the cabinet back. */}
+      {/* Top: white structural panel (interior ceiling) + a thin
+          colored crown skin on top so the exterior reads as the
+          chosen color while the inside stays white. */}
+      <Plank position={[0, H - T / 2, 0]} args={[W, T, D]} color={SHELL_WHITE} texture={neutralTexture} />
       <Plank
-        position={[0, H - T / 2, TOP_CROWN_OVERHANG / 2]}
-        args={[W + 2 * TOP_CROWN_OVERHANG, T, D + TOP_CROWN_OVERHANG]}
+        position={[0, H + 0.005, TOP_CROWN_OVERHANG / 2]}
+        args={[W + 2 * TOP_CROWN_OVERHANG, 0.01, D + TOP_CROWN_OVERHANG]}
         color={palette.trim}
         texture={palette.texture}
       />
-      <Plank position={[0, T / 2,     0]} args={[W, T, D]} color={palette.trim} texture={palette.texture} />
-      {/* Sides */}
-      <Plank position={[-W / 2 + T / 2, H / 2, 0]} args={[T, H, D]} color={palette.trim} texture={palette.texture} />
-      <Plank position={[ W / 2 - T / 2, H / 2, 0]} args={[T, H, D]} color={palette.trim} texture={palette.texture} />
+      {/* Bottom (interior floor) — white. */}
+      <Plank position={[0, T / 2,     0]} args={[W, T, D]} color={SHELL_WHITE} texture={neutralTexture} />
+      {/* Sides: white structural panels (interior) + thin colored
+          outer skins (exterior). */}
+      <Plank position={[-W / 2 + T / 2, H / 2, 0]} args={[T, H, D]} color={SHELL_WHITE} texture={neutralTexture} />
+      <Plank position={[ W / 2 - T / 2, H / 2, 0]} args={[T, H, D]} color={SHELL_WHITE} texture={neutralTexture} />
+      <Plank position={[-W / 2 - 0.004, H / 2, 0]} args={[0.008, H, D]} color={palette.trim} texture={palette.texture} />
+      <Plank position={[ W / 2 + 0.004, H / 2, 0]} args={[0.008, H, D]} color={palette.trim} texture={palette.texture} />
 
       {/* Optional aluminum perimeter outline on each side panel. */}
       {effects.aluminumPerimeterOnSides && (
@@ -763,25 +786,24 @@ export default function ClosetFromConfig({
         </>
       )}
 
-      {/* Vertical dividers between adjacent compartments (N-1 of
-          them). v1.60.0 — admin opt-in via `config.hasInternalDivider`.
-          Missing → defaults handled by migrateConfig (legacy
-          templates = true; new templates = false). When false the
-          cabinet is one open box behind multiple doors, which
-          matches the actual 2-door product line. */}
-      {(config.hasInternalDivider ?? false) &&
-        Array.from({ length: Math.max(0, N - 1) }).map((_, k) => {
-          const x = -W / 2 + compartmentWidth * (k + 1);
-          return (
-            <Plank
-              key={`div-${k}`}
-              position={[x, H / 2, 0]}
-              args={[T, H - 2 * T, D - T]}
-              color={palette.trim}
-              texture={palette.texture}
-            />
-          );
-        })}
+      {/* Vertical dividers (דופן) between adjacent compartments.
+          v2.x — per-cabin: a wall at boundary k renders only when
+          that cabin opts in (door[k+1].divider), with a fallback to
+          the legacy closet-wide flag for older templates. Interior
+          surface → white. */}
+      {Array.from({ length: Math.max(0, N - 1) }).map((_, k) => {
+        if (!dividerAt(k)) return null;
+        const x = -W / 2 + compartmentWidth * (k + 1);
+        return (
+          <Plank
+            key={`div-${k}`}
+            position={[x, H / 2, 0]}
+            args={[T, H - 2 * T, D - T]}
+            color={SHELL_WHITE}
+            texture={neutralTexture}
+          />
+        );
+      })}
 
       {/* Compartment contents */}
       {doors.map((door, i) => renderCompartment(door, i))}

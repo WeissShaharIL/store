@@ -45,7 +45,7 @@
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  object-fit: contain;
   background: #111113;
   transform-origin: 35% 40%;
   transition: transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
