@@ -9,8 +9,7 @@ import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import { useHandles } from "./admin/HandlesContext.jsx";
 import { ColorPicker, ToggleField } from "./admin/closet-builder/Fields.jsx";
 import ClosetInteriorPlan from "./admin/ClosetInteriorPlan.jsx";
-import { renderInteriorPlanPng } from "./admin/closet3d/interior-plan/planImage.js";
-import { dataUrlToU8, delay } from "../lib/dataUrl.js";
+import { usePhotoExport } from "./admin/designer/usePhotoExport.js";
 import RoomPlanner from "./admin/RoomPlanner.jsx";
 import { WIZARD_STEPS } from "./admin/designer/wizardSteps.js";
 import StepNav from "./admin/designer/StepNav.jsx";
@@ -394,63 +393,17 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   // ── Photo download (final step) ──────────────────────────────────────────
   const captureRef = useRef(null);
-  const [downloading, setDownloading] = useState(false);
-
-  // Download = front view (closed + open) + a 2D image of the stage-2 interior
-  // configuration, bundled into one ZIP. (No 3/4 angle — per customer request.)
-  // Browsers block multiple rapid programmatic downloads, hence the single zip.
-  async function handleDownloadPhotos() {
-    if (!captureRef.current || downloading) return;
-    setDownloading(true);
-    const name = (item.name || "ארון").replace(/\s+/g, "-");
-    const dist = Math.max(3.5, Math.max(Hm, Wm) * 2.0);
-    const front = [0, sceneTargetY, Dm / 2 + dist];
-    try {
-      const { default: JSZip } = await import("jszip");
-      const zip = new JSZip();
-      const shots = [];
-
-      // Closed shot
-      setOpenDoorIds([]);
-      setSlidingDoorsHidden(false);
-      await delay(450);
-      if (captureRef.current) {
-        shots.push([`${name}-חזית-סגור.png`, captureRef.current(front)]);
-      }
-      // "Open" shot — sliding closets: hide doors entirely; hinged: open them
-      if (hasSliding) {
-        setSlidingDoorsHidden(true);
-      } else {
-        setOpenDoorIds(doorList.map((d) => d.id));
-      }
-      await delay(750);
-      if (captureRef.current) {
-        shots.push([`${name}-חזית-פתוח.png`, captureRef.current(front)]);
-      }
-      // Restore state
-      setOpenDoorIds([]);
-      setSlidingDoorsHidden(false);
-
-      for (const [fn, url] of shots) zip.file(fn, dataUrlToU8(url));
-
-      // The 2D interior configuration from stage 2 (shelves/rods/drawers + cm).
-      try {
-        const planPng = await renderInteriorPlanPng(customConfig, customItems);
-        zip.file(`${name}-תצורת-פנים.png`, dataUrlToU8(planPng));
-      } catch {
-        // A failed config image shouldn't block the photo download.
-      }
-
-      const blob = await zip.generateAsync({ type: "blob" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${name}.zip`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    } finally {
-      setDownloading(false);
-    }
-  }
+  const { downloading, handleDownloadPhotos } = usePhotoExport({
+    captureRef,
+    name: item.name,
+    dims: { Hm, Wm, Dm, targetY: sceneTargetY },
+    hasSliding,
+    doorList,
+    customConfig,
+    customItems,
+    setOpenDoorIds,
+    setSlidingDoorsHidden,
+  });
 
   const Preview = (
     <div className="closet-designer__preview">
