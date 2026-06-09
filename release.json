@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.8",
-  "released_at": "2026-06-09T19:12:50Z",
-  "notes": "48ddb85 refactor(designer): extract photo-export (ZIP download) into usePhotoExport hook"
+  "version": "v1.64.9",
+  "released_at": "2026-06-09T19:30:36Z",
+  "notes": "058f0b6 refactor(designer): extract wizard step bodies into DesignerSteps component"
 }
