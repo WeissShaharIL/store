@@ -47,14 +47,26 @@ export default function LeadClosetPreview({ item, onClose }) {
   const snap = item.snapshot || {};
   // Merge stage-2 interior placements into each door's compartment so the
   // admin sees the exact shelves/rods/drawers the customer added.
+  const resolveType = (t) => {
+    if (typeof t === "string" && t.startsWith("c:")) {
+      const id = parseInt(t.slice(2), 10);
+      return components.find((c) => c.id === id)?.item_type ?? null;
+    }
+    return t;
+  };
   const mergedDoors = (base.doors ?? []).map((door) => {
     const placed = snap.customItems?.[door.id];
     if (!placed) return door;
+    // External drawers shorten the door + render below it (drawerStack);
+    // pull them out of the interior items and count into drawerStack.
+    const interior = placed.filter((it) => resolveType(it.type) !== "external_drawer");
+    const extCount = placed.length - interior.length;
     return {
       ...door,
+      drawerStack: (door.drawerStack ?? 0) + extCount,
       compartment: {
         defaultVariant: "custom",
-        variants: [{ id: "custom", label: "מותאם", items: placed }],
+        variants: [{ id: "custom", label: "מותאם", items: interior }],
       },
     };
   });

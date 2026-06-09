@@ -184,14 +184,30 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     // door.compartment.variants[].items) shows the shelves/rods/drawers the
     // customer placed. Doors the customer didn't touch keep their template
     // interior.
+    // Resolve a placed item's type (custom components are stored as
+    // `c:<id>`) to its underlying item_type.
+    const resolveType = (t) => {
+      if (typeof t === "string" && t.startsWith("c:")) {
+        const id = parseInt(t.slice(2), 10);
+        return componentPrices.find((c) => c.id === id)?.item_type ?? null;
+      }
+      return t;
+    };
     const doors = (cfg.doors ?? []).map((door) => {
       const placed = customItems?.[door.id];
       if (!placed) return door;
+      // External drawers (מגירה חיצונית) aren't interior items — each one
+      // shortens the door and renders as a front drawer below it. Pull
+      // them out of the interior list and fold their count into the
+      // door's drawerStack (same mechanism as the admin "קיצור" option).
+      const interior = placed.filter((it) => resolveType(it.type) !== "external_drawer");
+      const extCount = placed.length - interior.length;
       return {
         ...door,
+        drawerStack: (door.drawerStack ?? 0) + extCount,
         compartment: {
           defaultVariant: "custom",
-          variants: [{ id: "custom", label: "מותאם", items: placed }],
+          variants: [{ id: "custom", label: "מותאם", items: interior }],
         },
       };
     });
@@ -202,7 +218,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       color: customColor,
       hasInternalDivider: customDivider,
     };
-  }, [cfg, customDims, customColor, customDivider, customItems]);
+  }, [cfg, customDims, customColor, customDivider, customItems, componentPrices]);
 
   useEffect(() => {
     saveDesignerState(item.id, {
