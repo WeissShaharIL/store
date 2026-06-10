@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.13",
-  "released_at": "2026-06-10T10:58:49Z",
-  "notes": "36a24bf refactor(frontend): remove all emojis, replace with SVG icons\n343ba8b docs(backend-progress): record release v1.64.12 + prod smoke checks"
+  "version": "v1.64.14",
+  "released_at": "2026-06-10T11:39:09Z",
+  "notes": "b37587a feat(designer): replace scene dim-toggle with open-all / hide-all door buttons"
 }
