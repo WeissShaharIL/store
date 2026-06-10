@@ -5,6 +5,7 @@ import {
   adminUpdateComponentPrice,
   adminDeleteComponentPrice,
 } from "../../api.js";
+import { ItemTypeIcon, ITEM_TYPE_OPTIONS, itemTypeLabel } from "./interior-plan/itemVisuals.jsx";
 import "./AdminTab.css";
 import "./ComponentPricesTab.css";
 
@@ -16,7 +17,7 @@ const BASIS_OPTIONS = [
 ];
 
 function emptyForm() {
-  return { name: "", sku: "", price_basis: "fixed", sort_order: 0, color: "#a98865" };
+  return { name: "", sku: "", price_basis: "fixed", sort_order: 0, item_type: "" };
 }
 
 function emptyFixed() { return { price: "" }; }
@@ -93,7 +94,7 @@ export default function ComponentPricesTab() {
   }
 
   function openEdit(item) {
-    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order, color: item.color || "#a98865" });
+    setForm({ name: item.name, sku: item.sku, price_basis: item.price_basis, sort_order: item.sort_order, item_type: item.item_type ?? "" });
     const parsed = parseRules(item.rules, item.price_basis);
     if (item.price_basis === "fixed") {
       setFixedPrice(String(parsed.fixedPrice));
@@ -132,7 +133,7 @@ export default function ComponentPricesTab() {
   async function handleSave() {
     if (!form.name.trim()) { setError("יש להזין שם לרכיב."); return; }
     const rules = buildRules(form.price_basis, fixedPrice, ranges);
-    const payload = { ...form, rules };
+    const payload = { ...form, item_type: form.item_type || null, rules };
     setSaving(true);
     setError("");
     try {
@@ -183,6 +184,7 @@ export default function ComponentPricesTab() {
           <thead>
             <tr>
               <th>שם</th>
+              <th>סוג</th>
               <th>מק״ט</th>
               <th>בסיס תמחור</th>
               <th>כללי מחיר</th>
@@ -193,6 +195,10 @@ export default function ComponentPricesTab() {
             {items.map(item => (
               <tr key={item.id} className={editingId === item.id ? "cp-row--editing" : ""}>
                 <td className="cp-name">{item.name}</td>
+                <td className="cp-type-cell">
+                  <ItemTypeIcon type={item.item_type ?? null} width={36} height={24} />
+                  <span>{itemTypeLabel(item.item_type) ?? "כללי"}</span>
+                </td>
                 <td className="cp-sku">{item.sku || "—"}</td>
                 <td>{basisLabel(item.price_basis)}</td>
                 <td className="cp-rules"><RulesPreview rulesStr={item.rules} basis={item.price_basis} /></td>
@@ -231,17 +237,27 @@ export default function ComponentPricesTab() {
             />
           </div>
 
-          <div className="cp-editor__row">
-            <label>צבע (שלב 2)</label>
-            <div className="cp-color-row">
-              <input
-                type="color"
-                value={form.color || "#a98865"}
-                onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
-                className="cp-color-input"
-              />
-              <span className="cp-color-hex">{form.color || "#a98865"}</span>
+          <div className="cp-editor__row cp-editor__row--types">
+            <label>סוג רכיב — כך הוא ייראה בארון</label>
+            <div className="cp-type-pool" role="radiogroup" aria-label="סוג רכיב">
+              {[{ value: "", label: "תוספת כללית" }, ...ITEM_TYPE_OPTIONS].map(opt => (
+                <button
+                  key={opt.value || "general"}
+                  type="button"
+                  role="radio"
+                  aria-checked={(form.item_type ?? "") === opt.value}
+                  className={"cp-type-card" + ((form.item_type ?? "") === opt.value ? " cp-type-card--active" : "")}
+                  onClick={() => setForm(f => ({ ...f, item_type: opt.value }))}
+                >
+                  <ItemTypeIcon type={opt.value || null} />
+                  <span>{opt.label}</span>
+                </button>
+              ))}
             </div>
+            <p className="cp-type-hint">
+              רכיב עם סוג מופיע ללקוח בשלב פנים הארון ומוצג בארון כפי שהוא נראה בדגם.
+              ״תוספת כללית״ נשארת ללא ייצוג ויזואלי בארון.
+            </p>
           </div>
 
           <div className="cp-editor__row">
