@@ -8,6 +8,7 @@ import {
 } from "../../api.js";
 import { parseConfig } from "../../lib/parseConfig.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { MapPin, Mail } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 import "./AdminOrders.css";
 
@@ -182,10 +183,10 @@ export default function OrdersTab() {
                 <span className={`order-status order-status--${o.status}`}>{STATUS_LABELS[o.status] || o.status}</span>
               </div>
               <a className="lead-phone" href={`tel:${o.phone}`}>{o.phone}</a>
-              {o.email && <div className="lead-detail">✉️ {o.email}</div>}
-              {o.address && <div className="lead-detail">📍 {o.address}</div>}
+              {o.email && <div className="lead-detail"><Mail /> {o.email}</div>}
+              {o.address && <div className="lead-detail"><MapPin /> {o.address}</div>}
               {o.total_amount != null && (
-                <div className="lead-detail">💰 ₪{Number(o.total_amount).toLocaleString()}</div>
+                <div className="lead-detail lead-detail--total">₪{Number(o.total_amount).toLocaleString()}</div>
               )}
 
               {o.cart?.length > 0 && (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminActivateLogo, adminDeleteLogo, adminGetLogos, adminUploadLogo, adminChangePassword, getSettings, updateSettings } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { Check } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 export default function SettingsTab({ onStartTour }) {
@@ -95,7 +96,7 @@ export default function SettingsTab({ onStartTour }) {
             <input type="password" value={cpConfirm} onChange={(e) => setCpConfirm(e.target.value)} required />
           </div>
           {cpError && <p className="tab-error">{cpError}</p>}
-          {cpDone && <p style={{ color: "#86efac", fontSize: "0.82rem", margin: 0 }}>הסיסמה שונתה בהצלחה ✓</p>}
+          {cpDone && <p style={{ color: "#86efac", fontSize: "0.82rem", margin: 0, display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>הסיסמה שונתה בהצלחה <Check width={15} height={15} /></p>}
           <button type="submit" disabled={cpLoading} className="settings-save-btn">
             {cpLoading ? "שומר..." : "שמור סיסמה"}
           </button>

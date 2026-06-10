@@ -319,3 +319,65 @@ export function FileSpreadsheet(props) {
     </svg>
   );
 }
+
+export function Ruler(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 8.5 8.5 3 21 15.5 15.5 21z" />
+      <line x1="7" y1="7" x2="9" y2="9" />
+      <line x1="10.5" y1="10.5" x2="12.5" y2="12.5" />
+      <line x1="14" y1="14" x2="16" y2="16" />
+    </svg>
+  );
+}
+
+export function DoorIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17" />
+      <line x1="3" y1="21" x2="21" y2="21" />
+      <circle cx="15" cy="12" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function Palette(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="13.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="17.5" cy="10.5" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="8.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="6.5" cy="12.5" r="1.2" fill="currentColor" stroke="none" />
+      <path d="M12 2a10 10 0 1 0 0 20c1.1 0 1.5-.9 1.5-1.7 0-.5-.2-.9-.5-1.2-.3-.4-.5-.8-.5-1.3a1.5 1.5 0 0 1 1.5-1.5H16a6 6 0 0 0 6-6c0-4.4-4.5-8-10-8z" />
+    </svg>
+  );
+}
+
+export function MapPin(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+export function Key(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="7.5" cy="15.5" r="4.5" />
+      <line x1="10.7" y1="12.3" x2="21" y2="2" />
+      <line x1="16" y1="7" x2="19" y2="10" />
+      <line x1="13" y1="10" x2="16" y2="13" />
+    </svg>
+  );
+}
+
+export function Copy(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}

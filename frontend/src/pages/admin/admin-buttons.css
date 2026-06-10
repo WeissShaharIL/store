@@ -168,3 +168,34 @@
 /* Steady ON state for the toggle buttons (מוכן/טיוטה, מכירה מתצוגה) — they swap
    btn--ghost↔btn--primary in JSX when active; green tint makes "currently on"
    unmistakable at a glance and distinct from a transient press. */
+
+/* SVG icons inside small admin delete/close buttons (de-emojified). Sized so
+   the glyph matches the prior emoji footprint and stays centered. */
+.admin .row-delete-btn svg,
+.admin .template-delete-btn svg,
+.admin .trust-editor__del svg,
+.admin .images-lightbox__close svg,
+.admin .hero-banner-thumb__delete svg,
+.admin .default-closet-image__delete svg,
+.admin .images-grid__edit-btn svg,
+.admin .images-grid__del svg,
+.admin .images-grid__copy svg,
+.tour-card__close svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+.admin .row-delete-btn,
+.admin .template-delete-btn,
+.admin .trust-editor__del,
+.admin .images-lightbox__close,
+.admin .hero-banner-thumb__delete,
+.admin .default-closet-image__delete,
+.admin .images-grid__edit-btn,
+.admin .images-grid__del,
+.admin .images-grid__copy,
+.tour-card__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

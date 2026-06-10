@@ -41,8 +41,11 @@
 .lead-status.closed { color: #5cba7e; border-color: rgba(92,186,126,0.4); background: rgba(92,186,126,0.1); }
 .lead-date { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
 .lead-cart-count { font-size: 0.82rem; color: rgba(255,255,255,0.35); }
-.lead-detail { font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+.lead-detail { font-size: 0.85rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; }
+.lead-detail svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.75; }
+.lead-detail--total { color: #86efac; font-weight: 600; }
 .lead-detail--notes {
+  align-items: flex-start;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: 6px;
@@ -95,6 +98,7 @@
   border: 1px solid rgba(37,99,235,0.25);
 }
 .lead-cart__summary { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
-.lead-cart__interior { font-size: 0.78rem; color: rgba(147,197,253,0.85); }
+.lead-cart__interior { font-size: 0.78rem; color: rgba(147,197,253,0.85); display: inline-flex; align-items: center; gap: 5px; }
+.lead-cart__interior svg { width: 13px; height: 13px; flex-shrink: 0; }
 
 .lead-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }

@@ -89,3 +89,17 @@ Legend: ✅ done · 🔄 in progress · ⬜ not started
 - **A2 (Alembic)**: still on the hand-rolled `ADD COLUMN` migrations — a larger architectural change.
 - **A3 (audit session)**: `act.record` still commits on the request session; low urgency.
 - **M3/M5 (schema location / serializer consolidation)**: partially eased via `parse_cart`; the remaining 1:1 `_to_out` functions are low-risk and left as-is.
+
+---
+
+## Release & deploy
+
+- **Committed** to `dev` (`e64d2f1`) — backend changes + the two review docs only; the unrelated `.claude/settings.json` edit and untracked skill files were kept out.
+- **Predeploy gate**: frontend build OK, all frontend tests pass, backend **100 passed**. Note: `vitest` hangs at worker-pool teardown in this environment (a pre-existing flake — my changes are backend-only) so the gate script itself doesn't exit cleanly; the underlying checks are all green and were run/verified individually.
+- **Released `v1.64.12`** via `release.ps1` (dev→main merge, tag, GitHub release) and pushed `dev`.
+- **Deployed** via `deploy-remote.ps1 shahar 89.139.33.201` — backend + frontend images rebuilt, all three containers recreated and started (exit 0).
+- **Production smoke checks** against `https://store.works-on-my-machine.net`:
+  - `GET /api/health` → `{"ok":true}` (backend booted → `SECRET_KEY` present on server; S2 didn't break the deploy)
+  - `GET /api/public/settings` → all 9 keys (C2 live)
+  - `GET /api/settings` (no auth) → **401** (S3 live)
+  - `POST /api/auth/login` (bad creds) → **401**, not 500 (auth + `token_version` path healthy)

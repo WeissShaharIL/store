@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { adminGetActivity } from "../../api.js";
+import { AlertTriangle, Edit, FileText, Image, Key, Mail, Plus, Trash } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 import "./AdminActivity.css";
 
 const ACTION_META = {
-  lead_submitted:     { icon: "📬", color: "green",  label: "פנייה חדשה" },
-  admin_login:        { icon: "🔑", color: "blue",   label: "כניסת מנהל" },
-  admin_login_failed: { icon: "⚠️", color: "red",    label: "ניסיון כניסה נכשל" },
-  template_created:   { icon: "➕", color: "blue",   label: "תבנית נוצרה" },
-  template_updated:   { icon: "✏️", color: "muted",  label: "תבנית עודכנה" },
-  template_deleted:   { icon: "🗑️", color: "red",    label: "תבנית נמחקה" },
-  image_uploaded:     { icon: "🖼️", color: "muted",  label: "תמונה הועלתה" },
+  lead_submitted:     { Icon: Mail,          color: "green",  label: "פנייה חדשה" },
+  admin_login:        { Icon: Key,           color: "blue",   label: "כניסת מנהל" },
+  admin_login_failed: { Icon: AlertTriangle, color: "red",    label: "ניסיון כניסה נכשל" },
+  template_created:   { Icon: Plus,          color: "blue",   label: "תבנית נוצרה" },
+  template_updated:   { Icon: Edit,          color: "muted",  label: "תבנית עודכנה" },
+  template_deleted:   { Icon: Trash,         color: "red",    label: "תבנית נמחקה" },
+  image_uploaded:     { Icon: Image,         color: "muted",  label: "תמונה הועלתה" },
 };
 
 const ACTIONS = Object.entries(ACTION_META).map(([k, v]) => ({ value: k, label: v.label }));
@@ -51,7 +52,7 @@ export default function ActivityTab() {
     <div className="admin-tab-content">
       {hasFailedAdmin && (
         <div className="activity-alert">
-          ⚠️ נרשם ניסיון כניסה נכשל לחשבון מנהל
+          <AlertTriangle /> נרשם ניסיון כניסה נכשל לחשבון מנהל
         </div>
       )}
 
@@ -81,10 +82,11 @@ export default function ActivityTab() {
       ) : (
         <ul className="activity-list">
           {events.map((ev) => {
-            const meta = ACTION_META[ev.action] ?? { icon: "•", color: "muted", label: ev.action_label };
+            const meta = ACTION_META[ev.action] ?? { Icon: FileText, color: "muted", label: ev.action_label };
+            const Icon = meta.Icon;
             return (
               <li key={ev.id} className={`activity-item activity-item--${meta.color}`}>
-                <span className="activity-item__icon">{meta.icon}</span>
+                <span className="activity-item__icon">{Icon && <Icon />}</span>
                 <div className="activity-item__body">
                   <span className="activity-item__label">{meta.label}</span>
                   {ev.actor && <span className="activity-item__actor">{ev.actor}</span>}

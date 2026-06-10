@@ -1,3 +1,4 @@
+import { Check, Image } from "./Icons.jsx";
 import "./ClosetCard.css";
 
 export default function ClosetCard({ closet, onAddToCart, added, showPrice = false }) {
@@ -7,7 +8,7 @@ export default function ClosetCard({ closet, onAddToCart, added, showPrice = fal
         {closet.image_path ? (
           <img src={`/uploads/${closet.image_path}`} alt={closet.name} />
         ) : (
-          <div className="closet-card-placeholder">🪟</div>
+          <div className="closet-card-placeholder"><Image /></div>
         )}
         {closet.is_display_sale && (
           <span className="closet-card-badge">מתצוגה</span>
@@ -24,7 +25,7 @@ export default function ClosetCard({ closet, onAddToCart, added, showPrice = fal
             onClick={onAddToCart}
             disabled={added}
           >
-            {added ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
+            {added ? <><Check /> נוסף לעגלה</> : "הוסף לעגלה"}
           </button>
         )}
       </div>

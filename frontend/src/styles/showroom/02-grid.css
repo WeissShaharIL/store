@@ -64,6 +64,7 @@
   font-size: 48px;
   color: rgba(242, 242, 244, 0.25);
 }
+.showroom-card__placeholder svg { width: 44px; height: 44px; }
 
 .showroom-card__badge {
   position: absolute;

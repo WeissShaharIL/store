@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminCreateColor, adminDeleteColor, adminGetColors, adminUpdateColor } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { X } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 export default function ColorsTab() {
@@ -69,7 +70,7 @@ export default function ColorsTab() {
             <div className="color-swatch" style={{ background: c.swatch }} />
             <span className="row-name">{c.name}</span>
             <span className="row-key">{c.color_key}</span>
-            <button className="row-delete-btn" onClick={() => handleDelete(c.id)}>✕</button>
+            <button className="row-delete-btn" onClick={() => handleDelete(c.id)} aria-label="מחק"><X /></button>
           </div>
         ))}
       </div>
