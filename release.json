@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.18",
-  "released_at": "2026-06-10T14:31:09Z",
-  "notes": "dfc02a7 feat(landing): restore + redesign the #about section, admin-editable"
+  "version": "v1.64.19",
+  "released_at": "2026-06-10T14:54:26Z",
+  "notes": "ea1948b feat(landing): admin-selectable landing themes (dark / light / warm / navy)"
 }
