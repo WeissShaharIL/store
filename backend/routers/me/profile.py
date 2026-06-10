@@ -1,10 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
-from auth import get_current_user, hash_password, verify_password
+from auth import (
+    get_current_user,
+    hash_password,
+    validate_password_strength,
+    verify_password,
+)
 from db import get_db
 from models import User
 from schemas import MeResponse, PasswordChange, ProfileUpdate
+from routers.auth import _set_auth_cookie
 
 router = APIRouter()
 
@@ -12,13 +18,18 @@ router = APIRouter()
 @router.patch("/password", status_code=204)
 def change_my_password(
     payload: PasswordChange,
+    response: Response,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     if not verify_password(payload.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="הסיסמה הנוכחית שגויה")
+    validate_password_strength(payload.new_password)
     user.password_hash = hash_password(payload.new_password)
+    # Revoke prior tokens, then refresh this session's cookie.
+    user.token_version += 1
     db.commit()
+    _set_auth_cookie(response, user)
 
 
 @router.patch("/profile", response_model=MeResponse)

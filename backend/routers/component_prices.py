@@ -5,13 +5,14 @@ from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
+from enums import PriceBasis
 from models import ComponentPrice
 from schemas import ComponentPriceCreate, ComponentPriceOut, ComponentPriceUpdate
 
 router = APIRouter(dependencies=[Depends(require_admin)])
 public_router = APIRouter()
 
-VALID_BASIS = {"fixed", "width", "height", "depth"}
+VALID_BASIS = PriceBasis.values()
 
 
 def _to_out(row: ComponentPrice) -> ComponentPriceOut:

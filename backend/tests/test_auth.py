@@ -61,6 +61,11 @@ def test_change_password_and_login_with_new(client, auth_headers):
     """Change password, verify new credentials work, restore original."""
     NEW = "temp-new-pass-789"
 
+    # Snapshot the pre-change token so we can prove it gets revoked. (auth_headers
+    # carries this same token; the live `client` will receive a refreshed cookie
+    # from the change endpoint, which would otherwise shadow the stale token.)
+    old_token = auth_headers["Authorization"].split(" ", 1)[1]
+
     # Change to new
     r = client.post(
         "/api/auth/change-password",
@@ -68,6 +73,12 @@ def test_change_password_and_login_with_new(client, auth_headers):
         headers=auth_headers,
     )
     assert r.status_code == 200, r.text
+
+    # The pre-change token is now revoked via the token_version bump. Use a clean
+    # client (no refreshed cookie) carrying only the old bearer token.
+    with TestClient(app, raise_server_exceptions=True) as clean:
+        revoked = clean.get("/api/me", headers={"Authorization": f"Bearer {old_token}"})
+        assert revoked.status_code == 401, "old token should be rejected after password change"
 
     # Old credentials must fail
     r2 = client.post("/api/auth/login", json={"customer_id": "admin", "password": "test-admin-pass"})

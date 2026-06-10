@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -6,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from bootstrap import (
     run_migrations,
@@ -42,12 +44,35 @@ from routers import custom_closet as custom_closet_router
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "./uploads")).resolve()
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Store")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    import models  # noqa: F401
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        run_migrations(db)
+        seed_admin(db)
+        seed_guest_user(db)
+        seed_default_catalog(db)
+        seed_settings(db)
+        seed_palette_colors(db)
+        seed_handles(db)
+    finally:
+        db.close()
+    yield
+
+
+app = FastAPI(title="Store", lifespan=lifespan)
 
 app.add_middleware(RequestIDMiddleware)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# Enforce the limiter's default_limits globally. Without this middleware the
+# limiter is inert and only routes carrying an explicit @limiter.limit decorator
+# are throttled; with it, every route gets the default ceiling as a backstop.
+app.add_middleware(SlowAPIMiddleware)
 
 _cors_origins_env = os.environ.get("CORS_ORIGINS", "").strip()
 _cors_origins = (
@@ -62,23 +87,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
-
-
-@app.on_event("startup")
-def on_startup():
-    import models  # noqa: F401
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        run_migrations(db)
-        seed_admin(db)
-        seed_guest_user(db)
-        seed_default_catalog(db)
-        seed_settings(db)
-        seed_palette_colors(db)
-        seed_handles(db)
-    finally:
-        db.close()
 
 
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")

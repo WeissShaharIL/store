@@ -1,3 +1,5 @@
+import io
+import json
 import logging
 import os
 import uuid
@@ -29,6 +31,20 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
+def parse_cart(snapshot: Optional[str]) -> list:
+    """Parse a JSON cart snapshot into a list.
+
+    Tolerant of `None`, malformed JSON, and non-list payloads — always returns a
+    list so callers never have to guard. Centralizes the parse-and-fallback block
+    that was previously copy-pasted across the leads/orders routers and notify.
+    """
+    try:
+        cart = json.loads(snapshot or "[]")
+    except (TypeError, ValueError):
+        return []
+    return cart if isinstance(cart, list) else []
+
+
 def save_upload(file: UploadFile) -> str:
     """Save an uploaded image to UPLOAD_DIR. Returns the bare filename."""
     ext = (file.filename or "").rsplit(".", 1)[-1].lower()
@@ -38,12 +54,19 @@ def save_upload(file: UploadFile) -> str:
             detail=f"סוג קובץ לא נתמך. מותר: {', '.join(sorted(ALLOWED_EXTENSIONS))}",
         )
 
-    data = file.file.read()
-    if len(data) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=413, detail="הקובץ גדול מדי (מקסימום 5MB)")
+    # Read in bounded chunks so an oversized upload can't exhaust memory before
+    # we reject it — we never buffer more than MAX_FILE_SIZE (+ one chunk).
+    data = bytearray()
+    while True:
+        chunk = file.file.read(1024 * 1024)
+        if not chunk:
+            break
+        data.extend(chunk)
+        if len(data) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail="הקובץ גדול מדי (מקסימום 5MB)")
 
     try:
-        img = Image.open(__import__("io").BytesIO(data))
+        img = Image.open(io.BytesIO(bytes(data)))
         img.verify()
     except Exception:
         raise HTTPException(status_code=422, detail="הקובץ אינו תמונה תקינה")

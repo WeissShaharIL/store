@@ -145,8 +145,7 @@ class ClosetTemplateOut(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Palette Colors ────────────────────────────────────────────────────────────
@@ -184,8 +183,7 @@ class PaletteColorOut(BaseModel):
     sort_order: int
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Handles ───────────────────────────────────────────────────────────────────
@@ -217,8 +215,7 @@ class HandleOut(BaseModel):
     sort_order: int
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Assets ────────────────────────────────────────────────────────────────────
@@ -229,8 +226,7 @@ class AssetOut(BaseModel):
     image_path: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Logos ─────────────────────────────────────────────────────────────────────
@@ -242,8 +238,7 @@ class LogoOut(BaseModel):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HeroBannerOut(BaseModel):
@@ -252,8 +247,7 @@ class HeroBannerOut(BaseModel):
     sort_order: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Settings ──────────────────────────────────────────────────────────────────
@@ -269,8 +263,7 @@ class DoorTypeCoverOut(BaseModel):
     image_path: str
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Leads ─────────────────────────────────────────────────────────────────────
@@ -280,8 +273,7 @@ class CartItemOut(BaseModel):
     config: Optional[Dict[str, Any]] = None
     display_sale_id: Optional[int] = None
 
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class LeadCreate(BaseModel):
@@ -311,8 +303,7 @@ class ComponentPriceOut(BaseModel):
     max_per_cabin: int = 0
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ComponentPriceCreate(BaseModel):
@@ -352,5 +343,4 @@ class LeadOut(BaseModel):
     contacted_at: Optional[datetime]
     deleted_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -17,6 +17,12 @@ DEFAULT_SETTINGS = {
     "contact_phone": "",
     "contact_whatsapp": "",
     "whatsapp_message": "שלום! אני מעוניין/ת לשמוע יותר על ארונות Forma 👋",
+    # Also surfaced by /api/public/settings (see PUBLIC_SETTING_KEYS); declared
+    # here so every known setting key has a single documented default.
+    "hero_tagline": "",
+    "about_text": "",
+    "default_closet_image": "",
+    "trust_items": "",
 }
 
 DEFAULT_PALETTE_COLORS = [
@@ -74,6 +80,7 @@ def run_migrations(_db: Session) -> None:
     _add_col("users", "cash_discount_percent", "NUMERIC(5,2)", "4")
     _add_col("users", "buy_now_discount_enabled", "BOOLEAN", "FALSE")
     _add_col("users", "buy_now_discount_percent", "NUMERIC(5,2)", "6")
+    _add_col("users", "token_version", "INTEGER", "0")
 
     # media_files — name and tags added in v0.63.0
     _add_col("media_files", "display_name", "VARCHAR(255)", "NULL")

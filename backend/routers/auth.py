@@ -12,9 +12,11 @@ from auth import (
     get_current_user,
     hash_password,
     require_admin,
+    validate_password_strength,
     verify_password,
 )
 from db import get_db
+from limiter import limiter
 from models import User
 from schemas import LoginRequest, LoginResponse
 import activity as act
@@ -30,7 +32,21 @@ _COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 _COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "strict")
 
 
+def _set_auth_cookie(response: Response, user: User) -> None:
+    """Issue a fresh JWT cookie for the user. Shared by login and password change."""
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=create_token(user),
+        httponly=True,
+        secure=_COOKIE_SECURE,
+        samesite=_COOKIE_SAMESITE,
+        max_age=TOKEN_TTL_DAYS * 86400,
+        path="/",
+    )
+
+
 @router.post("/login", response_model=LoginResponse)
+@limiter.limit("10/minute")
 def login(payload: LoginRequest, request: Request, response: Response, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.customer_id == payload.customer_id).one_or_none()
     if not user or not verify_password(payload.password, user.password_hash):
@@ -41,16 +57,7 @@ def login(payload: LoginRequest, request: Request, response: Response, db: Sessi
 
     if user.is_admin:
         act.record(db, "admin_login", request=request, actor=user.display_name)
-    token = create_token(user)
-    response.set_cookie(
-        key=COOKIE_NAME,
-        value=token,
-        httponly=True,
-        secure=_COOKIE_SECURE,
-        samesite=_COOKIE_SAMESITE,
-        max_age=TOKEN_TTL_DAYS * 86400,
-        path="/",
-    )
+    _set_auth_cookie(response, user)
     return LoginResponse(
         id=user.id,
         customer_id=user.customer_id,
@@ -66,15 +73,21 @@ def logout(response: Response, _: User = Depends(get_current_user)):
 
 
 @router.post("/change-password")
+@limiter.limit("10/minute")
 def change_password(
+    request: Request,
     payload: ChangePasswordRequest,
+    response: Response,
     user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     if not verify_password(payload.current_password, user.password_hash):
         raise HTTPException(status_code=401, detail="הסיסמה הנוכחית שגויה")
-    if len(payload.new_password) < 6:
-        raise HTTPException(status_code=422, detail="הסיסמה החדשה חייבת להכיל לפחות 6 תווים")
+    validate_password_strength(payload.new_password)
     user.password_hash = hash_password(payload.new_password)
+    # Invalidate all tokens issued before this change, then re-issue one for
+    # the current session so the admin isn't logged out by their own change.
+    user.token_version += 1
     db.commit()
+    _set_auth_cookie(response, user)
     return {"ok": True}

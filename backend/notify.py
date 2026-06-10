@@ -70,15 +70,12 @@ def notify_new_lead(lead) -> None:
         lines.append("")
         lines.append("הערות:")
         lines.append(lead.notes)
-    try:
-        import json
-        cart = json.loads(lead.cart_snapshot or "[]")
-        if isinstance(cart, list) and cart:
-            lines.append("")
-            lines.append(f"פריטים בעגלה: {len(cart)}")
-            for it in cart:
-                name = it.get("name") or "ארון"
-                lines.append(f"  • {name}")
-    except Exception:
-        pass
+    from helpers import parse_cart
+    cart = parse_cart(lead.cart_snapshot)
+    if cart:
+        lines.append("")
+        lines.append(f"פריטים בעגלה: {len(cart)}")
+        for it in cart:
+            name = it.get("name") if isinstance(it, dict) else None
+            lines.append(f"  • {name or 'ארון'}")
     send_email(f"פנייה חדשה — {lead.name}", "\n".join(lines))
