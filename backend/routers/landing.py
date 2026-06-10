@@ -26,6 +26,7 @@ LANDING_KEYS = {
     "hero_tagline",
     "about_text",
     "trust_items",  # JSON array of {title, body} objects
+    "landing_theme",  # one of: dark | light | warm | navy
 }
 
 DEFAULT_CLOSET_IMAGE_KEY = "default_closet_image"
