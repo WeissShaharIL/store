@@ -149,7 +149,15 @@ export default function ShowroomPage() {
 
       <main className="showroom__main">
         {loading ? (
-          <div className="showroom-grid__empty muted">טוען דגמים…</div>
+          <div className="showroom-grid" aria-busy="true" aria-label="טוען דגמים">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="showroom-skeleton" aria-hidden="true">
+                <div className="showroom-skeleton__head" />
+                <div className="showroom-skeleton__image" />
+                <div className="showroom-skeleton__foot" />
+              </div>
+            ))}
+          </div>
         ) : loadError ? (
           <div className="showroom-grid__empty">
             <p>לא ניתן לטעון את הארונות. אנא רענן את הדף.</p>

@@ -37,7 +37,9 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
-  color: rgba(255, 255, 255, 0.55);
+  /* 0.72 (was 0.55): the buy-path labels must read as enabled controls and
+     clear WCAG contrast on the dark storefront, not whisper until hover. */
+  color: rgba(255, 255, 255, 0.72);
   font-family: inherit;
   font-weight: 500;
   font-size: var(--text-sm, 0.875rem);
@@ -134,5 +136,85 @@
 .sr-details__cta-btn--added::after { display: none; }
 
 /* ---- Secondary actions (design / outline variants) stay plain text ---- */
-.sr-details__cta-btn--design { color: rgba(255, 255, 255, 0.55); }
+.sr-details__cta-btn--design { color: rgba(255, 255, 255, 0.72); }
 .sr-details__cta-btn--design:hover:not(:disabled) { color: #ffffff; }
+
+/* ---- Keyboard focus — every storefront action gets a visible ring ----
+   The text-link look has no border/background, so without this the focused
+   buy button is invisible to keyboard users. */
+.landing .btn--primary:focus-visible,
+.section-hover-title__reveal:focus-visible,
+.showroom-card__add-btn:focus-visible,
+.showroom-card__icon-btn:focus-visible,
+.sr-details__cta-btn:focus-visible,
+.closet-designer__add-btn:focus-visible,
+.closet-scene-action-btn:focus-visible,
+.inquiry-submit:focus-visible,
+.inquiry-done-btn:focus-visible,
+.cart-btn:focus-visible,
+.cookie-bar__accept:focus-visible,
+.login-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* =============================================================================
+   PRIMARY TIER — the ONE conversion action per screen gets real button
+   affordance: the white pill the hero/contact form always intended
+   (.landing-hero .btn--primary / .landing-contact__form .btn--primary define
+   exactly this, but this file loads last and used to flatten them to the
+   text-link). Secondary actions keep the quiet text-link above.
+   Placed after the canonical group so it wins by cascade order.
+   ========================================================================== */
+/* (.login-btn keeps its own glass pill — LoginPage.css enforces it with
+   !important, and it's already a real button affordance.) */
+.landing .btn--primary,
+.cart-btn--primary,
+.closet-designer__add-btn,
+.inquiry-submit,
+.sr-details__cta-btn--quick {
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: #0d0d0f;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 10px 30px -8px rgba(255, 255, 255, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.landing .btn--primary:hover:not(:disabled),
+.cart-btn--primary:hover:not(:disabled),
+.closet-designer__add-btn:hover:not(:disabled),
+.inquiry-submit:hover:not(:disabled),
+.sr-details__cta-btn--quick:hover:not(:disabled) {
+  background: #f0f0f2;
+  color: #0d0d0f;
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 36px -8px rgba(255, 255, 255, 0.3),
+    0 6px 16px rgba(0, 0, 0, 0.4);
+}
+.landing .btn--primary:active:not(:disabled),
+.cart-btn--primary:active:not(:disabled),
+.closet-designer__add-btn:active:not(:disabled),
+.inquiry-submit:active:not(:disabled),
+.sr-details__cta-btn--quick:active:not(:disabled) {
+  transform: translateY(0);
+}
+/* Icons inside the white pill inherit the dark ink. */
+.cart-btn--primary svg,
+.closet-designer__add-btn svg,
+.inquiry-submit svg { color: #0d0d0f; }
+
+/* Confirmed/added state on the pill variants flips to the green outline
+   (matches .showroom-card__add-btn--added) instead of a white fill. */
+.sr-details__cta-btn--quick.sr-details__cta-btn--added {
+  background: transparent;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  color: #4ade80;
+  box-shadow: none;
+  transform: none;
+}
