@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, ArrowLeft, ArrowRight, Eye, EyeOff, Download } from "../components/Icons.jsx";
+import { X, ArrowLeft, ArrowRight, Download } from "../components/Icons.jsx";
 import SceneDoorControls from "../components/SceneDoorControls.jsx";
 import { addToCart, updateCartItem } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
@@ -408,16 +408,6 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   const Preview = (
     <div className="closet-designer__preview">
-      {hasSliding && (
-        <button
-          type="button"
-          className="closet-preview__eye-btn"
-          onClick={() => setSlidingDoorsHidden((v) => !v)}
-          aria-label={slidingDoorsHidden ? "הראה דלתות הזזה" : "הסתר דלתות הזזה"}
-        >
-          {slidingDoorsHidden ? <EyeOff /> : <Eye />}
-        </button>
-      )}
       {isLastStep && (
         <button
           type="button"
