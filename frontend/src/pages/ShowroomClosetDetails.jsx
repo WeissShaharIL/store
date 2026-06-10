@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Eye, EyeOff, Check } from "../components/Icons.jsx";
+import { X, Check } from "../components/Icons.jsx";
 import SceneDoorControls from "../components/SceneDoorControls.jsx";
 import { formatILS } from "../lib/money.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
@@ -17,12 +17,7 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
 
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
-  const [slidingDoorsHidden, setSlidingDoorsHidden] = useState(false);
   const [allDoorsHidden, setAllDoorsHidden] = useState(false);
-
-  const hasSliding =
-    cfg.kind === "sliding" ||
-    (cfg.doors ?? []).some((d) => d.kind === "sliding");
 
   function toggleDoor(id) {
     const isClosing = openDoorIds.includes(id);
@@ -139,16 +134,6 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
 
           {/* Preview column — DOM second → visual LEFT in RTL */}
           <div className="sr-details__preview">
-            {hasSliding && (
-              <button
-                type="button"
-                className={"sr-details__eye-btn" + (slidingDoorsHidden ? " sr-details__eye-btn--active" : "")}
-                onClick={() => setSlidingDoorsHidden((v) => !v)}
-                aria-label={slidingDoorsHidden ? "הראה דלתות הזזה" : "הסתר דלתות הזזה"}
-              >
-                {slidingDoorsHidden ? <EyeOff /> : <Eye />}
-              </button>
-            )}
             <ClosetScene
               cameraPosition={sceneCamera}
               targetY={sceneTargetY}
@@ -167,7 +152,7 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
             >
               <ClosetFromConfig
                 config={cfg}
-                state={{ openDoorIds, openDrawerIds, slidingDoorsHidden, hideDoors: allDoorsHidden }}
+                state={{ openDoorIds, openDrawerIds, hideDoors: allDoorsHidden }}
                 onSelectDoor={toggleDoor}
                 onSelectDrawer={toggleDrawer}
                 showDimensions
