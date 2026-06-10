@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.16",
-  "released_at": "2026-06-10T12:38:15Z",
-  "notes": "3c9210f fix(designer): exterior drawer spans the full merged cabin (was cut at one door)\na9a48ab fix(designer): pin exterior drawers to the bottom of the cabin in stage 2"
+  "version": "v1.64.17",
+  "released_at": "2026-06-10T14:10:42Z",
+  "notes": "b4d5e58 ui(storefront): elevate primary CTAs + focus rings, skeleton loading, gallery a11y"
 }
