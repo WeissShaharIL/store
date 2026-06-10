@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.14",
-  "released_at": "2026-06-10T11:39:09Z",
-  "notes": "b37587a feat(designer): replace scene dim-toggle with open-all / hide-all door buttons"
+  "version": "v1.64.15",
+  "released_at": "2026-06-10T12:11:13Z",
+  "notes": "e1bee60 refactor(designer): unify door controls for sliding + hinged; drop sliding-only eye toggle"
 }
