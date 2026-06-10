@@ -33,6 +33,11 @@ import "../styles/landing/06-footer.css";
 import "../styles/landing/07-whatsapp.css";
 import "../styles/landing/08-closet-anim.css";
 import "../styles/landing/09-scroll-fx.css";
+import "../styles/landing/10-themes.css";
+
+// Admin-selectable landing theme (הגדרות דף בית). Unknown values fall back to
+// dark so a bad/legacy setting can never break the page.
+const LANDING_THEMES = new Set(["dark", "light", "warm", "navy"]);
 
 const DEFAULTS = {
   welcome_title: "ארונות בהתאמה אישית",
@@ -212,9 +217,12 @@ const contactRef = useRef(null);
 
   const heroSrc = settings.hero_image ? `/uploads/${settings.hero_image}` : null;
   const brandName = settings.brand_name || "Forma";
+  const landingTheme = LANDING_THEMES.has(settings.landing_theme)
+    ? settings.landing_theme
+    : "dark";
 
   return (
-    <div className="landing">
+    <div className="landing" data-landing-theme={landingTheme}>
       <Suspense fallback={null}>
         {selectedCloset && (
           <ShowroomClosetDetails

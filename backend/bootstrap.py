@@ -23,6 +23,7 @@ DEFAULT_SETTINGS = {
     "about_text": "",
     "default_closet_image": "",
     "trust_items": "",
+    "landing_theme": "dark",
 }
 
 DEFAULT_PALETTE_COLORS = [
