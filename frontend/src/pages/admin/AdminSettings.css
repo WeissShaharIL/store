@@ -22,6 +22,7 @@
 }
 .settings-field input:focus, .settings-field textarea:focus { border-color: rgba(255,255,255,0.3); }
 .settings-field--full { grid-column: 1 / -1; }
+.settings-field__hint { margin: 0; font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.4; }
 
 /* .settings-save-btn styled in ./admin-buttons.css */
 

@@ -73,7 +73,16 @@ export default function LandingPage() {
   useEffect(() => {
     let alive = true;
     getPublicSettings()
-      .then((data) => { if (alive && data) setSettings({ ...DEFAULTS, ...data }); })
+      .then((data) => {
+        if (!alive || !data) return;
+        // The backend seeds every known key, so unset settings arrive as "".
+        // Drop those before merging or they clobber the built-in copy
+        // (about_text / hero_tagline would render blank, hiding #about).
+        const filled = Object.fromEntries(
+          Object.entries(data).filter(([, v]) => String(v ?? "").trim() !== "")
+        );
+        setSettings({ ...DEFAULTS, ...filled });
+      })
       .catch(() => {})
       .finally(() => { if (alive) setSettingsResolved(true); });
     getActiveLogo().then((l) => { if (alive) setLogo(l); }).catch(() => {});
@@ -394,10 +403,18 @@ const contactRef = useRef(null);
         {settings.about_text && (
           <section id="about" data-scroll-section className="landing-scroll-section landing-section landing-about">
             <div className="landing-about__inner">
-              <header className="landing-section__head">
-                <h2 className="landing-section__title">אודות</h2>
-              </header>
-              <p>{settings.about_text}</p>
+              <p className="landing-about__eyebrow">מי אנחנו</p>
+              <h2 className="landing-section__title">אודות</h2>
+              <div className="landing-about__rule" aria-hidden="true" />
+              {settings.about_text
+                .split(/\n+/)
+                .map((para) => para.trim())
+                .filter(Boolean)
+                .map((para, i) => (
+                  <p key={i} className={i === 0 ? "landing-about__lead" : "landing-about__body"}>
+                    {para}
+                  </p>
+                ))}
             </div>
           </section>
         )}
