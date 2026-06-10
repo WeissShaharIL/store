@@ -20,40 +20,6 @@ const FIELDS = [
   { key: "whatsapp_message", label: "הודעת WhatsApp אוטומטית" },
 ];
 
-// Landing page themes — keep in sync with frontend/src/styles/landing/10-themes.css
-const LANDING_THEMES = [
-  { value: "dark",  label: "כהה",      hint: "ברירת המחדל — שחור יוקרתי",   swatches: ["#0d0d0f", "#161618", "#ffffff"] },
-  { value: "light", label: "בהיר",     hint: "גלריה לבנה ונקייה",            swatches: ["#f6f6f8", "#ffffff", "#16161a"] },
-  { value: "warm",  label: "קרם חם",   hint: "גווני עץ ושמנת",               swatches: ["#f4eee2", "#fdf9f0", "#2c2316"] },
-  { value: "navy",  label: "כחול עמוק", hint: "נייבי אלגנטי",                 swatches: ["#0a1020", "#111a30", "#6366f1"] },
-];
-
-function ThemePicker({ value, onChange }) {
-  const current = LANDING_THEMES.some((t) => t.value === value) ? value : "dark";
-  return (
-    <div className="theme-picker" role="radiogroup" aria-label="ערכת נושא לדף הבית">
-      {LANDING_THEMES.map((t) => (
-        <button
-          key={t.value}
-          type="button"
-          role="radio"
-          aria-checked={current === t.value}
-          className={"theme-picker__opt" + (current === t.value ? " theme-picker__opt--active" : "")}
-          onClick={() => onChange(t.value)}
-        >
-          <span className="theme-picker__swatches" aria-hidden="true">
-            {t.swatches.map((c, i) => (
-              <span key={i} className="theme-picker__dot" style={{ background: c }} />
-            ))}
-          </span>
-          <span className="theme-picker__name">{t.label}</span>
-          <span className="theme-picker__hint">{t.hint}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
 const TRUST_DEFAULTS = [
   { title: "ייצור עצמי",    body: "שליטה מלאה על האיכות" },
   { title: "אחריות 5 שנים", body: "על כל המוצרים שלנו" },
@@ -421,14 +387,6 @@ export default function LandingSettingsTab() {
       <DefaultClosetImageManager />
 
       <form onSubmit={handleSave} className="settings-form">
-        <div className="settings-field settings-field--full">
-          <label>ערכת נושא לדף הבית</label>
-          <p className="settings-field__hint">צבעוניות דף הבית הציבורי. הכותרת הראשית (תמונות) והפוטר נשארים כהים בכל ערכה.</p>
-          <ThemePicker
-            value={values.landing_theme}
-            onChange={(v) => setValues((prev) => ({ ...prev, landing_theme: v }))}
-          />
-        </div>
         {FIELDS.map(({ key, label, multiline, hint }) => (
           <div key={key} className="settings-field">
             <label>{label}</label>
