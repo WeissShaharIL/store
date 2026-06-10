@@ -11,6 +11,17 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+/* Shown instead of the compartment editor on a merged (no-דופן) door —
+   the cabin's contents are owned by its master door. */
+.closet-builder__merged-note {
+  padding: 0.6rem 0.75rem;
+  background: rgba(96, 165, 250, 0.07);
+  border: 1px dashed rgba(96, 165, 250, 0.35);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.45;
+}
 .closet-builder__items {
   list-style: none;
   margin: 0;
