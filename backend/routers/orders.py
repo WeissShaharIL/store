@@ -1,22 +1,31 @@
 import csv
 import io
-import json
+import logging
 from datetime import datetime
+from decimal import Decimal
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
+from enums import OrderStatus
+from helpers import parse_cart
 from models import ClosetOrder, Lead, utcnow
 import activity as act
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(dependencies=[Depends(require_admin)])
 
-VALID_STATUSES = {"new", "in_production", "ready", "delivered", "cancelled"}
+VALID_STATUSES = OrderStatus.values()
+
+DEFAULT_PAGE = 500
+MAX_PAGE = 1000
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
@@ -48,12 +57,7 @@ class OrderUpdate(BaseModel):
 
 
 def _to_out(row: ClosetOrder) -> OrderOut:
-    try:
-        cart = json.loads(row.cart_snapshot or "[]")
-        if not isinstance(cart, list):
-            cart = []
-    except (TypeError, ValueError):
-        cart = []
+    cart = parse_cart(row.cart_snapshot)
     return OrderOut(
         id=row.id, lead_id=row.lead_id, customer_name=row.customer_name,
         phone=row.phone, email=row.email, address=row.address, cart=cart,
@@ -67,10 +71,15 @@ def _to_out(row: ClosetOrder) -> OrderOut:
 
 @router.get("/counts")
 def order_counts(db: Session = Depends(get_db)):
-    base = db.query(ClosetOrder)
-    out = {"all": base.count()}
-    for s in VALID_STATUSES:
-        out[s] = base.filter(ClosetOrder.status == s).count()
+    rows = (
+        db.query(ClosetOrder.status, func.count())
+        .group_by(ClosetOrder.status)
+        .all()
+    )
+    by_status = {status: n for status, n in rows}
+    out = {"all": sum(by_status.values())}
+    for s in OrderStatus.values():
+        out[s] = by_status.get(s, 0)
     return out
 
 
@@ -80,6 +89,8 @@ def list_orders(
     q: Optional[str] = Query(default=None),
     date_from: Optional[str] = Query(default=None),  # YYYY-MM-DD
     date_to: Optional[str] = Query(default=None),
+    limit: int = Query(default=DEFAULT_PAGE, ge=1, le=MAX_PAGE),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
     query = db.query(ClosetOrder).order_by(ClosetOrder.created_at.desc())
@@ -105,7 +116,10 @@ def list_orders(
             query = query.filter(ClosetOrder.created_at <= end)
         except ValueError:
             raise HTTPException(status_code=422, detail="תאריך סיום לא תקין")
-    return [_to_out(r) for r in query.all()]
+    rows = query.limit(limit).offset(offset).all()
+    if len(rows) == limit:
+        logger.warning("list_orders hit the page limit (%s); results may be truncated", limit)
+    return [_to_out(r) for r in rows]
 
 
 @router.post("", response_model=OrderOut, status_code=201)
@@ -121,16 +135,19 @@ def create_order(payload: OrderCreate, request: Request, db: Session = Depends(g
         raise HTTPException(status_code=409, detail="כבר קיימת הזמנה עבור פנייה זו")
 
     # Best-effort total: sum displaySalePrice / snapshot.priceEstimate per item.
+    # Money stays in Decimal end-to-end — never float — to avoid rounding drift.
     total = None
     try:
-        cart = json.loads(lead.cart_snapshot or "[]")
-        s = 0.0
-        for it in cart if isinstance(cart, list) else []:
+        s = Decimal("0")
+        for it in parse_cart(lead.cart_snapshot):
+            if not isinstance(it, dict):
+                continue
             p = it.get("displaySalePrice") or (it.get("snapshot") or {}).get("priceEstimate")
             if p:
-                s += float(p)
-        total = s or None
+                s += Decimal(str(p))
+        total = s.quantize(Decimal("0.01")) if s else None
     except Exception:
+        logger.warning("create_order: failed to compute total for lead %s", lead.id, exc_info=True)
         total = None
 
     row = ClosetOrder(
@@ -163,11 +180,7 @@ def export_orders_csv(db: Session = Depends(get_db)):
     w = csv.writer(buf)
     w.writerow(["מספר הזמנה", "תאריך", "שם", "טלפון", "אימייל", "כתובת", "סטטוס", "סכום", "פריטים"])
     for r in rows:
-        try:
-            cart = json.loads(r.cart_snapshot or "[]")
-            n = len(cart) if isinstance(cart, list) else 0
-        except (TypeError, ValueError):
-            n = 0
+        n = len(parse_cart(r.cart_snapshot))
         w.writerow([
             r.id,
             r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "",
@@ -203,7 +216,10 @@ def update_order(order_id: int, payload: OrderUpdate, db: Session = Depends(get_
     if "admin_notes" in data:
         row.admin_notes = data["admin_notes"]
     if "total_amount" in data:
-        row.total_amount = data["total_amount"]
+        val = data["total_amount"]
+        # Route through str() so the JSON float doesn't carry binary-float noise
+        # into the Numeric column.
+        row.total_amount = Decimal(str(val)).quantize(Decimal("0.01")) if val is not None else None
     db.commit()
     db.refresh(row)
     return _to_out(row)

@@ -69,7 +69,7 @@ cd backend && python -m pytest tests/test_auth.py -q
 Nginx (port 3082 in dev, 80 in prod) routes `/api/*` → FastAPI on :8000, everything else → React SPA. `/uploads/` is served statically by nginx with 30-day cache headers (do not serve uploads from FastAPI).
 
 ### Auth
-JWT stored in an httpOnly cookie named `store_token` (TTL 7 days). The `is_admin` flag lives in the JWT payload. `get_current_user()` is the FastAPI dependency for protected routes; public endpoints use `get_optional_user()`.
+JWT stored in an httpOnly cookie named `store_token` (TTL 7 days). The token also carries `is_admin` and a `ver` claim (the user's `token_version`); `get_current_user()` re-reads `is_admin` from the DB and rejects any token whose `ver` no longer matches (a password change bumps `token_version`, revoking all prior tokens). `get_current_user()` is the dependency for customer routes and `require_admin()` for admin routes; public endpoints simply omit the auth dependency. The admin password-change endpoint enforces the shared policy in `auth.validate_password_strength`.
 
 ### Database
 `bootstrap.py` runs at startup — it applies idempotent `ALTER TABLE` migrations and seeds default data (admin user, default colors, handles). There is no Alembic; add new columns directly in `bootstrap.py` with `ADD COLUMN IF NOT EXISTS`. SQLite is used for local dev without postgres; PostgreSQL in production.

@@ -8,7 +8,9 @@ from db import get_db
 from models import Setting
 from schemas import SettingsUpdate
 
-router = APIRouter()
+# Admin-only: returns *all* settings. Public/anonymous callers must use
+# /api/public/settings, which whitelists the keys safe to expose.
+router = APIRouter(dependencies=[Depends(require_admin)])
 
 
 @router.get("")
@@ -17,7 +19,7 @@ def get_settings(db: Session = Depends(get_db)) -> Dict[str, str]:
     return {r.key: r.value for r in rows}
 
 
-@router.patch("", dependencies=[Depends(require_admin)])
+@router.patch("")
 def update_settings(payload: SettingsUpdate, db: Session = Depends(get_db)) -> Dict[str, str]:
     for key, value in payload.values.items():
         row = db.query(Setting).filter(Setting.key == key).one_or_none()

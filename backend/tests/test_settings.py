@@ -1,10 +1,21 @@
-"""Settings endpoints (/api/settings) — public GET, admin-only PATCH."""
+"""Settings endpoints (/api/settings) — admin-only GET and PATCH.
+
+The admin settings surface returns *all* keys, so it requires auth; anonymous
+callers read the whitelisted subset via /api/public/settings instead.
+"""
 from fastapi.testclient import TestClient
 from main import app
 
 
-def test_get_settings_no_auth(client):
-    r = client.get("/api/settings")
+def test_get_settings_requires_admin():
+    # Fresh client (no admin cookie from the shared fixture) to test the guard.
+    with TestClient(app, raise_server_exceptions=True) as fresh:
+        r = fresh.get("/api/settings")
+        assert r.status_code == 401
+
+
+def test_get_settings_admin(client, auth_headers):
+    r = client.get("/api/settings", headers=auth_headers)
     assert r.status_code == 200
     assert isinstance(r.json(), dict)
 

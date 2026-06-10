@@ -1,7 +1,9 @@
+import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, ConfigDict  # noqa: F401 (ConfigDict used in schemas below)
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from auth import require_admin
@@ -9,7 +11,12 @@ from db import get_db
 from helpers import delete_upload, save_upload
 from models import MediaFile, MediaFolder
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(dependencies=[Depends(require_admin)])
+
+DEFAULT_PAGE = 500
+MAX_PAGE = 1000
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
@@ -41,11 +48,16 @@ class FileUpdatePayload(BaseModel):
 @router.get("/folders", response_model=List[FolderOut])
 def list_folders(db: Session = Depends(get_db)):
     folders = db.query(MediaFolder).order_by(MediaFolder.name).all()
-    result = []
-    for f in folders:
-        count = db.query(MediaFile).filter(MediaFile.folder_id == f.id).count()
-        result.append(FolderOut(id=f.id, name=f.name, file_count=count))
-    return result
+    # One grouped query for all folder counts instead of a COUNT per folder.
+    counts = dict(
+        db.query(MediaFile.folder_id, func.count(MediaFile.id))
+        .group_by(MediaFile.folder_id)
+        .all()
+    )
+    return [
+        FolderOut(id=f.id, name=f.name, file_count=counts.get(f.id, 0))
+        for f in folders
+    ]
 
 
 @router.post("/folders", response_model=FolderOut, status_code=201)
@@ -91,6 +103,8 @@ def delete_folder(folder_id: int, db: Session = Depends(get_db)):
 def list_files(
     folder_id: Optional[int] = None,
     no_folder: bool = False,
+    limit: int = Query(default=DEFAULT_PAGE, ge=1, le=MAX_PAGE),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
     q = db.query(MediaFile)
@@ -98,7 +112,10 @@ def list_files(
         q = q.filter(MediaFile.folder_id.is_(None))
     elif folder_id is not None:
         q = q.filter(MediaFile.folder_id == folder_id)
-    return q.order_by(MediaFile.created_at.desc()).all()
+    rows = q.order_by(MediaFile.created_at.desc()).limit(limit).offset(offset).all()
+    if len(rows) == limit:
+        logger.warning("list_files hit the page limit (%s); results may be truncated", limit)
+    return rows
 
 
 @router.post("/files", response_model=FileOut, status_code=201)

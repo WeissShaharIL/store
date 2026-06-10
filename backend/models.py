@@ -28,6 +28,9 @@ class User(Base):
     is_admin = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow)
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
+    # Bumped whenever the password changes; embedded in issued JWTs so that
+    # changing the password invalidates every previously-issued token.
+    token_version = Column(Integer, nullable=False, default=0)
 
     # Per-customer discount toggles + percentages
     cash_discount_enabled = Column(Boolean, nullable=False, default=False)

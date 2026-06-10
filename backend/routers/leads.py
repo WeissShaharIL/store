@@ -1,32 +1,39 @@
 import csv
 import io
 import json
+import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from auth import require_admin
 from db import get_db
+from enums import LeadStatus
+from helpers import parse_cart
 from models import Lead, utcnow
 from schemas import LeadCreate, LeadOut, LeadUpdate
 import activity as act
 import notify
+from limiter import limiter
+
+logger = logging.getLogger(__name__)
 
 public_router = APIRouter()
 admin_router = APIRouter(dependencies=[Depends(require_admin)])
 
-VALID_STATUSES = {"new", "contacted", "closed"}
+VALID_STATUSES = LeadStatus.values()
+
+# Backward-compatible bound: endpoints still return a plain array, but never more
+# than MAX_PAGE rows in one response. Callers can page with limit/offset.
+DEFAULT_PAGE = 500
+MAX_PAGE = 1000
 
 
 def _to_out(row: Lead) -> LeadOut:
-    try:
-        cart = json.loads(row.cart_snapshot or "[]")
-        if not isinstance(cart, list):
-            cart = []
-    except (TypeError, ValueError):
-        cart = []
+    cart = parse_cart(row.cart_snapshot)
     return LeadOut(
         id=row.id,
         name=row.name,
@@ -45,6 +52,7 @@ def _to_out(row: Lead) -> LeadOut:
 
 
 @public_router.post("", response_model=LeadOut, status_code=201)
+@limiter.limit("10/minute")
 def submit_lead(payload: LeadCreate, request: Request, db: Session = Depends(get_db)):
     row = Lead(
         name=payload.name.strip(),
@@ -82,13 +90,17 @@ def unread_leads_count(db: Session = Depends(get_db)):
 @admin_router.get("/counts")
 def lead_counts(db: Session = Depends(get_db)):
     """Per-status counts of active (non-deleted) leads, for the admin header."""
-    base = db.query(Lead).filter(Lead.deleted_at.is_(None))
-    return {
-        "all": base.count(),
-        "new": base.filter(Lead.status == "new").count(),
-        "contacted": base.filter(Lead.status == "contacted").count(),
-        "closed": base.filter(Lead.status == "closed").count(),
-    }
+    rows = (
+        db.query(Lead.status, func.count())
+        .filter(Lead.deleted_at.is_(None))
+        .group_by(Lead.status)
+        .all()
+    )
+    by_status = {status: n for status, n in rows}
+    out = {"all": sum(by_status.values())}
+    for status in LeadStatus.values():
+        out[status] = by_status.get(status, 0)
+    return out
 
 
 @admin_router.get("/export.csv")
@@ -105,11 +117,7 @@ def export_leads_csv(db: Session = Depends(get_db)):
     writer = csv.writer(buf)
     writer.writerow(["תאריך", "שם", "טלפון", "אימייל", "כתובת", "סטטוס", "פריטים", "הערות"])
     for r in rows:
-        try:
-            cart = json.loads(r.cart_snapshot or "[]")
-            n_items = len(cart) if isinstance(cart, list) else 0
-        except (TypeError, ValueError):
-            n_items = 0
+        n_items = len(parse_cart(r.cart_snapshot))
         writer.writerow([
             r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "",
             r.name or "", r.phone or "", r.email or "", r.address or "",
@@ -137,6 +145,8 @@ def list_trashed_leads(db: Session = Depends(get_db)):
 @admin_router.get("", response_model=List[LeadOut])
 def list_leads(
     status: Optional[str] = Query(default=None),
+    limit: int = Query(default=DEFAULT_PAGE, ge=1, le=MAX_PAGE),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
     q = (
@@ -151,7 +161,10 @@ def list_leads(
                 detail=f"status חייב להיות אחד מ: {', '.join(sorted(VALID_STATUSES))}",
             )
         q = q.filter(Lead.status == status)
-    return [_to_out(r) for r in q.all()]
+    rows = q.limit(limit).offset(offset).all()
+    if len(rows) == limit:
+        logger.warning("list_leads hit the page limit (%s); results may be truncated", limit)
+    return [_to_out(r) for r in rows]
 
 
 @admin_router.get("/{lead_id}", response_model=LeadOut)

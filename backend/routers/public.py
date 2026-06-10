@@ -4,11 +4,12 @@ Serves data the public pages (showroom, display sale, guest catalog, designer) n
 """
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from db import get_db
+from limiter import limiter
 from helpers import active_catalog_id
 from models import (
     GUEST_CUSTOMER_ID,
@@ -36,6 +37,21 @@ from schemas import (
 )
 
 router = APIRouter()
+
+# The only setting keys safe to expose to anonymous callers. Kept as a single
+# named constant so the whitelist isn't buried inside the handler. The seed in
+# bootstrap.DEFAULT_SETTINGS declares defaults for these.
+PUBLIC_SETTING_KEYS = frozenset({
+    "welcome_title",
+    "welcome_subtitle",
+    "contact_phone",
+    "contact_whatsapp",
+    "whatsapp_message",
+    "hero_tagline",
+    "about_text",
+    "default_closet_image",
+    "trust_items",
+})
 
 
 @router.get("/closets", response_model=List[ClosetTemplateOut])
@@ -69,7 +85,6 @@ def list_display_sale(db: Session = Depends(get_db)):
 
 @router.get("/closets/{template_id}", response_model=ClosetTemplateOut)
 def get_public_closet(template_id: int, db: Session = Depends(get_db)):
-    from fastapi import HTTPException
     row = db.get(ClosetTemplate, template_id)
     if row is None or not row.is_ready:
         raise HTTPException(status_code=404, detail="ארון לא נמצא")
@@ -104,18 +119,7 @@ def get_active_logo(db: Session = Depends(get_db)):
 
 @router.get("/settings")
 def get_public_settings(db: Session = Depends(get_db)):
-    PUBLIC_KEYS = {
-        "welcome_title",
-        "welcome_subtitle",
-        "contact_phone",
-        "contact_whatsapp",
-        "whatsapp_message",
-        "hero_tagline",
-        "about_text",
-        "default_closet_image",
-        "trust_items",
-    }
-    rows = db.query(Setting).filter(Setting.key.in_(PUBLIC_KEYS)).all()
+    rows = db.query(Setting).filter(Setting.key.in_(PUBLIC_SETTING_KEYS)).all()
     return {r.key: r.value for r in rows}
 
 
@@ -180,7 +184,8 @@ def _guest_user(db: Session) -> User:
 
 
 @router.post("/contact", status_code=201)
-def public_contact(payload: GuestContact, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def public_contact(payload: GuestContact, request: Request, db: Session = Depends(get_db)):
     admin = _first_admin(db)
     guest = _guest_user(db)
     composed = (

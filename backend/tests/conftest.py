@@ -57,6 +57,12 @@ finally:
 # ── 5 + 6. Wire override + suppress startup ───────────────────────────────────
 from main import app
 
+# Disable rate limiting for the suite so tests can hammer endpoints freely.
+# Rate-limit enforcement is exercised in isolation in test_rate_limit.py, which
+# flips this back on for the duration of one test.
+from limiter import limiter
+limiter.enabled = False
+
 
 def _override_get_db():
     """Generator function (not lambda!) — FastAPI needs the generator protocol."""
@@ -68,8 +74,20 @@ def _override_get_db():
 
 
 app.dependency_overrides[get_db] = _override_get_db
-app.router.on_startup.clear()
-app.router.on_shutdown.clear()
+
+# Neutralize the app's lifespan: the suite manages its own engine + seeding
+# above, and the real lifespan would run create_all/seed against the dev DB
+# (and seed_admin requires ADMIN_PASSWORD). TestClient triggers the lifespan
+# when used as a context manager, so replace it with a no-op.
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def _noop_lifespan(_app):
+    yield
+
+
+app.router.lifespan_context = _noop_lifespan
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -80,7 +98,10 @@ def client():
         yield c
 
 
-@pytest.fixture(scope="session")
+# Module-scoped (not session): a password change bumps the user's token_version,
+# which invalidates older tokens. Re-logging in once per module guarantees each
+# module starts with a token reflecting the current version.
+@pytest.fixture(scope="module")
 def admin_token(client):
     """Login as admin and return the JWT from the session cookie."""
     r = client.post("/api/auth/login", json={"customer_id": "admin", "password": "test-admin-pass"})
@@ -90,7 +111,7 @@ def admin_token(client):
     return token
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def auth_headers(admin_token):
     return {"Authorization": f"Bearer {admin_token}"}
 
