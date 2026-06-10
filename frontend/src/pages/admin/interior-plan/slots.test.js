@@ -6,6 +6,7 @@ import {
   slotIndexFor,
   snapToSlot,
   findFreeSlotIndex,
+  isExternalDrawerType,
 } from "./slots.js";
 
 // Real slots: 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95
@@ -75,5 +76,33 @@ describe("findFreeSlotIndex (middle-out from per-type preferred slot)", () => {
   it("exposes DEFAULT_SLOT + SLOT_EPS as documented", () => {
     expect(DEFAULT_SLOT).toMatchObject({ shelf: 0.55, rod: 0.85, drawer: 0.15 });
     expect(SLOT_EPS).toBe(0.001);
+  });
+});
+
+describe("external drawers are pinned to the bottom (slot 0)", () => {
+  const PALETTE = [
+    { id: 5, name: "מגירה חיצונית", item_type: "external_drawer" },
+    { id: 6, name: "מדף", item_type: "shelf" },
+  ];
+
+  it("detects external drawers by raw type and by component chip", () => {
+    expect(isExternalDrawerType("external_drawer", PALETTE)).toBe(true);
+    expect(isExternalDrawerType("c:5", PALETTE)).toBe(true);
+    expect(isExternalDrawerType("c:6", PALETTE)).toBe(false);
+    expect(isExternalDrawerType("shelf", PALETTE)).toBe(false);
+    expect(isExternalDrawerType("c:99", PALETTE)).toBe(false); // unknown id
+    expect(isExternalDrawerType(undefined, PALETTE)).toBe(false);
+  });
+
+  it("places the first external drawer at the bottom slot, extras stacking upward", () => {
+    // The planner drops external drawers via findFreeSlotIndex(_, "external_drawer").
+    expect(findFreeSlotIndex([], "external_drawer")).toBe(0); // bottom
+    expect(findFreeSlotIndex([{ y: SNAP_POSITIONS[0] }], "external_drawer")).toBe(1);
+    expect(
+      findFreeSlotIndex(
+        [{ y: SNAP_POSITIONS[0] }, { y: SNAP_POSITIONS[1] }],
+        "external_drawer",
+      ),
+    ).toBe(2);
   });
 });

@@ -4,6 +4,7 @@ import {
   SLOT_EPS,
   snapToSlot,
   findFreeSlotIndex,
+  isExternalDrawerType,
 } from "./interior-plan/slots.js";
 import PlacedItem from "./interior-plan/PlacedItem.jsx";
 import {
@@ -201,7 +202,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
           const cabin = geo.cabins.find((c) => di >= c.startDoor && di < c.startDoor + c.size);
           next.targetDoorId = cabin?.doorId ?? geo.doors[0]?.id ?? null;
           next.overCanvas = !!next.targetDoorId;
-          next.y = snapToSlot(pxToY(svgY));
+          // External drawers are pinned to the bottom slot — the preview
+          // always shows at the bottom so the user sees where it will land.
+          next.y = isExternalDrawerType(next.type, paletteRef.current)
+            ? SNAP_POSITIONS[0]
+            : snapToSlot(pxToY(svgY));
         }
       }
       newDragRef.current = next;
@@ -217,9 +222,25 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
         const cid = typeof nd.type === "string" && nd.type.startsWith("c:") ? parseInt(nd.type.slice(2)) : null;
         const comp = cid ? (paletteRef.current ?? []).find((c) => c.id === cid) : null;
         const maxPer = comp?.max_per_cabin ?? 0;
+        const isExtDrawer = isExternalDrawerType(nd.type, paletteRef.current);
         const conflict = existing.some((it) => Math.abs(it.y - nd.y) < SLOT_EPS);
         if (maxPer > 0 && existing.filter((it) => it.type === nd.type).length >= maxPer) {
           showNotice(`ניתן להוסיף עד ${maxPer} ${comp?.name ?? "פריטים"} בכל תא`);
+        } else if (isExtDrawer) {
+          // External drawer → always the lowest free slot (it renders at the
+          // bottom in 3D). Drop height is ignored; extra ones stack upward.
+          const idx = findFreeSlotIndex(existing, "external_drawer");
+          if (idx == null) {
+            showNotice("אין מקום פנוי לפריט נוסף בתא.");
+          } else {
+            onChangeRef.current({
+              ...all,
+              [nd.targetDoorId]: [
+                ...existing.map((it) => ({ type: it.type, y: it.y })),
+                { type: nd.type, y: SNAP_POSITIONS[idx] },
+              ],
+            });
+          }
         } else if (conflict) {
           // The exact drop slot is taken — fall back to the nearest free slot.
           const idx = findFreeSlotIndex(existing, nd.type);
@@ -339,8 +360,12 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
         targetDoorId = cabin?.doorId ?? targetDoorId;
       }
 
-      const snappedY = snapToSlot(pxToY(svgY));
       const prev = dragPreviewRef.current;
+      // External drawers stay pinned to the bottom slot — they can move
+      // between cabins but never up/down within one.
+      const snappedY = isExternalDrawerType(prev.type, paletteRef.current)
+        ? SNAP_POSITIONS[0]
+        : snapToSlot(pxToY(svgY));
       if (prev.doorId === targetDoorId && prev.y === snappedY) return;
 
       const next = { ...prev, doorId: targetDoorId, y: snappedY };
@@ -433,7 +458,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
           );
         })}
         <p className="closet-plan__hint">
-          גררו מדף, מוט או מגירה אל התא הרצוי בארון, לגובה שתבחרו. אפשר גם לגרור פריט קיים מעלה/מטה או בין התאים. לחיצה על × מסירה פריט.
+          גררו מדף, מוט או מגירה אל התא הרצוי בארון, לגובה שתבחרו. אפשר גם לגרור פריט קיים מעלה/מטה או בין התאים. לחיצה על × מסירה פריט. מגירה חיצונית ממוקמת תמיד בתחתית התא.
         </p>
       </div>
 
@@ -463,6 +488,45 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
             height={interiorBottomPx - interiorTopPx}
             fill="rgba(0, 0, 0, 0.025)"
           />
+
+          {/* While an external drawer is being dragged, highlight the bottom of
+              the target cabin — it can only be placed there. */}
+          {(() => {
+            const extTargetId =
+              newDrag?.overCanvas && isExternalDrawerType(newDrag.type, paletteComponents)
+                ? newDrag.targetDoorId
+                : isDragging && dragPreview && isExternalDrawerType(dragPreview.type, paletteComponents)
+                ? dragPreview.doorId
+                : null;
+            if (!extTargetId) return null;
+            const cabin = cabins.find((c) => c.doorId === extTargetId);
+            if (!cabin) return null;
+            const bandTop = yToPx(0.12);
+            return (
+              <g pointerEvents="none">
+                <rect
+                  x={cabinLeftPx(cabin)}
+                  y={bandTop}
+                  width={cabinWidthPx(cabin)}
+                  height={interiorBottomPx - bandTop}
+                  fill="rgba(79, 70, 229, 0.10)"
+                  stroke="rgba(79, 70, 229, 0.55)"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 4"
+                />
+                <text
+                  x={cabinCenterPx(cabin)}
+                  y={(bandTop + interiorBottomPx) / 2 + 4}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fontWeight="700"
+                  fill="#4f46e5"
+                >
+                  תחתית התא
+                </text>
+              </g>
+            );
+          })()}
 
           {doorBoundariesPx.map((x, i) => (
             <line

@@ -294,6 +294,16 @@ export default function ClosetFromConfig({
     while (i + n <= N - 1 && !dividerAt(i + n - 1)) n++;
     return n;
   };
+  // An external drawer placed on a merged cabin is folded into the cabin's
+  // FIRST door's drawerStack (see ClosetDesigner). So the stack belongs to the
+  // whole cabin: every door in it shortens by the same amount, and the drawer
+  // face spans the full cabin width (not just the first door's slot).
+  const cabinStartIndexFrom = (i) => {
+    let s = i;
+    while (s > 0 && !dividerAt(s - 1)) s--;
+    return s;
+  };
+  const cabinStackAt = (i) => doors[cabinStartIndexFrom(i)]?.drawerStack ?? 0;
 
   // Render the contents of one cabin (shelves + rods + drawers), keyed
   // off the cabin's FIRST door; non-start doors render nothing here so
@@ -467,7 +477,10 @@ export default function ClosetFromConfig({
     const isOpen = state.openDoorIds?.includes(door.id) ?? false;
     const material = state.doorMaterials?.[door.id] ?? door.defaultMaterial ?? "wood";
     const baseX = compartmentCenterX(i);
-    const { doorAreaH, doorCenterY } = doorGeometry(door);
+    // Shorten by the CABIN's stack, not just this door's, so every door over a
+    // merged cabin's external drawer is raised by the same amount (otherwise a
+    // non-start door covers the wide drawer below it).
+    const { doorAreaH, doorCenterY } = doorGeometry({ ...door, drawerStack: cabinStackAt(i) });
     // v1.69.0 — per-door handle. State override wins (customer
     // designer step 3 picks per-door), then the door's own field,
     // then the cabinet's default handle, then silver as a final
@@ -596,10 +609,16 @@ export default function ClosetFromConfig({
   // is divided in half by a vertical plank, with two drawer faces
   // per row instead of one.
   function renderDrawerStack(door, i) {
+    // Render ONCE per cabin (at its first door), spanning the full merged-cabin
+    // width — mirrors renderCompartment. Non-start doors of a cabin skip it so
+    // the drawer isn't drawn at a single door's width ("cut in half").
+    if (!isCabinStart(i)) return null;
     const { stack, split, drawerAreaH, drawerAreaBottomY, drawerAreaTopY } =
       doorGeometry(door);
     if (!stack) return null;
-    const cx = compartmentCenterX(i);
+    const cabinWidth = cabinSizeFrom(i) * compartmentWidth;
+    const innerCabinWidth = Math.max(0.05, cabinWidth - 2 * T - 0.02);
+    const cx = -W / 2 + compartmentWidth * i + cabinWidth / 2;
     const drawerHeight = drawerAreaH / stack;
     // External-drawer faces share the door's resolved handle option
     // (same fallback chain renderDoor uses).
@@ -615,11 +634,11 @@ export default function ClosetFromConfig({
     // two faces offset to either side of the center divider,
     // each sized to fit half the compartment minus the divider.
     const colOffsets = split
-      ? [-compartmentWidth / 4, compartmentWidth / 4]
+      ? [-cabinWidth / 4, cabinWidth / 4]
       : [0];
     const faceWidth = split
-      ? Math.max(0.05, (innerCompartmentWidth - T - 0.02) / 2)
-      : innerCompartmentWidth;
+      ? Math.max(0.05, (innerCabinWidth - T - 0.02) / 2)
+      : innerCabinWidth;
 
     return (
       <group key={`stack-${door.id}`}>
@@ -627,7 +646,7 @@ export default function ClosetFromConfig({
             the drawer area. */}
         <Plank
           position={[cx, drawerAreaTopY, 0]}
-          args={[compartmentWidth - 2 * T - 0.01, T, D - T]}
+          args={[cabinWidth - 2 * T - 0.01, T, D - T]}
           color={palette.trim}
           texture={palette.texture}
         />
