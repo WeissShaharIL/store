@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.20",
-  "released_at": "2026-06-10T14:59:56Z",
-  "notes": "dd2d9dd Revert \"feat(landing): admin-selectable landing themes (dark / light / warm / navy)\""
+  "version": "v1.64.21",
+  "released_at": "2026-06-10T21:49:44Z",
+  "notes": "be49aea fix(builder): merged cabin is edited only from its master door"
 }
