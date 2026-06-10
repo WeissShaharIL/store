@@ -27,6 +27,15 @@ function DoorCard({
   setActiveVariantId,
 }) {
   const door = config.doors[doorIndex];
+  // Cabin membership — mirrors the renderer's rule (ClosetFromConfig
+  // isCabinStart): a door with no דופן to its left merges into the previous
+  // cabin, and only the cabin's FIRST door ("master") renders the interior
+  // and the drawer stack. Editing those on a merged door would be a dead
+  // control, so this card hides them and points at the master door instead.
+  const leftDividerOf = (i) => config.doors[i]?.divider ?? config.hasInternalDivider ?? false;
+  const isCabinStart = doorIndex === 0 || leftDividerOf(doorIndex);
+  let cabinStartIndex = doorIndex;
+  while (cabinStartIndex > 0 && !leftDividerOf(cabinStartIndex)) cabinStartIndex--;
   // The active variant is the one currently being edited AND the one
   // the 3D preview renders for this door's compartment (parent wires
   // it into previewState.compartmentVariants). Falls back to the
@@ -168,18 +177,22 @@ function DoorCard({
             </div>
           </div>
         )}
-        <div className="field field--small">
-          <span>קיצור</span>
-          <div className="closet-builder__door-vis" role="radiogroup" aria-label="קיצור">
-            {[{v:0,l:"ללא"},{v:1,l:"+ מגירה"},{v:2,l:"+ 2 מגירות"}].map(({v,l}) => (
-              <button key={v} type="button" role="radio" aria-checked={(door.drawerStack ?? 0) === v}
-                className={"closet-builder__door-vis-btn" + ((door.drawerStack ?? 0) === v ? " closet-builder__door-vis-btn--active" : "")}
-                onClick={() => setDoor((d) => { d.drawerStack = v; })}
-              >{l}</button>
-            ))}
+        {/* קיצור (drawer stack) applies to the whole CABIN and is owned by
+            its master door — hidden on merged doors (renderer ignores it). */}
+        {isCabinStart && (
+          <div className="field field--small">
+            <span>קיצור</span>
+            <div className="closet-builder__door-vis" role="radiogroup" aria-label="קיצור">
+              {[{v:0,l:"ללא"},{v:1,l:"+ מגירה"},{v:2,l:"+ 2 מגירות"}].map(({v,l}) => (
+                <button key={v} type="button" role="radio" aria-checked={(door.drawerStack ?? 0) === v}
+                  className={"closet-builder__door-vis-btn" + ((door.drawerStack ?? 0) === v ? " closet-builder__door-vis-btn--active" : "")}
+                  onClick={() => setDoor((d) => { d.drawerStack = v; })}
+                >{l}</button>
+              ))}
+            </div>
           </div>
-        </div>
-        {(door.drawerStack ?? 0) > 0 && (
+        )}
+        {isCabinStart && (door.drawerStack ?? 0) > 0 && (
           <div className="field field--small">
             <span>פיצול מגירות</span>
             <div className="closet-builder__door-vis" role="radiogroup" aria-label="פיצול מגירות">
@@ -228,7 +241,15 @@ function DoorCard({
         </div>
       </div>
 
-      {/* Compartment editor */}
+      {/* Compartment editor — only on the cabin's master door. A merged door
+          shares the master's interior; its own compartment data is kept (and
+          comes back if the דופן is re-added) but is not rendered in 3D, so
+          editing it here would be misleading. */}
+      {!isCabinStart ? (
+        <div className="closet-builder__merged-note">
+          תא משותף ללא דופן — תכולת התא והמגירות נערכות בדלת + תא #{cabinStartIndex + 1}
+        </div>
+      ) : (
       <div className="closet-builder__compartment">
         <div className="closet-builder__label">תכולת תא</div>
 
@@ -335,6 +356,7 @@ function DoorCard({
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }
