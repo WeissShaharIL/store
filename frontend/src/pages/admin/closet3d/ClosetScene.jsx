@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
 import { Spherical, Vector3 } from "three";
-import { Moon, Sun } from "../../../components/Icons.jsx";
 
 /**
  * Shared canvas + lighting + controls wrapper for every Dev*3D
@@ -214,14 +213,10 @@ export default function ClosetScene({
      DevClosetDesigner. Default false to preserve the admin builder's
      neutral working background. */
   hall = false,
-  /* v1.91.0 — when true, an overlay button on the canvas lets the
-     user toggle a "dim light" mode: walls darken to charcoal, the
-     directional light dims, and a warm-yellow ambient takes over.
-     Use case: a white cabinet against the v1.90 cream walls reads
-     as a white-on-white wash — switching to dim mode puts a dark
-     contrast wall behind it. Only meaningful when `hall` is also
-     true (no walls = nothing to darken). */
-  showDimToggle = false,
+  /* Optional React node rendered as an overlay in the top-left corner of the
+     canvas (e.g. <SceneDoorControls/>). When provided, the canvas is wrapped in
+     a position:relative container so the actions can sit absolutely. */
+  overlayActions = null,
   /* v0.80.0 — when set, the scene enables preserveDrawingBuffer and mounts a
      CaptureController that assigns a (position)=>dataURL fn to this ref. */
   captureRef = null,
@@ -239,11 +234,6 @@ export default function ClosetScene({
   }, [introAnimation, cameraPosition, targetY]);
 
   const [introDone, setIntroDone] = useState(!introAnimation);
-  /* v1.91.0 — local toggle for the "dim light" mode (see
-     showDimToggle prop above). Lives in scene state because
-     consumers don't need to know about it; the toggle button
-     overlay handles the flip entirely on its own. */
-  const [dimMode, setDimMode] = useState(false);
 
   const canvas = (
     <Canvas
@@ -270,22 +260,11 @@ export default function ClosetScene({
           reflections; these two fill in shadows + cast the main
           highlight. Warm tones combine well with the wallpaper
           wall + marble floor without making the cabinet look
-          orange.
-          v1.91.0 — when dimMode is on, switch to a warmer + brighter
-          ambient that compensates for the darker walls, so the
-          cabinet stays well-lit even in the "evening showroom"
-          look. */}
-      <ambientLight
-        color={dimMode ? "#ffb84a" : "#fff0c2"}
-        intensity={dimMode ? 0.9 : 0.5}
-      />
+          orange. */}
+      <ambientLight color="#fff0c2" intensity={0.5} />
       <directionalLight
         position={[5, 8, 4]}
-        /* v1.91.0 — dim mode reduces the directional throw from
-           1.05 → 0.5 so the cabinet's contact shadow softens and
-           the ambient does most of the lighting work, simulating
-           a dimmed showroom. */
-        intensity={dimMode ? 0.5 : 1.05}
+        intensity={1.05}
         color="#fff5d8"
         castShadow
         shadow-mapSize-width={1024}
@@ -297,7 +276,7 @@ export default function ClosetScene({
         shadow-camera-bottom={-5}
       />
 
-      {hall && <Hall dim={dimMode} />}
+      {hall && <Hall />}
 
       {children}
 
@@ -335,28 +314,18 @@ export default function ClosetScene({
     </Canvas>
   );
 
-  /* v1.91.0 — when the dim-toggle is enabled, wrap the canvas in
-     a position:relative container so the toggle button can sit
-     absolutely in a corner. Otherwise return the bare canvas to
-     preserve every existing layout (callers may have CSS sized
-     to the canvas itself). */
-  if (!showDimToggle) {
+  /* When overlay actions are provided, wrap the canvas in a position:relative
+     container so they can sit absolutely in a corner. Otherwise return the bare
+     canvas to preserve every existing layout (callers may have CSS sized to the
+     canvas itself). */
+  if (!overlayActions) {
     return canvas;
   }
 
   return (
     <div className="closet-scene-with-toggle">
       {canvas}
-      <button
-        type="button"
-        className="closet-scene-dim-toggle"
-        onClick={() => setDimMode((v) => !v)}
-        title={dimMode ? "החזר תאורה רגילה" : "המתן תאורה (לתצוגה של דגם לבן)"}
-        aria-label={dimMode ? "החזר תאורה רגילה" : "המתן תאורה"}
-        aria-pressed={dimMode}
-      >
-        {dimMode ? <Sun /> : <Moon />}
-      </button>
+      {overlayActions}
     </div>
   );
 }

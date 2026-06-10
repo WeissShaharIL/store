@@ -341,6 +341,17 @@ export function DoorIcon(props) {
   );
 }
 
+export function DoorOpen(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M13 4 4 6.2V20l9 1.8z" />
+      <path d="M13 4h6v16h-6" />
+      <line x1="2" y1="21" x2="22" y2="21" />
+      <circle cx="10.5" cy="13" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function Palette(props) {
   return (
     <svg {...base} {...props}>

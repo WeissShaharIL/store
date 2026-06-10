@@ -206,7 +206,6 @@ export default function LeadClosetPreview({ item, onClose }) {
               minDistance={3}
               maxDistance={25}
               hall
-              showDimToggle
               captureRef={captureRef}
             >
               <ClosetFromConfig
