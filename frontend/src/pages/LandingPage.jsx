@@ -371,15 +371,16 @@ const contactRef = useRef(null);
             </header>
             <div className="landing-gallery__grid">
               {galleryItems.map((c) => (
-                <figure
+                <button
+                  type="button"
                   key={c.id}
                   className="landing-gallery__card"
                   onClick={() => setSelectedCloset(c)}
-                  style={{ cursor: "pointer" }}
+                  aria-label={`פרטים על ${c.name}`}
                 >
-                  <img src={`/uploads/${c.image_path || defaultClosetImage}`} alt={c.name} loading="lazy" />
-                  <figcaption>{c.name}</figcaption>
-                </figure>
+                  <img src={`/uploads/${c.image_path || defaultClosetImage}`} alt="" loading="lazy" />
+                  <span className="landing-gallery__caption">{c.name}</span>
+                </button>
               ))}
             </div>
             <div className="landing-gallery__cta-row">

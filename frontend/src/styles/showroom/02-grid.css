@@ -108,8 +108,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 6px;
   background: none;
   border: none;
@@ -158,6 +158,49 @@
   color: #4ade80;
   box-shadow: none;
   cursor: default;
+}
+
+/* Loading skeletons — same silhouette as a .showroom-card so the grid doesn't
+   jump when real data lands. Shimmer is killed globally by the
+   prefers-reduced-motion block in tokens.css. */
+.showroom-skeleton {
+  display: flex;
+  flex-direction: column;
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.showroom-skeleton__head { height: 44px; }
+.showroom-skeleton__image { aspect-ratio: 4 / 3; }
+.showroom-skeleton__foot { height: 52px; }
+.showroom-skeleton__head,
+.showroom-skeleton__image,
+.showroom-skeleton__foot {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+.showroom-skeleton__image { background: rgba(255, 255, 255, 0.02); }
+.showroom-skeleton__head { margin: 0 0 1px; }
+.showroom-skeleton__foot { margin-top: auto; }
+.showroom-skeleton__head::after,
+.showroom-skeleton__image::after,
+.showroom-skeleton__foot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: showroom-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes showroom-shimmer {
+  to { transform: translateX(100%); }
 }
 
 .showroom-grid__empty {
