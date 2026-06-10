@@ -13,7 +13,8 @@ const FIELDS = [
   { key: "welcome_title",    label: "כותרת ראשית" },
   { key: "welcome_subtitle", label: "כותרת משנה" },
   { key: "hero_tagline",     label: "טקסט תיאור" },
-  { key: "about_text",       label: "טקסט אודות", multiline: true },
+  { key: "about_text",       label: "טקסט אודות (#about בדף הבית)", multiline: true,
+    hint: "השורה הראשונה מוצגת כמשפט פתיחה מודגש; שורה ריקה מתחילה פסקה חדשה." },
   { key: "contact_phone",    label: "טלפון ליצירת קשר" },
   { key: "contact_whatsapp", label: "מספר WhatsApp" },
   { key: "whatsapp_message", label: "הודעת WhatsApp אוטומטית" },
@@ -386,14 +387,15 @@ export default function LandingSettingsTab() {
       <DefaultClosetImageManager />
 
       <form onSubmit={handleSave} className="settings-form">
-        {FIELDS.map(({ key, label, multiline }) => (
+        {FIELDS.map(({ key, label, multiline, hint }) => (
           <div key={key} className="settings-field">
             <label>{label}</label>
+            {hint && <p className="settings-field__hint">{hint}</p>}
             {multiline ? (
               <textarea
                 value={values[key] || ""}
                 onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-                rows={3}
+                rows={6}
               />
             ) : (
               <input
