@@ -6,6 +6,7 @@ import {
   adminGetDoorTypeCovers, adminUploadDoorTypeCover, adminDeleteDoorTypeCover,
   getPublicSettings,
 } from "../../api.js";
+import { Check, X } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 const FIELDS = [
@@ -65,7 +66,7 @@ function TrustBarEditor({ value, onChange }) {
               onChange={(e) => update(idx, "body", e.target.value)}
             />
           </div>
-          <button type="button" className="trust-editor__del" onClick={() => remove(idx)} title="הסר שורה">✕</button>
+          <button type="button" className="trust-editor__del" onClick={() => remove(idx)} title="הסר שורה" aria-label="הסר שורה"><X /></button>
         </div>
       ))}
       {items.length < 8 && (
@@ -137,8 +138,9 @@ function HeroBannerManager() {
               className="hero-banner-thumb__delete"
               onClick={() => handleDelete(b.id)}
               title="מחק"
+              aria-label="מחק"
             >
-              ✕
+              <X />
             </button>
           </div>
         ))}
@@ -231,7 +233,8 @@ function DoorTypeCoversManager() {
                   className="default-closet-image__delete"
                   onClick={() => handleDelete(key)}
                   title="הסר תמונה"
-                >✕</button>
+                  aria-label="הסר תמונה"
+                ><X /></button>
               </div>
             ) : (
               <div className="default-closet-image__placeholder">אין תמונה</div>
@@ -313,8 +316,9 @@ function DefaultClosetImageManager() {
               className="default-closet-image__delete"
               onClick={handleDelete}
               title="הסר תמונה"
+              aria-label="הסר תמונה"
             >
-              ✕
+              <X />
             </button>
           </div>
         ) : (
@@ -409,7 +413,7 @@ export default function LandingSettingsTab() {
         </div>
 
         <button type="submit" className="settings-save-btn" disabled={saving}>
-          {saved ? "✓ נשמר" : saving ? "שומר..." : "שמור"}
+          {saved ? <><Check /> נשמר</> : saving ? "שומר..." : "שמור"}
         </button>
       </form>
     </div>

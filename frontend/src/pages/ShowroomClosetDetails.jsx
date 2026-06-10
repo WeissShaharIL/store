@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Eye, EyeOff } from "../components/Icons.jsx";
+import { X, Eye, EyeOff, Check } from "../components/Icons.jsx";
 import { formatILS } from "../lib/money.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
@@ -124,7 +124,7 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
                   onClick={() => !added && onAddToCart(item)}
                   disabled={added}
                 >
-                  {added ? "✓ נוסף לעגלה" : "הזמן"}
+                  {added ? <><Check /> נוסף לעגלה</> : "הזמן"}
                 </button>
                 {onDesign && (
                   <button type="button" className="sr-details__cta-btn sr-details__cta-btn--design" onClick={() => onDesign(item)}>

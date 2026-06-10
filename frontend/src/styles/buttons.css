@@ -114,6 +114,16 @@
 /* cart-btn already renders <ArrowRight/> in JSX, so it is intentionally
    excluded here to avoid a double arrow. */
 
+/* Inline SVG icons inside storefront text buttons (e.g. the Check on the
+   confirmed "added" state) inherit the button color and sit on the text line. */
+.showroom-card__add-btn svg,
+.sr-details__cta-btn svg,
+.closet-card-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
 /* ---- "Added to cart" confirmed state — green, no arrow ---- */
 .showroom-card__add-btn--added,
 .sr-details__cta-btn--added {

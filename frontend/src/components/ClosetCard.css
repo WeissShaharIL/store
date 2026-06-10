@@ -28,6 +28,8 @@
   font-size: 3rem;
   color: var(--color-border);
 }
+.closet-card-placeholder svg { width: 2.75rem; height: 2.75rem; opacity: 0.5; }
+.closet-card-btn svg { width: 16px; height: 16px; vertical-align: -3px; }
 .closet-card-badge {
   position: absolute;
   top: 0.5rem;

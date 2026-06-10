@@ -11,6 +11,7 @@ import {
 } from "../../api.js";
 import { parseConfig } from "../../lib/parseConfig.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { FileText, MapPin, Mail, Package } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 // Lazy so three.js loads only when an admin opens a 3D preview.
@@ -201,9 +202,9 @@ export default function LeadsTab({ onOrderCreated }) {
                 <span className={`lead-status ${l.status}`}>{STATUS_LABELS[l.status]}</span>
               </div>
               <a className="lead-phone" href={`tel:${l.phone}`}>{l.phone}</a>
-              {l.email && <div className="lead-detail">✉️ {l.email}</div>}
-              {l.address && <div className="lead-detail">📍 {l.address}</div>}
-              {l.notes && <div className="lead-detail lead-detail--notes">📝 {l.notes}</div>}
+              {l.email && <div className="lead-detail"><Mail /> {l.email}</div>}
+              {l.address && <div className="lead-detail"><MapPin /> {l.address}</div>}
+              {l.notes && <div className="lead-detail lead-detail--notes"><FileText /> {l.notes}</div>}
               {l.cart?.length > 0 ? (
                 <div className="lead-cart">
                   <div className="lead-cart__title">פריטים שנבחרו ({l.cart.length})</div>
@@ -219,7 +220,7 @@ export default function LeadsTab({ onOrderCreated }) {
                           </span>
                           {summary && <span className="lead-cart__summary">{summary}</span>}
                           {interior && (
-                            <span className="lead-cart__interior">🗄️ פנים הארון: {interior}</span>
+                            <span className="lead-cart__interior"><Package /> פנים הארון: {interior}</span>
                           )}
                           {hasRenderableConfig(item) && (
                             <button

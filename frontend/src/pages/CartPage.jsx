@@ -6,7 +6,7 @@ import { parseConfig } from "../lib/parseConfig.js";
 import { saveDesignerState } from "./admin/designer/persistence.js";
 import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import CartIcon from "../components/CartIcon.jsx";
-import { ArrowRight } from "../components/Icons.jsx";
+import { ArrowRight, Check, DoorIcon, Edit, Palette, Ruler, X } from "../components/Icons.jsx";
 import "../styles/landing/01-shell-nav.css";
 import "./CartPage.css";
 
@@ -119,7 +119,7 @@ export default function CartPage() {
       <div className="cart-page">
         <CartNav />
         <div className="cart-page__inner cart-done">
-          <div className="cart-done__icon">✓</div>
+          <div className="cart-done__icon"><Check /></div>
           <h2 className="cart-done__title">תודה! קיבלנו את הפנייה שלך</h2>
           <p className="cart-done__sub">ניצור קשר בהקדם עם הצעת מחיר.</p>
           <Link to="/" className="cart-btn cart-btn--primary">חזרה לדף הבית <ArrowRight /></Link>
@@ -218,20 +218,20 @@ export default function CartPage() {
                         {item.displaySalePrice && <span className="cart-item__badge cart-item__badge--sale">מתצוגה</span>}
                       </div>
                       {dims && widthCm && (
-                        <span className="cart-item__detail">📐 {widthCm} × {dims.H} × {dims.D} ס״מ</span>
+                        <span className="cart-item__detail"><Ruler /> {widthCm} × {dims.H} × {dims.D} ס״מ</span>
                       )}
                       {doors.length > 0 && (
-                        <span className="cart-item__detail">🚪 {doors.length} דלתות{doorKind ? ` · ${doorKind}` : ""}</span>
+                        <span className="cart-item__detail"><DoorIcon /> {doors.length} דלתות{doorKind ? ` · ${doorKind}` : ""}</span>
                       )}
                       {color && (
-                        <span className="cart-item__detail">🎨 {colorName(color)}</span>
+                        <span className="cart-item__detail"><Palette /> {colorName(color)}</span>
                       )}
                       {price && <span className="cart-item__price">{price}</span>}
                     </div>
                     {!item.displaySaleId && (
-                      <button onClick={() => handleEditItem(item)} className="cart-item__edit" aria-label="ערוך" title="ערוך ארון">✏️</button>
+                      <button onClick={() => handleEditItem(item)} className="cart-item__edit" aria-label="ערוך" title="ערוך ארון"><Edit /></button>
                     )}
-                    <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר">✕</button>
+                    <button onClick={() => handleRemove(item.id)} className="cart-item__remove" aria-label="הסר"><X /></button>
                   </li>
                 );
               })}

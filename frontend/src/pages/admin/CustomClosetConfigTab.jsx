@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { adminGetCustomClosetConfig, adminUpdateCustomClosetConfig, adminListComponentPrices, adminUpdateComponentPrice } from "../../api.js";
+import { Check } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 import "./CustomClosetConfigTab.css";
 
@@ -284,7 +285,7 @@ export default function CustomClosetConfigTab() {
 
       <div className="cc-actions">
         <button className="btn btn--primary" onClick={handleSave} disabled={saving}>
-          {saved ? "✓ נשמר" : saving ? "שומר..." : "שמור הגדרות"}
+          {saved ? <><Check /> נשמר</> : saving ? "שומר..." : "שמור הגדרות"}
         </button>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   adminUploadTemplateImage,
 } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { Image, Upload, X } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 export default function ClosetTemplatesTab() {
@@ -119,10 +120,10 @@ export default function ClosetTemplatesTab() {
               {t.image_path ? (
                 <img src={`/uploads/${t.image_path}`} alt={t.name} />
               ) : (
-                <div className="template-placeholder">🪟</div>
+                <div className="template-placeholder"><Image /></div>
               )}
               <label className="image-upload-btn" title="העלה תמונה">
-                📷
+                <Upload />
                 <input
                   type="file"
                   accept="image/*"
@@ -147,7 +148,7 @@ export default function ClosetTemplatesTab() {
                 <PriceEditor template={t} onChange={(updated) => setTemplates((prev) => prev.map((x) => (x.id === t.id ? updated : x)))} />
               )}
             </div>
-            <button className="template-delete-btn" onClick={() => handleDelete(t.id)} title="מחק">✕</button>
+            <button className="template-delete-btn" onClick={() => handleDelete(t.id)} title="מחק" aria-label="מחק"><X /></button>
           </div>
         ))}
       </div>

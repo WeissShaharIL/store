@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { X } from "../../components/Icons.jsx";
 import "./TourOverlay.css";
 
 const PAD = 10;
@@ -238,7 +239,7 @@ export default function TourOverlay({ activeTab, setActiveTab, setPituchSubTab, 
 
         <div className="tour-card__header">
           <span className="tour-card__counter">{stepIdx + 1} / {total}</span>
-          <button className="tour-card__close" onClick={onClose} aria-label="סגור סיור">✕</button>
+          <button className="tour-card__close" onClick={onClose} aria-label="סגור סיור"><X /></button>
         </div>
         <h3 className="tour-card__title">{step.title}</h3>
         <p className="tour-card__body">{step.body}</p>

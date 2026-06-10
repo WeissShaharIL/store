@@ -6,7 +6,11 @@
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+.activity-alert svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 .activity-controls {
   display: flex;
@@ -60,7 +64,10 @@
   flex-shrink: 0;
   font-size: 1rem;
   line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
 }
+.activity-item__icon svg { width: 16px; height: 16px; }
 
 .activity-item__body {
   flex: 1;

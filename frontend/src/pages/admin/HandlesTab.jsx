@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminCreateHandle, adminDeleteHandle, adminGetHandles } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { X } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 
 export default function HandlesTab() {
@@ -82,7 +83,7 @@ export default function HandlesTab() {
             <div className="handle-dot" style={{ background: h.color }} />
             <span className="row-name">{h.name}</span>
             <span className="row-key">{h.handle_key} · {h.finish} · {h.door_kind}</span>
-            <button className="row-delete-btn" onClick={() => handleDelete(h.id)}>✕</button>
+            <button className="row-delete-btn" onClick={() => handleDelete(h.id)} aria-label="מחק"><X /></button>
           </div>
         ))}
       </div>

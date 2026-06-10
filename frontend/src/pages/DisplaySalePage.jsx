@@ -5,7 +5,7 @@ import { parseConfig } from "../lib/parseConfig.js";
 import { totalWidth } from "./admin/closet3d/schema.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
-import { ArrowRight, Mail } from "../components/Icons.jsx";
+import { ArrowRight, Check, Image, Mail } from "../components/Icons.jsx";
 
 const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
 import InquiryModal from "./InquiryModal.jsx";
@@ -121,7 +121,7 @@ export default function DisplaySalePage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="showroom-card__placeholder">🪟</div>
+                      <div className="showroom-card__placeholder"><Image /></div>
                     )}
                     <span className="showroom-card__badge">מתצוגה</span>
                   </button>
@@ -141,7 +141,7 @@ export default function DisplaySalePage() {
                           onClick={() => handleAddToCart(c)}
                           disabled={addedIds.has(c.id)}
                         >
-                          {addedIds.has(c.id) ? "✓ נוסף לעגלה" : "הוסף לעגלה"}
+                          {addedIds.has(c.id) ? <><Check /> נוסף לעגלה</> : "הוסף לעגלה"}
                         </button>
                       </div>
                     </div>

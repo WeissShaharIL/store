@@ -10,6 +10,7 @@ import {
   adminUpdateMediaFileDetails,
 } from "../../api.js";
 import { useConfirm } from "./useConfirm.jsx";
+import { Copy, Edit, X } from "../../components/Icons.jsx";
 import "./AdminTab.css";
 import "./AdminImages.css";
 
@@ -401,12 +402,14 @@ export default function ImagesTab() {
                       className="images-grid__edit-btn"
                       onClick={(e) => { e.stopPropagation(); openEdit(file); }}
                       title="ערוך פרטים"
-                    >✏️</button>
+                      aria-label="ערוך פרטים"
+                    ><Edit /></button>
                     <button
                       className="images-grid__del"
                       onClick={(e) => { e.stopPropagation(); handleDeleteFileConfirm(file.id); }}
                       title="מחק"
-                    >×</button>
+                      aria-label="מחק"
+                    ><X /></button>
                   </div>
                 </div>
                 <div className="images-grid__name" title={file.display_name || file.original_name || file.image_path}>
@@ -423,7 +426,8 @@ export default function ImagesTab() {
                   className="images-grid__copy"
                   onClick={() => navigator.clipboard.writeText(file.image_path)}
                   title="העתק שם קובץ"
-                >📋</button>
+                  aria-label="העתק שם קובץ"
+                ><Copy /></button>
               </div>
             ))}
           </div>
@@ -483,7 +487,7 @@ export default function ImagesTab() {
             className="images-lightbox__img"
             onClick={(e) => e.stopPropagation()}
           />
-          <button className="images-lightbox__close" onClick={() => setLightboxFile(null)}>✕</button>
+          <button className="images-lightbox__close" onClick={() => setLightboxFile(null)} aria-label="סגור"><X /></button>
         </div>
       )}
 

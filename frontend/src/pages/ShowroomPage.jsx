@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getPublicClosets, getPublicSettings } from "../api.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import CartIcon from "../components/CartIcon.jsx";
-import { ArrowRight, Mail } from "../components/Icons.jsx";
+import { ArrowRight, Image, Mail } from "../components/Icons.jsx";
 import InquiryModal from "./InquiryModal.jsx";
 
 const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
@@ -204,7 +204,7 @@ function ShowroomCard({ closet, onCardClick, onInquiry, defaultImage }) {
             loading="lazy"
           />
         ) : (
-          <div className="showroom-card__placeholder">🪟</div>
+          <div className="showroom-card__placeholder"><Image /></div>
         )}
       </button>
       <div className="showroom-card__foot">
