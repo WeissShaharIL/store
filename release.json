@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.11",
-  "released_at": "2026-06-09T21:02:32Z",
-  "notes": "eb00a7e fix(planner): cabin-aware columns + enforce max-per-cabin at drop\nb408c3c chore: untrack plan.md (working notes) + gitignore it"
+  "version": "v1.64.12",
+  "released_at": "2026-06-10T09:56:54Z",
+  "notes": "e64d2f1 feat(backend): security hardening + quality pass from backend.md review"
 }
