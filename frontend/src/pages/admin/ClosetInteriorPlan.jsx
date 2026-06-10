@@ -7,16 +7,18 @@ import {
   isExternalDrawerType,
 } from "./interior-plan/slots.js";
 import PlacedItem from "./interior-plan/PlacedItem.jsx";
+import { ItemTypeIcon } from "./interior-plan/itemVisuals.jsx";
 import {
   DimensionLineV,
   DimensionLineH,
 } from "./interior-plan/DimensionLines.jsx";
 
-// Legacy fallback colours for items placed before component-based palette.
+// Legacy items placed before the component-based palette carry base types
+// directly; they render as the matching model depiction.
 const LEGACY = {
-  shelf:  { color: "#a98865", label: "מדף" },
-  rod:    { color: "#9aa0a6", label: "מוט תליה" },
-  drawer: { color: "#6f7787", label: "מגירה" },
+  shelf:  { color: "#a98865", label: "מדף",      type: "shelf" },
+  rod:    { color: "#9aa0a6", label: "מוט תליה", type: "rod" },
+  drawer: { color: "#6f7787", label: "מגירה",    type: "drawer" },
 };
 
 function resolveMeta(type, paletteComponents) {
@@ -24,9 +26,9 @@ function resolveMeta(type, paletteComponents) {
   const compId = type?.startsWith("c:") ? parseInt(type.slice(2)) : null;
   if (compId) {
     const comp = paletteComponents?.find(c => c.id === compId);
-    if (comp) return { color: comp.color || "#a98865", label: comp.name };
+    if (comp) return { color: comp.color || "#a98865", label: comp.name, type: comp.item_type ?? null };
   }
-  return { color: "#888", label: type || "?" };
+  return { color: "#888", label: type || "?", type: null };
 }
 
 function useIsMobile() {
@@ -439,7 +441,6 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
         <h5 className="closet-plan__palette-title">גררו פריט לארון</h5>
         {(paletteComponents ?? []).map((comp) => {
           const type = `c:${comp.id}`;
-          const chipColor = comp.color || "#a98865";
           return (
             <button
               key={type}
@@ -448,10 +449,11 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
               style={{ touchAction: "none" }}
               onPointerDown={(e) => onPalettePointerDown(e, type)}
             >
-              <span
-                className="closet-plan__chip-swatch"
-                style={{ background: chipColor }}
-                aria-hidden="true"
+              <ItemTypeIcon
+                type={comp.item_type}
+                className="closet-plan__chip-icon"
+                width={42}
+                height={28}
               />
               {comp.name}
             </button>
@@ -682,6 +684,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
                       isDragging={false}
                       color={meta.color}
                       label={meta.label}
+                      renderType={meta.type}
                       onPointerDown={(e, _) => onItemPointerDown(e, idx, cabin.doorId)}
                       canDelete={!isShelf(item.type) || shelfCount > 2}
                       onDelete={() => removeItemFrom(cabin.doorId, idx)}
@@ -709,6 +712,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
                 isDragging={true}
                 color={previewMeta.color}
                 label={previewMeta.label}
+                renderType={previewMeta.type}
                 onPointerDown={() => {}}
                 onDelete={() => {}}
               />
@@ -720,6 +724,7 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
             if (!cabin) return null;
             const slice = cabinWidthPx(cabin);
             const previewLeft = cabinLeftPx(cabin);
+            const newMeta = resolveMeta(newDrag.type, paletteComponents);
             return (
               <PlacedItem
                 key="new-drag-preview"
@@ -729,6 +734,9 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
                 widthPx={slice}
                 yToPx={yToPx}
                 isDragging={true}
+                color={newMeta.color}
+                label={newMeta.label}
+                renderType={newMeta.type}
                 onPointerDown={() => {}}
                 onDelete={() => {}}
               />

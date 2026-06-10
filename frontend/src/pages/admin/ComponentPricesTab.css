@@ -209,3 +209,54 @@
   .cp-table th:nth-child(3),
   .cp-table td:nth-child(3) { display: none; }
 }
+
+/* Visual type pool — pick how the component looks in the closet model. */
+.cp-editor__row--types { align-items: start; }
+.cp-type-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.cp-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.55rem 0.8rem;
+  min-width: 86px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.cp-type-card svg {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+}
+.cp-type-card:hover { border-color: rgba(255, 255, 255, 0.3); }
+.cp-type-card--active {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+  color: #ffffff;
+}
+.cp-type-hint {
+  grid-column: 2;
+  margin: 0.45rem 0 0;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.4;
+}
+.cp-type-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+.cp-type-cell svg {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
+}
