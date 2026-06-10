@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, ArrowLeft, ArrowRight, Eye, EyeOff, Download } from "../components/Icons.jsx";
+import SceneDoorControls from "../components/SceneDoorControls.jsx";
 import { addToCart, updateCartItem } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
@@ -148,6 +149,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
 
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
+  const [allDoorsHidden, setAllDoorsHidden] = useState(false);
   const [interiorError, setInteriorError] = useState("");
 
   // Pre-seed cabins with required minimum items when palette loads
@@ -347,6 +349,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const commonState = {
     openDoorIds, openDrawerIds, doorHandles: customDoorHandles,
     doorMaterials: customDoorMaterials, slidingDoorsHidden,
+    hideDoors: allDoorsHidden,
   };
 
   // Numeric fitting counts (shelf/rod/drawer) across all compartments —
@@ -433,7 +436,15 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         minDistance={3}
         maxDistance={25}
         introAnimation={step === availableSteps[0].id}
-        showDimToggle
+        overlayActions={
+          <SceneDoorControls
+            doors={cfg.doors ?? []}
+            openDoorIds={openDoorIds}
+            setOpenDoorIds={setOpenDoorIds}
+            hideDoors={allDoorsHidden}
+            setHideDoors={setAllDoorsHidden}
+          />
+        }
         captureRef={captureRef}
       >
         <ClosetFromConfig

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { X, Eye, EyeOff, Check } from "../components/Icons.jsx";
+import SceneDoorControls from "../components/SceneDoorControls.jsx";
 import { formatILS } from "../lib/money.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
@@ -17,6 +18,7 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
   const [openDoorIds, setOpenDoorIds] = useState([]);
   const [openDrawerIds, setOpenDrawerIds] = useState([]);
   const [slidingDoorsHidden, setSlidingDoorsHidden] = useState(false);
+  const [allDoorsHidden, setAllDoorsHidden] = useState(false);
 
   const hasSliding =
     cfg.kind === "sliding" ||
@@ -153,11 +155,19 @@ export default function ShowroomClosetDetails({ item, onClose, onAddToCart, onDe
               minDistance={3}
               maxDistance={25}
               introAnimation
-              showDimToggle
+              overlayActions={
+                <SceneDoorControls
+                  doors={cfg.doors ?? []}
+                  openDoorIds={openDoorIds}
+                  setOpenDoorIds={setOpenDoorIds}
+                  hideDoors={allDoorsHidden}
+                  setHideDoors={setAllDoorsHidden}
+                />
+              }
             >
               <ClosetFromConfig
                 config={cfg}
-                state={{ openDoorIds, openDrawerIds, slidingDoorsHidden }}
+                state={{ openDoorIds, openDrawerIds, slidingDoorsHidden, hideDoors: allDoorsHidden }}
                 onSelectDoor={toggleDoor}
                 onSelectDrawer={toggleDrawer}
                 showDimensions
