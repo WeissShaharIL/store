@@ -363,10 +363,34 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     return counts;
   })();
 
+  // Per-component counts of placed custom items (`c:<id>`), so the estimate
+  // charges each one at its admin-defined price (תוספות ארון rules).
+  const componentCounts = (() => {
+    const m = {};
+    for (const list of Object.values(customItems || {})) {
+      if (!Array.isArray(list)) continue;
+      for (const it of list) {
+        if (typeof it?.type === "string" && it.type.startsWith("c:")) {
+          const id = parseInt(it.type.slice(2), 10);
+          if (!Number.isNaN(id)) m[id] = (m[id] || 0) + 1;
+        }
+      }
+    }
+    return m;
+  })();
+
   // Live price estimate. Templates use the admin's basePrice (+ add-ons);
-  // from-scratch closets are priced by dimensions + structure + fittings.
+  // from-scratch closets use the admin base-price model (תמחור בסיס: 2-door
+  // base per kind + per-extra-door + priced components) with the built-in
+  // dimensional formula as fallback when no base price is configured.
   const priceEstimate = fromScratch
-    ? estimatePrice(customConfig, { fittings: fittingCounts, state: commonState })
+    ? estimatePrice(customConfig, {
+        fittings: fittingCounts,
+        state: commonState,
+        closetCfg,
+        componentPrices,
+        componentCounts,
+      })
     : totalPrice(customConfig, commonState);
   const priceLabel = priceEstimate ? `₪${Number(priceEstimate).toLocaleString()}` : null;
 
