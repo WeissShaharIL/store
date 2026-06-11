@@ -4,6 +4,7 @@ import {
   selectedExtras,
   totalPrice,
   estimatePrice,
+  componentUnitPrice,
   resolveVariant,
   PRICE_RATES,
 } from "./schema.js";
@@ -111,5 +112,58 @@ describe("estimatePrice (from-scratch, dimension-based)", () => {
   it("exposes the documented rate table", () => {
     expect(PRICE_RATES.perSqMeterFront).toBe(1400);
     expect(PRICE_RATES.slidingSurcharge).toBe(600);
+  });
+});
+
+describe("componentUnitPrice", () => {
+  it("fixed basis reads {price}", () => {
+    expect(componentUnitPrice({ price_basis: "fixed", rules: '{"price": 150}' })).toBe(150);
+  });
+  it("width basis matches the containing range", () => {
+    const comp = {
+      price_basis: "width",
+      rules: '[{"from": 0, "to": 80, "price": 100}, {"from": 81, "to": null, "price": 150}]',
+    };
+    expect(componentUnitPrice(comp, { W: 60 })).toBe(100);
+    expect(componentUnitPrice(comp, { W: 200 })).toBe(150); // open-ended range
+  });
+  it("malformed rules / no matching range price as 0", () => {
+    expect(componentUnitPrice({ price_basis: "fixed", rules: "not json" })).toBe(0);
+    expect(componentUnitPrice({ price_basis: "depth", rules: '[{"from": 90, "to": 100, "price": 50}]' }, { D: 56 })).toBe(0);
+  });
+});
+
+describe("estimatePrice — admin base-price model (תמחור בסיס)", () => {
+  const closetCfg = { basePriceHinged: 2000, basePriceSliding: 2600, extraDoorPrice: 300 };
+
+  it("2-door hinged closet = base price", () => {
+    expect(estimatePrice(makeConfig(), { closetCfg })).toBe(2000);
+  });
+  it("sliding kind uses the sliding base", () => {
+    expect(estimatePrice(makeConfig({ kind: "sliding" }), { closetCfg })).toBe(2600);
+  });
+  it("each door beyond 2 adds extraDoorPrice", () => {
+    const cfg = makeConfig({
+      doors: [{ id: "d1" }, { id: "d2" }, { id: "d3" }, { id: "d4" }],
+    });
+    expect(estimatePrice(cfg, { closetCfg })).toBe(2000 + 2 * 300);
+  });
+  it("placed components charge their unit price per count", () => {
+    const componentPrices = [
+      { id: 5, price_basis: "fixed", rules: '{"price": 45}' },
+      { id: 7, price_basis: "width", rules: '[{"from": 0, "to": 200, "price": 120}]' },
+    ];
+    // 2 shelves (id 5) + 1 width-priced drawer (id 7), W=160 → range hit
+    expect(
+      estimatePrice(makeConfig(), {
+        closetCfg,
+        componentPrices,
+        componentCounts: { 5: 2, 7: 1 },
+      }),
+    ).toBe(2000 + 2 * 45 + 120);
+  });
+  it("falls back to the built-in formula when no base price is set", () => {
+    const legacy = estimatePrice(makeConfig());
+    expect(estimatePrice(makeConfig(), { closetCfg: { basePriceHinged: 0 } })).toBe(legacy);
   });
 });

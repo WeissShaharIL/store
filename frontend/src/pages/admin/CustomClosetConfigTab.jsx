@@ -13,6 +13,13 @@ const DEFAULT = {
   allowShelf: true, allowRod: true, allowDrawer: true,
   minShelvesPerCabin: 2,
   addOnComponentIds: [],
+  // Base pricing for the from-scratch designer: a simple 2-door closet per
+  // door kind, plus a surcharge per additional door. Components (shelves,
+  // rods, drawers...) add their own prices from the תוספות ארון tab.
+  // 0 = not configured → the designer falls back to the built-in formula.
+  basePriceHinged: 0,
+  basePriceSliding: 0,
+  extraDoorPrice: 0,
 };
 
 function NumInput({ value, onChange, min = 0, max, step = 1 }) {
@@ -180,6 +187,34 @@ export default function CustomClosetConfigTab() {
         </div>
       </div>
 
+      {/* ── Base pricing ───────────────────────────────────── */}
+      <div className="cc-section">
+        <h3 className="cc-section__title">תמחור בסיס</h3>
+        <p className="cc-section__sub">
+          מחיר ארון בסיסי של 2 דלתות, לפי סוג הדלתות. כל דלת נוספת מוסיפה את
+          התוספת שמוגדרת כאן. מחירי הרכיבים (מדפים, מוטות, מגירות) מתווספים
+          אוטומטית לפי המחירים בלשונית ״תוספות ארון״. השאר 0 כדי להשתמש
+          בנוסחת המחיר המובנית.
+        </p>
+        <div className="cc-row">
+          <label className="cc-dim__field">
+            <span>בסיס 2 דלתות — פתיחה (ציר)</span>
+            <NumInput value={cfg.basePriceHinged} onChange={set("basePriceHinged")} min={0} step={50} />
+            <span className="cc-unit">₪</span>
+          </label>
+          <label className="cc-dim__field">
+            <span>בסיס 2 דלתות — הזזה</span>
+            <NumInput value={cfg.basePriceSliding} onChange={set("basePriceSliding")} min={0} step={50} />
+            <span className="cc-unit">₪</span>
+          </label>
+          <label className="cc-dim__field">
+            <span>תוספת לכל דלת נוספת</span>
+            <NumInput value={cfg.extraDoorPrice} onChange={set("extraDoorPrice")} min={0} step={50} />
+            <span className="cc-unit">₪</span>
+          </label>
+        </div>
+      </div>
+
       {/* Interior minimums are set per-component below ("מינ׳ לתא"),
           so the old closet-wide "מינימום מדפים לתא" field was removed
           to avoid duplication. */}
@@ -208,7 +243,7 @@ export default function CustomClosetConfigTab() {
                       return (
                         <div key={comp.id} className="cc-addon">
                           <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
-                          {comp.sku && <span className="cc-addon__sku" style={{marginRight: 'auto'}}>{comp.sku}</span>}
+                          <span className="cc-addon__sku">{comp.sku || "—"}</span>
                           {/* Change the item's type (or reset to a general
                               add-on). This is the only place to RE-assign a
                               component that already has a type. */}
@@ -264,7 +299,7 @@ export default function CustomClosetConfigTab() {
                       return (
                         <div key={comp.id} className="cc-addon">
                           <Toggle checked={checked} onChange={() => toggleAddOn(comp.id)} label={comp.name} />
-                          {comp.sku && <span className="cc-addon__sku">{comp.sku}</span>}
+                          <span className="cc-addon__sku">{comp.sku || "—"}</span>
                           <select className="cc-addon__mini-select cc-addon__mini-select--promote" value="" onChange={e => e.target.value && updateComponentType(comp.id, e.target.value)}>
                             <option value="">הוסף לשלב 2...</option>
                             <option value="shelf">כ-מדף</option>

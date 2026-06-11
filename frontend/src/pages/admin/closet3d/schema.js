@@ -332,6 +332,35 @@ export const PRICE_RATES = {
   drawer: 130,
 };
 
+/**
+ * Resolve one component's unit price from its admin-defined rules.
+ *
+ * fixed basis → `{"price": N}`; width/height/depth basis → an array of
+ * `{from, to, price}` ranges in cm, matched against the closet's dimension
+ * (`to: null` = open-ended). Unknown/malformed rules price as 0.
+ *
+ * @param {{price_basis?: string, rules?: string}} comp  component-price row
+ * @param {{W?: number, H?: number, D?: number}} dimsCm  closet dims in cm
+ * @returns {number}
+ */
+export function componentUnitPrice(comp, dimsCm = {}) {
+  let rules;
+  try { rules = JSON.parse(comp.rules || "{}"); } catch { return 0; }
+  const basis = comp.price_basis || "fixed";
+  if (basis === "fixed") return Number(rules?.price) || 0;
+  if (!Array.isArray(rules)) return 0;
+  const value =
+    basis === "width" ? (dimsCm.W ?? 0) :
+    basis === "height" ? (dimsCm.H ?? 0) :
+    (dimsCm.D ?? 0);
+  for (const r of rules) {
+    const from = Number(r.from) || 0;
+    const to = r.to == null || r.to === "" ? Infinity : Number(r.to);
+    if (value >= from && value <= to) return Number(r.price) || 0;
+  }
+  return 0;
+}
+
 export function estimatePrice(config, opts = {}) {
   const dims = config.dimensions || {};
   const nDoors = config.doors?.length || 1;
@@ -339,6 +368,42 @@ export function estimatePrice(config, opts = {}) {
   const heightM = (dims.H ?? 240) / 100;
   const depthCm = dims.D ?? 56;
 
+  // ── Admin-configured model ────────────────────────────────────────────
+  // When the custom-closet config defines a base price for this door kind
+  // (תמחור בסיס in ארון בהתאמה אישית): base 2-door price + a surcharge per
+  // additional door + the admin-priced components the customer placed.
+  const cc = opts.closetCfg;
+  const adminBase = Number(
+    config.kind === "sliding" ? cc?.basePriceSliding : cc?.basePriceHinged,
+  ) || 0;
+  if (adminBase > 0) {
+    let price = adminBase + Math.max(0, nDoors - 2) * (Number(cc.extraDoorPrice) || 0);
+
+    const dimsCm = {
+      W: (dims.compartmentWidth ?? 80) * nDoors,
+      H: dims.H ?? 240,
+      D: dims.D ?? 56,
+    };
+    const counts = opts.componentCounts || {};
+    for (const comp of opts.componentPrices || []) {
+      const n = counts[comp.id] || 0;
+      if (n > 0) price += n * componentUnitPrice(comp, dimsCm);
+    }
+
+    // Legacy base-typed fittings (template-seeded shelf/rod/drawer items)
+    // keep their built-in rates so mixed configs don't price as 0.
+    const f = opts.fittings || {};
+    price += (f.shelf || 0) * PRICE_RATES.shelf
+          +  (f.rod || 0) * PRICE_RATES.rod
+          +  (f.drawer || 0) * PRICE_RATES.drawer;
+
+    if (opts.state) {
+      price += selectedExtras(config, opts.state).reduce((s, e) => s + (e.price || 0), 0);
+    }
+    return Math.round(price / 10) * 10;
+  }
+
+  // ── Built-in fallback formula (no admin base price configured) ───────
   let price = widthM * heightM * PRICE_RATES.perSqMeterFront;
   price += nDoors * PRICE_RATES.perDoor;
   price += widthM * depthCm * PRICE_RATES.perDepthFactor;

@@ -27,11 +27,19 @@ function timeAgo(dateStr) {
   return `לפני ${d} ימים`;
 }
 
+// Acknowledged failed-login warnings: we remember the highest event id the
+// admin confirmed, so the banner only returns for NEW failed attempts.
+const FAILED_ACK_KEY = "store-admin-failed-login-ack";
+
 export default function ActivityTab() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterAction, setFilterAction] = useState("");
+  const [failedAckId, setFailedAckId] = useState(() => {
+    const v = Number(localStorage.getItem(FAILED_ACK_KEY));
+    return Number.isFinite(v) ? v : 0;
+  });
 
   const load = useCallback(async () => {
     try {
@@ -46,13 +54,30 @@ export default function ActivityTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  const hasFailedAdmin = events.some((e) => e.action === "admin_login_failed");
+  const latestFailedId = events.reduce(
+    (max, e) => (e.action === "admin_login_failed" && e.id > max ? e.id : max),
+    0,
+  );
+  const hasFailedAdmin = latestFailedId > failedAckId;
+
+  function acknowledgeFailed() {
+    localStorage.setItem(FAILED_ACK_KEY, String(latestFailedId));
+    setFailedAckId(latestFailedId);
+  }
 
   return (
     <div className="admin-tab-content">
       {hasFailedAdmin && (
-        <div className="activity-alert">
+        <div className="activity-alert" role="alert">
           <AlertTriangle /> נרשם ניסיון כניסה נכשל לחשבון מנהל
+          <button
+            type="button"
+            className="activity-alert__dismiss"
+            onClick={acknowledgeFailed}
+            title="אישור — הסתר את ההתראה עד ניסיון כושל חדש"
+          >
+            אישור
+          </button>
         </div>
       )}
 
