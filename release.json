@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.25",
-  "released_at": "2026-06-11T14:26:49Z",
-  "notes": "759fa41 feat(admin): bug tracker tab — write bugs, attach repro images and videos"
+  "version": "v1.64.26",
+  "released_at": "2026-06-11T23:37:24Z",
+  "notes": "6ea491c chore: ignore .claude/skills/ (Claude Code project skills, not app code)\n9e7446e fix: update drawer geometry test + pill-style bug card action buttons\n4210530 fix: admin bugs batch — image/video click, drawer height, platform toggle, proportions, design button"
 }
