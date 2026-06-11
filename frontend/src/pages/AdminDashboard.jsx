@@ -36,12 +36,24 @@ export default function AdminDashboard() {
   const [leadsUnread, setLeadsUnread] = useState(0);
   const [ordersRefresh, setOrdersRefresh] = useState(0);
 
+  // The badge counts new leads created AFTER the admin's last visit to the
+  // פניות tab — so opening the tab clears it, and it returns only when a
+  // genuinely new lead arrives.
+  const LEADS_SEEN_KEY = "store-admin-leads-seen-at";
+
   const fetchLeadsUnread = useCallback(async () => {
-    const r = await adminGetLeadsUnreadCount();
+    const since = localStorage.getItem(LEADS_SEEN_KEY) || undefined;
+    const r = await adminGetLeadsUnreadCount(since);
     setLeadsUnread(r.count || 0);
   }, []);
 
   usePolling(fetchLeadsUnread, { intervalMs: 30_000, onVisible: true, deps: [fetchLeadsUnread] });
+
+  useEffect(() => {
+    if (activeTab !== "leads") return;
+    localStorage.setItem(LEADS_SEEN_KEY, new Date().toISOString());
+    setLeadsUnread(0);
+  }, [activeTab, leadsUnread]);
 
   async function handleLogout() {
     await logout();

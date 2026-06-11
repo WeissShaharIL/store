@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { X } from "../components/Icons.jsx";
-import { submitLead } from "../api.js";
+import { X, WhatsApp } from "../components/Icons.jsx";
+import { submitLead, getPublicSettings } from "../api.js";
 import "../styles/showroom/04-inquiry.css";
 
 export default function InquiryModal({ item, onClose }) {
@@ -10,6 +10,22 @@ export default function InquiryModal({ item, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  // WhatsApp deep-link prefilled with the closet the customer is viewing.
+  const [waHref, setWaHref] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    getPublicSettings()
+      .then((s) => {
+        if (!alive) return;
+        const num = (s?.contact_whatsapp || "").trim().replace(/[^0-9]/g, "");
+        if (!num) return;
+        const text = `שלום! אשמח לקבל פרטים על הארון "${item.name}"`;
+        setWaHref(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [item.name]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -93,6 +109,19 @@ export default function InquiryModal({ item, onClose }) {
               />
             </div>
             {error && <p className="inquiry-error">{error}</p>}
+            {waHref && (
+              <>
+                <div className="inquiry-or" aria-hidden="true"><span>או</span></div>
+                <a
+                  className="inquiry-whatsapp"
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <WhatsApp /> שליחת הודעה ב-WhatsApp על {item.name}
+                </a>
+              </>
+            )}
             <div className="inquiry-footer">
               <button type="button" className="inquiry-cancel" onClick={onClose}>ביטול</button>
               <button

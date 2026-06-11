@@ -113,7 +113,8 @@ export const adminDeleteLead = (id) => api.delete(`/api/admin/leads/${id}`);
 export const adminRestoreLead = (id) => api.post(`/api/admin/leads/${id}/restore`);
 export const adminDeleteLeadPermanent = (id) => api.delete(`/api/admin/leads/${id}/permanent`);
 export const adminGetTrashedLeads = () => api.get("/api/admin/leads/trash");
-export const adminGetLeadsUnreadCount = () => api.get("/api/admin/leads/unread-count");
+export const adminGetLeadsUnreadCount = (since) =>
+  api.get(`/api/admin/leads/unread-count${since ? `?since=${encodeURIComponent(since)}` : ""}`);
 export const adminGetLeadCounts = () => api.get("/api/admin/leads/counts");
 export const adminExportLeadsCsv = () => api.downloadFile("/api/admin/leads/export.csv", "leads.csv");
 

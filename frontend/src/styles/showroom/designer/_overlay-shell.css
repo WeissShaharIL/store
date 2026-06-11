@@ -214,3 +214,66 @@
   transform: translateY(-1px);
 }
 
+
+/* ── Price breakdown popover (הערכת מחיר) ─────────────────────────────── */
+.closet-designer__footer-price-wrap { position: relative; }
+.closet-designer__footer-price {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  padding: 4px 10px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.closet-designer__footer-price:hover { background: rgba(255, 255, 255, 0.06); }
+.closet-designer__footer-price-label {
+  font-size: var(--text-xs);
+  color: rgba(242, 242, 244, 0.5);
+}
+.closet-designer__footer-price-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f2f2f4;
+}
+.closet-designer__price-pop {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  inset-inline-start: 50%;
+  transform: translateX(50%);
+  min-width: 260px;
+  max-width: 340px;
+  padding: 0.75rem 0.9rem;
+  background: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  z-index: 30;
+}
+.closet-designer__price-pop-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(242, 242, 244, 0.5);
+  margin-bottom: 0.5rem;
+}
+.closet-designer__price-pop-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(242, 242, 244, 0.78);
+  padding: 3px 0;
+}
+.closet-designer__price-pop-line--total {
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-weight: 700;
+  color: #f2f2f4;
+}

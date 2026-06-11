@@ -361,23 +361,36 @@ export function componentUnitPrice(comp, dimsCm = {}) {
   return 0;
 }
 
-export function estimatePrice(config, opts = {}) {
+/**
+ * Itemized estimate: { total, model, lines: [{label, amount}] }.
+ *
+ * model "admin"   — תמחור בסיס is configured: base 2-door price per door
+ *                   kind + per-extra-door surcharge + each placed component
+ *                   at its admin price + selected add-ons.
+ * model "formula" — fallback to the built-in dimensional formula when no
+ *                   base price is configured for this kind.
+ *
+ * estimatePrice() below returns breakdown.total — single source of truth.
+ */
+export function estimateBreakdown(config, opts = {}) {
   const dims = config.dimensions || {};
   const nDoors = config.doors?.length || 1;
-  const widthM = ((dims.compartmentWidth ?? 80) * nDoors) / 100;
-  const heightM = (dims.H ?? 240) / 100;
-  const depthCm = dims.D ?? 56;
+  const lines = [];
 
-  // ── Admin-configured model ────────────────────────────────────────────
-  // When the custom-closet config defines a base price for this door kind
-  // (תמחור בסיס in ארון בהתאמה אישית): base 2-door price + a surcharge per
-  // additional door + the admin-priced components the customer placed.
   const cc = opts.closetCfg;
   const adminBase = Number(
     config.kind === "sliding" ? cc?.basePriceSliding : cc?.basePriceHinged,
   ) || 0;
+
   if (adminBase > 0) {
-    let price = adminBase + Math.max(0, nDoors - 2) * (Number(cc.extraDoorPrice) || 0);
+    const kindLabel = config.kind === "sliding" ? "הזזה" : "פתיחה";
+    lines.push({ label: `ארון בסיס 2 דלתות (${kindLabel})`, amount: adminBase });
+
+    const extraDoors = Math.max(0, nDoors - 2);
+    const perDoor = Number(cc.extraDoorPrice) || 0;
+    if (extraDoors > 0 && perDoor > 0) {
+      lines.push({ label: `${extraDoors} דלתות נוספות`, amount: extraDoors * perDoor });
+    }
 
     const dimsCm = {
       W: (dims.compartmentWidth ?? 80) * nDoors,
@@ -387,23 +400,36 @@ export function estimatePrice(config, opts = {}) {
     const counts = opts.componentCounts || {};
     for (const comp of opts.componentPrices || []) {
       const n = counts[comp.id] || 0;
-      if (n > 0) price += n * componentUnitPrice(comp, dimsCm);
+      if (n > 0) {
+        const unit = componentUnitPrice(comp, dimsCm);
+        lines.push({ label: `${comp.name ?? "רכיב"} ×${n}`, amount: n * unit });
+      }
     }
 
     // Legacy base-typed fittings (template-seeded shelf/rod/drawer items)
     // keep their built-in rates so mixed configs don't price as 0.
     const f = opts.fittings || {};
-    price += (f.shelf || 0) * PRICE_RATES.shelf
-          +  (f.rod || 0) * PRICE_RATES.rod
-          +  (f.drawer || 0) * PRICE_RATES.drawer;
+    const fittingsTotal =
+      (f.shelf || 0) * PRICE_RATES.shelf +
+      (f.rod || 0) * PRICE_RATES.rod +
+      (f.drawer || 0) * PRICE_RATES.drawer;
+    if (fittingsTotal > 0) lines.push({ label: "פריטי פנים", amount: fittingsTotal });
 
     if (opts.state) {
-      price += selectedExtras(config, opts.state).reduce((s, e) => s + (e.price || 0), 0);
+      for (const e of selectedExtras(config, opts.state)) {
+        if (e.price) lines.push({ label: e.label ?? "תוספת", amount: e.price });
+      }
     }
-    return Math.round(price / 10) * 10;
+
+    const raw = lines.reduce((s, l) => s + l.amount, 0);
+    return { model: "admin", lines, total: Math.round(raw / 10) * 10 };
   }
 
   // ── Built-in fallback formula (no admin base price configured) ───────
+  const widthM = ((dims.compartmentWidth ?? 80) * nDoors) / 100;
+  const heightM = (dims.H ?? 240) / 100;
+  const depthCm = dims.D ?? 56;
+
   let price = widthM * heightM * PRICE_RATES.perSqMeterFront;
   price += nDoors * PRICE_RATES.perDoor;
   price += widthM * depthCm * PRICE_RATES.perDepthFactor;
@@ -417,7 +443,16 @@ export function estimatePrice(config, opts = {}) {
   if (opts.state) {
     price += selectedExtras(config, opts.state).reduce((s, e) => s + (e.price || 0), 0);
   }
-  return Math.round(price / 10) * 10;
+  const total = Math.round(price / 10) * 10;
+  return {
+    model: "formula",
+    lines: [{ label: "חישוב לפי מידות הארון", amount: total }],
+    total,
+  };
+}
+
+export function estimatePrice(config, opts = {}) {
+  return estimateBreakdown(config, opts).total;
 }
 
 /**
