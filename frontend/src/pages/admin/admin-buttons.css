@@ -151,6 +151,33 @@
   color: #fff;
 }
 
+/* Save buttons (שמור / שמור סיסמה) — same neutral pill as the
+   .settings-section primary buttons (e.g. "החלף תמונה"), so all the main
+   form actions in the admin share one look. */
+.admin .settings-save-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 5px 14px;
+  width: fit-content;
+  color: rgba(242, 242, 244, 0.85);
+}
+.admin .settings-save-btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.admin .settings-save-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.42);
+  color: #fff;
+}
+.admin .settings-save-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.6);
+}
+
 /* Pressed feedback */
 .admin .pituch-tab__content .btn:active:not(:disabled),
 .admin .settings-section .btn:active:not(:disabled) {

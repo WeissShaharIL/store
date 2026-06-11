@@ -158,3 +158,40 @@
   transition: background 150ms;
 }
 .inquiry-done-btn:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* WhatsApp alternative — deep-link prefilled with the viewed closet */
+.inquiry-or {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.78rem;
+  margin: 0.25rem 0;
+}
+.inquiry-or::before,
+.inquiry-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.inquiry-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  color: #4ade80;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.inquiry-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.2);
+  border-color: rgba(37, 211, 102, 0.6);
+}
+.inquiry-whatsapp svg { flex-shrink: 0; }

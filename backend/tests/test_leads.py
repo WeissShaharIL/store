@@ -125,6 +125,33 @@ def test_admin_unread_count(client, auth_headers):
     assert "count" in r.json()
 
 
+def test_admin_unread_count_since(client, auth_headers):
+    """`since` narrows the badge count to leads created after that moment."""
+    client.post("/api/public/leads", json=VALID_LEAD)
+
+    # since in the past → counts the lead we just created
+    r = client.get(
+        "/api/admin/leads/unread-count?since=2000-01-01T00:00:00Z",
+        headers=auth_headers,
+    )
+    assert r.json()["count"] >= 1
+
+    # since in the future → nothing newer, badge clears
+    r = client.get(
+        "/api/admin/leads/unread-count?since=2100-01-01T00:00:00Z",
+        headers=auth_headers,
+    )
+    assert r.json()["count"] == 0
+
+    # malformed since is ignored (full count, no error)
+    r = client.get(
+        "/api/admin/leads/unread-count?since=not-a-date",
+        headers=auth_headers,
+    )
+    assert r.status_code == 200
+    assert r.json()["count"] >= 1
+
+
 def test_admin_lead_counts(client, auth_headers):
     client.post("/api/public/leads", json=VALID_LEAD)
     r = client.get("/api/admin/leads/counts", headers=auth_headers)

@@ -5,7 +5,7 @@ import SceneDoorControls from "../components/SceneDoorControls.jsx";
 import { addToCart, updateCartItem } from "../lib/cart.js";
 import ClosetScene from "./admin/closet3d/ClosetScene.jsx";
 import ClosetFromConfig from "./admin/closet3d/ClosetFromConfig.jsx";
-import { totalPrice, estimatePrice } from "./admin/closet3d/schema.js";
+import { totalPrice, estimateBreakdown } from "./admin/closet3d/schema.js";
 import { usePaletteColors } from "./admin/PaletteContext.jsx";
 import { useHandles } from "./admin/HandlesContext.jsx";
 import { usePhotoExport } from "./admin/designer/usePhotoExport.js";
@@ -142,6 +142,7 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
     setCustomDoorMaterials((m) => ({ ...m, [doorId]: kind }));
   }, []);
 
+  const [priceOpen, setPriceOpen] = useState(false);
   const [slidingDoorsHidden, setSlidingDoorsHidden] = useState(false);
   const hasSliding =
     cfg.kind === "sliding" ||
@@ -383,14 +384,19 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   // from-scratch closets use the admin base-price model (תמחור בסיס: 2-door
   // base per kind + per-extra-door + priced components) with the built-in
   // dimensional formula as fallback when no base price is configured.
-  const priceEstimate = fromScratch
-    ? estimatePrice(customConfig, {
+  // The breakdown's lines feed the clickable "הערכת מחיר" popover so the
+  // basis of the number is always inspectable.
+  const priceBreakdown = fromScratch
+    ? estimateBreakdown(customConfig, {
         fittings: fittingCounts,
         state: commonState,
         closetCfg,
         componentPrices,
         componentCounts,
       })
+    : null;
+  const priceEstimate = fromScratch
+    ? priceBreakdown.total
     : totalPrice(customConfig, commonState);
   const priceLabel = priceEstimate ? `₪${Number(priceEstimate).toLocaleString()}` : null;
 
@@ -534,9 +540,32 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
         <div className="closet-designer__footer">
           <button type="button" className="closet-designer__cancel-btn" onClick={onClose}>ביטול</button>
           {priceLabel && (
-            <div className="closet-designer__footer-price">
-              <span className="closet-designer__footer-price-label">הערכת מחיר</span>
-              <span className="closet-designer__footer-price-value">{priceLabel}</span>
+            <div className="closet-designer__footer-price-wrap">
+              {priceBreakdown && priceOpen && (
+                <div className="closet-designer__price-pop" role="dialog" aria-label="פירוט הערכת מחיר">
+                  <div className="closet-designer__price-pop-title">ממה מורכב המחיר</div>
+                  {priceBreakdown.lines.map((l, i) => (
+                    <div key={i} className="closet-designer__price-pop-line">
+                      <span>{l.label}</span>
+                      <span>₪{Number(l.amount).toLocaleString()}</span>
+                    </div>
+                  ))}
+                  <div className="closet-designer__price-pop-line closet-designer__price-pop-line--total">
+                    <span>סה״כ (מעוגל)</span>
+                    <span>{priceLabel}</span>
+                  </div>
+                </div>
+              )}
+              <button
+                type="button"
+                className="closet-designer__footer-price"
+                onClick={() => priceBreakdown && setPriceOpen((v) => !v)}
+                aria-expanded={priceOpen}
+                title={priceBreakdown ? "לחצו לפירוט המחיר" : undefined}
+              >
+                <span className="closet-designer__footer-price-label">הערכת מחיר</span>
+                <span className="closet-designer__footer-price-value">{priceLabel}</span>
+              </button>
             </div>
           )}
           {isLastStep && (

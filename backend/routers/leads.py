@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import logging
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -77,14 +78,28 @@ def submit_lead(payload: LeadCreate, request: Request, db: Session = Depends(get
 
 
 @admin_router.get("/unread-count")
-def unread_leads_count(db: Session = Depends(get_db)):
-    count = (
+def unread_leads_count(
+    since: Optional[str] = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    """Count of new (unhandled) leads for the admin-tab badge.
+
+    `since` (ISO datetime) narrows to leads created after that moment — the
+    admin UI passes its last-visit timestamp so the badge clears once the
+    leads were seen and only returns for genuinely new arrivals.
+    """
+    q = (
         db.query(Lead)
         .filter(Lead.status == "new")
         .filter(Lead.deleted_at.is_(None))
-        .count()
     )
-    return {"count": count}
+    if since:
+        try:
+            since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
+            q = q.filter(Lead.created_at > since_dt)
+        except ValueError:
+            pass  # ignore a malformed timestamp — show the full count
+    return {"count": q.count()}
 
 
 @admin_router.get("/counts")
