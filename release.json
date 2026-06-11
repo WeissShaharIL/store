@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.22",
-  "released_at": "2026-06-10T22:12:18Z",
-  "notes": "df4aef4 feat(pituch): components render as model items, visual type pool in admin"
+  "version": "v1.64.23",
+  "released_at": "2026-06-11T13:51:29Z",
+  "notes": "00ef3d9 feat(custom-closet): admin base pricing + real-time component-priced estimate; admin UI fixes"
 }
