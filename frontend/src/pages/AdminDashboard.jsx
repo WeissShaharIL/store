@@ -7,6 +7,7 @@ import LandingSettingsTab from "./admin/LandingSettingsTab.jsx";
 import SettingsTab from "./admin/SettingsTab.jsx";
 import ImagesTab from "./admin/ImagesTab.jsx";
 import ActivityTab from "./admin/ActivityTab.jsx";
+import BugsTab from "./admin/BugsTab.jsx";
 import OrdersTab from "./admin/OrdersTab.jsx";
 import { usePolling } from "../hooks/usePolling.js";
 import { adminGetLeadsUnreadCount } from "../api.js";
@@ -24,6 +25,7 @@ const TABS = [
   { id: "leads",     label: "פניות" },
   { id: "orders",    label: "הזמנות" },
   { id: "activity",  label: "פעילות" },
+  { id: "bugs",      label: "באגים" },
   { id: "pituch",    label: "פיתוח" },
 ];
 
@@ -93,6 +95,7 @@ export default function AdminDashboard() {
       <div className="admin-content">
         {activeTab === "images"    && <ImagesTab />}
         {activeTab === "activity"  && <ActivityTab />}
+        {activeTab === "bugs"      && <BugsTab />}
         {activeTab === "pituch"    && <Suspense fallback={<div style={{padding:"2rem",color:"rgba(255,255,255,0.35)"}}>טוען...</div>}><PituchTab externalSubTab={pituchSubTab} /></Suspense>}
         {activeTab === "leads"     && <LeadsTab onOrderCreated={() => { setOrdersRefresh((n) => n + 1); setActiveTab("orders"); }} />}
         {activeTab === "orders"    && <OrdersTab key={ordersRefresh} />}

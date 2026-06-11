@@ -118,6 +118,16 @@ export const adminGetLeadsUnreadCount = (since) =>
 export const adminGetLeadCounts = () => api.get("/api/admin/leads/counts");
 export const adminExportLeadsCsv = () => api.downloadFile("/api/admin/leads/export.csv", "leads.csv");
 
+// Bug tracker (admin)
+export const adminListBugs = () => api.get("/api/admin/bugs");
+export const adminCreateBug = (data) => api.post("/api/admin/bugs", data);
+export const adminUpdateBug = (id, data) => api.patch(`/api/admin/bugs/${id}`, data);
+export const adminDeleteBug = (id) => api.delete(`/api/admin/bugs/${id}`);
+export const adminUploadBugAttachment = (id, formData) =>
+  api.postForm(`/api/admin/bugs/${id}/attachments`, formData);
+export const adminDeleteBugAttachment = (id, index) =>
+  api.delete(`/api/admin/bugs/${id}/attachments/${index}`);
+
 // ── Admin — Orders ────────────────────────────────────────────────────────────
 export const adminGetOrders = (params = {}) => {
   const qs = new URLSearchParams();

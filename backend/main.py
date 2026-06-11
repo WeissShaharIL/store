@@ -37,6 +37,7 @@ from routers import landing as landing_router
 from routers import version as version_router
 from routers import media as media_router
 from routers import activity_router
+from routers import bug_reports as bug_reports_router
 from routers import orders as orders_router
 from routers import component_prices as component_prices_router
 from routers import custom_closet as custom_closet_router
@@ -109,6 +110,7 @@ app.include_router(version_router.router, prefix="/api/version", tags=["version"
 app.include_router(media_router.router, prefix="/api/admin/media", tags=["admin-media"])
 app.include_router(activity_router.router, prefix="/api/admin/activity", tags=["admin-activity"])
 app.include_router(orders_router.router, prefix="/api/admin/orders", tags=["admin-orders"])
+app.include_router(bug_reports_router.router, prefix="/api/admin/bugs", tags=["admin-bugs"])
 app.include_router(component_prices_router.router, prefix="/api/admin/component-prices", tags=["admin-component-prices"])
 app.include_router(component_prices_router.public_router, prefix="/api/public/component-prices", tags=["public-component-prices"])
 app.include_router(custom_closet_router.router, prefix="/api/admin/custom-closet-config", tags=["admin-custom-closet"])

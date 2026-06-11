@@ -350,6 +350,21 @@ class ClosetOrder(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
 
 
+class BugReport(Base):
+    """Internal bug tracker — the admin documents bugs found in the app,
+    with image/video attachments to reproduce them."""
+    __tablename__ = "bug_reports"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(String(16), nullable=False, default="open", index=True)  # open | closed
+    # JSON array of {"path": str, "kind": "image"|"video", "original_name": str}
+    attachments = Column(Text, nullable=False, default="[]")
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
+
+
 class ActivityEvent(Base):
     __tablename__ = "activity_events"
 
