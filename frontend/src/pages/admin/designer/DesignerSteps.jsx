@@ -95,16 +95,28 @@ export default function DesignerSteps({
               )}
             </>
           ) : (
-            nDoors > 1 && closetCfg?.allowDivider !== false && (
-              <div className="closet-designer__color-block">
-                <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
-                <ToggleField
-                  label="דופן פנימי בין תאים"
-                  checked={customDivider}
-                  onChange={setCustomDivider}
-                />
-              </div>
-            )
+            <>
+              {closetCfg?.allowBase !== false && (
+                <div className="closet-designer__color-block">
+                  <h5 className="closet-designer__color-title">בסיס</h5>
+                  <ToggleField
+                    label="במה — הארון עומד על רגליים"
+                    checked={customBase}
+                    onChange={setCustomBase}
+                  />
+                </div>
+              )}
+              {nDoors > 1 && closetCfg?.allowDivider !== false && (
+                <div className="closet-designer__color-block">
+                  <h5 className="closet-designer__color-title">חלוקה פנימית</h5>
+                  <ToggleField
+                    label="דופן פנימי בין תאים"
+                    checked={customDivider}
+                    onChange={setCustomDivider}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
         {preview}

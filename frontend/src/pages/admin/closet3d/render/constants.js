@@ -65,6 +65,10 @@ export const HINGED_DOOR_EDGE_MARGIN = 0.003;
 //   drawerStack=1 → door shortened by 1 × 15% = 15%
 //   drawerStack=2 → door shortened by 2 × 15% = 30%
 export const DRAWER_ROW_FRACTION = 0.15;
+// v2.x — fixed drawer-row height (23 cm) replaces the fraction-based
+// sizing so drawers look the same regardless of closet height.
+// Capped at 65% of inner height so extreme stacks stay renderable.
+export const DRAWER_ROW_H = 0.23;
 
 // v1.35.0 — when a drawer is "open" the face slides forward by
 // this many world units. 30 cm reads as clearly pulled-out

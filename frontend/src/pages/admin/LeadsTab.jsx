@@ -101,7 +101,7 @@ export default function LeadsTab({ onOrderCreated }) {
 
   useEffect(() => {
     adminGetLeadCounts().then(setCounts).catch(() => {});
-  }, [leads]);
+  }, []);
 
   async function load() {
     setLoading(true);

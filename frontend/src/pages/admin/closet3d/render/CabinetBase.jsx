@@ -31,12 +31,21 @@ import {
  *             legs (8 cm) supporting a thin 2 cm silver stage
  *             that the cabinet body sits on.
  */
-export default function CabinetBase({ W, D, hasBase = false }) {
-  // 4 inset corners, slightly inboard from the cabinet edges so
-  // they read as feet rather than corner posts of the cabinet
-  // itself.
-  const legX = W / 2 - LEG_SIZE / 2 - LEG_INSET;
+export default function CabinetBase({ W, D, hasBase = false, nSections = 1 }) {
+  // Outer corner legs are inset from the cabinet edges; internal
+  // divider legs sit exactly at the divider X positions.
+  const outerLegX = W / 2 - LEG_SIZE / 2 - LEG_INSET;
   const legZ = D / 2 - LEG_SIZE / 2 - LEG_INSET;
+
+  // Build one X position per structural panel: left + right outer
+  // walls, plus one per internal divider.
+  const legXPositions = [-outerLegX, outerLegX];
+  if (nSections > 1) {
+    const sectionW = W / nSections;
+    for (let s = 1; s < nSections; s++) {
+      legXPositions.push(-W / 2 + sectionW * s);
+    }
+  }
 
   return (
     <group>
@@ -51,23 +60,27 @@ export default function CabinetBase({ W, D, hasBase = false }) {
           base ("במה"). Without it the cabinet body sits flat on the
           floor (the body group's lift is 0 in that case). */}
       {hasBase && (<>
-      {/* 4 silver corner legs + silver stage slab the cabinet
-          body sits on. Polished silver via high metalness + low
-          roughness — reads like machined aluminum / chrome. */}
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
-        <mesh
-          key={`leg-${i}`}
-          position={[sx * legX, LEG_HEIGHT / 2, sz * legZ]}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[LEG_SIZE, LEG_HEIGHT, LEG_SIZE]} />
-          <meshStandardMaterial
-            color={LEG_COLOR}
-            roughness={0.25}
-            metalness={0.85}
-          />
-        </mesh>
+      {/* Silver legs: one pair (front + back) at each structural
+          panel position — outer walls inset, internal dividers
+          centered. Stage slab spans the full cabinet width. */}
+      {legXPositions.map((x, i) => (
+        <group key={`legpair-${i}`}>
+          {[-1, 1].map((sz) => (
+            <mesh
+              key={sz}
+              position={[x, LEG_HEIGHT / 2, sz * legZ]}
+              castShadow
+              receiveShadow
+            >
+              <boxGeometry args={[LEG_SIZE, LEG_HEIGHT, LEG_SIZE]} />
+              <meshStandardMaterial
+                color={LEG_COLOR}
+                roughness={0.25}
+                metalness={0.85}
+              />
+            </mesh>
+          ))}
+        </group>
       ))}
       <mesh
         position={[0, LEG_HEIGHT + STAGE_HEIGHT / 2, 0]}

@@ -128,7 +128,7 @@ export default function ClosetTemplatesTab() {
                   type="file"
                   accept="image/*"
                   hidden
-                  onChange={(e) => e.target.files[0] && handleImageUpload(t, e.target.files[0])}
+                  onChange={(e) => { if (e.target.files[0]) { handleImageUpload(t, e.target.files[0]); e.target.value = ""; } }}
                 />
               </label>
             </div>

@@ -26,6 +26,7 @@ export default function AdminLoginGate({ children }) {
       // auth context updates → component re-renders → shows children
     } catch (err) {
       setError(err.message);
+      setForm((f) => ({ ...f, password: "" }));
     } finally {
       setLoading(false);
     }
