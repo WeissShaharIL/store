@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.23",
-  "released_at": "2026-06-11T13:51:29Z",
-  "notes": "00ef3d9 feat(custom-closet): admin base pricing + real-time component-priced estimate; admin UI fixes"
+  "version": "v1.64.24",
+  "released_at": "2026-06-11T14:11:19Z",
+  "notes": "86e50a4 feat(storefront+admin): WhatsApp inquiry, price breakdown, badge seen-state, save-btn pill"
 }
