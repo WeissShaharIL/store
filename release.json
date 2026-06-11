@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.24",
-  "released_at": "2026-06-11T14:11:19Z",
-  "notes": "86e50a4 feat(storefront+admin): WhatsApp inquiry, price breakdown, badge seen-state, save-btn pill"
+  "version": "v1.64.25",
+  "released_at": "2026-06-11T14:26:49Z",
+  "notes": "759fa41 feat(admin): bug tracker tab — write bugs, attach repro images and videos"
 }
