@@ -25,13 +25,16 @@ describe("doorGeometry()", () => {
     expect(g.doorAreaH).toBeCloseTo(innerH, 6);
   });
 
-  it("shortens the door by exactly 15% of inner height per drawer row", () => {
+  it("uses a fixed 23 cm drawer row height (capped at 65% of inner height)", () => {
+    const DRAWER_ROW_H = 0.23;
     const g1 = doorGeometry({ drawerStack: 1 }, dims);
     const g2 = doorGeometry({ drawerStack: 2 }, dims);
-    expect(g1.drawerAreaH).toBeCloseTo(innerH * 0.15, 6);
-    expect(g2.drawerAreaH).toBeCloseTo(innerH * 0.30, 6);
-    expect(g1.doorAreaH).toBeCloseTo(innerH * 0.85, 6);
-    expect(g2.doorAreaH).toBeCloseTo(innerH * 0.70, 6);
+    const expected1 = Math.min(DRAWER_ROW_H * 1, innerH * 0.65);
+    const expected2 = Math.min(DRAWER_ROW_H * 2, innerH * 0.65);
+    expect(g1.drawerAreaH).toBeCloseTo(expected1, 6);
+    expect(g2.drawerAreaH).toBeCloseTo(expected2, 6);
+    expect(g1.doorAreaH).toBeCloseTo(innerH - expected1, 6);
+    expect(g2.doorAreaH).toBeCloseTo(innerH - expected2, 6);
   });
 
   it("places the drawer area at the cabinet bottom and the door above it", () => {

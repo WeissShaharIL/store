@@ -70,6 +70,26 @@
 .bug-card__actions { display: flex; align-items: center; gap: 0.4rem; margin-inline-start: auto; }
 .bug-card__delete:hover { color: #f87171 !important; }
 
+/* Pill-style buttons inside bug cards — same look as settings-section buttons */
+.admin .bug-card__actions .btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 12px;
+  color: rgba(242, 242, 244, 0.7);
+}
+.admin .bug-card__actions .btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.admin .bug-card__actions .btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  background: rgba(255, 255, 255, 0.15);
+}
+.admin .bug-card__actions .btn--primary::after { display: none; }
+.admin .bug-card__actions .btn--danger:hover:not(:disabled) { color: #f87171; border-color: rgba(248, 113, 113, 0.4); }
+
 .bug-status {
   padding: 2px 10px;
   border-radius: 999px;
