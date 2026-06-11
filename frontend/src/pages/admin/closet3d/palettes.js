@@ -48,7 +48,7 @@
  * so admin edits in the new "פלטת צבעים" section apply.
  */
 export const DEFAULT_COLORS = {
-  white:       { name: "לבן",       wood: "#f6f4ee", trim: "#dad6cc", swatch: "#f6f4ee" },
+  white:       { name: "לבן",       wood: "#fafafa",  trim: "#c8c8c8", swatch: "#fafafa"  },
   cream:       { name: "שמנת",      wood: "#ebe1c8", trim: "#c9bf9f", swatch: "#ebe1c8" },
   almond:      { name: "שקד",       wood: "#ddd0b6", trim: "#b8a98d", swatch: "#ddd0b6" },
   linen:       { name: "פשתן",      wood: "#bcb19a", trim: "#928871", swatch: "#bcb19a" },

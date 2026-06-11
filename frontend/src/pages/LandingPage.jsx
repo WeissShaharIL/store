@@ -12,6 +12,7 @@ const ShowroomClosetDetails = lazy(() => import("./ShowroomClosetDetails.jsx"));
 const importScratchStart = () => import("./ScratchStart.jsx");
 const importClosetDesigner = () => import("./ClosetDesigner.jsx");
 const ScratchStart = lazy(importScratchStart);
+const ClosetDesigner = lazy(importClosetDesigner);
 
 // Visible Suspense fallback so a not-yet-loaded chunk shows a spinner instead
 // of a blank flash.
@@ -22,6 +23,7 @@ function DesignerLoading() {
     </div>
   );
 }
+import { parseConfig } from "../lib/parseConfig.js";
 import { addToCart, getCart } from "../lib/cart.js";
 import "../styles/landing/01-shell-nav.css";
 import "../styles/showroom/03-details.css";
@@ -60,9 +62,15 @@ export default function LandingPage() {
   const [doorCovers, setDoorCovers] = useState({});
   const [selectedCloset, setSelectedCloset] = useState(null);
   const [scratchOpen, setScratchOpen] = useState(false);
+  const [designingCloset, setDesigningCloset] = useState(null);
   const [addedIds, setAddedIds] = useState(() =>
     new Set(getCart().map((i) => i.templateId))
   );
+
+  function handleDesign(closet) {
+    setDesigningCloset({ ...closet, config: parseConfig(closet.config_json) });
+    setSelectedCloset(null);
+  }
 
   function handleAddToCart(closet) {
     const id = "closet-" + closet.id + "-" + Date.now();
@@ -216,17 +224,21 @@ const contactRef = useRef(null);
   return (
     <div className="landing">
       <Suspense fallback={null}>
-        {selectedCloset && (
+        {selectedCloset && !designingCloset && (
           <ShowroomClosetDetails
             item={selectedCloset}
             onClose={() => setSelectedCloset(null)}
             onAddToCart={(closet) => { handleAddToCart(closet); }}
+            onDesign={handleDesign}
             added={addedIds.has(selectedCloset.id)}
           />
         )}
       </Suspense>
       <Suspense fallback={<DesignerLoading />}>
         {scratchOpen && <ScratchStart onClose={() => setScratchOpen(false)} />}
+        {designingCloset && (
+          <ClosetDesigner item={designingCloset} onClose={() => setDesigningCloset(null)} />
+        )}
       </Suspense>
       <header className="landing-nav">
         <div className="landing-nav__inner">

@@ -59,14 +59,18 @@ export default function OrdersTab() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  function load() {
+  function load(overrides = {}) {
+    const status = "statusFilter" in overrides ? overrides.statusFilter : statusFilter;
+    const q = "search" in overrides ? overrides.search : search;
+    const from = "dateFrom" in overrides ? overrides.dateFrom : dateFrom;
+    const to = "dateTo" in overrides ? overrides.dateTo : dateTo;
     setLoading(true);
     setError("");
     adminGetOrders({
-      status: statusFilter || undefined,
-      q: search.trim() || undefined,
-      dateFrom: dateFrom || undefined,
-      dateTo: dateTo || undefined,
+      status: status || undefined,
+      q: q.trim() || undefined,
+      dateFrom: from || undefined,
+      dateTo: to || undefined,
     })
       .then(setOrders)
       .catch((e) => setError(e.message))
@@ -164,7 +168,7 @@ export default function OrdersTab() {
             <button
               type="button"
               className="lead-action-btn"
-              onClick={() => { setSearch(""); setDateFrom(""); setDateTo(""); setStatusFilter(""); }}
+              onClick={() => { setSearch(""); setDateFrom(""); setDateTo(""); setStatusFilter(""); load({ search: "", dateFrom: "", dateTo: "", statusFilter: "" }); }}
             >נקה</button>
           )}
         </form>

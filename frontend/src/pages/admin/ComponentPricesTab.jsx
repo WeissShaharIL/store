@@ -5,6 +5,7 @@ import {
   adminUpdateComponentPrice,
   adminDeleteComponentPrice,
 } from "../../api.js";
+import { useConfirm } from "./useConfirm.jsx";
 import { ItemTypeIcon, ITEM_TYPE_OPTIONS, itemTypeLabel } from "./interior-plan/itemVisuals.jsx";
 import "./AdminTab.css";
 import "./ComponentPricesTab.css";
@@ -67,6 +68,7 @@ function RulesPreview({ rulesStr, basis }) {
 }
 
 export default function ComponentPricesTab() {
+  const { confirm, dialog } = useConfirm();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -153,7 +155,7 @@ export default function ComponentPricesTab() {
   }
 
   async function handleDelete(item) {
-    if (!confirm(`למחוק את "${item.name}"?`)) return;
+    if (!await confirm(`למחוק את "${item.name}"?`)) return;
     try {
       await adminDeleteComponentPrice(item.id);
       setItems(prev => prev.filter(it => it.id !== item.id));
@@ -338,6 +340,7 @@ export default function ComponentPricesTab() {
           </div>
         </div>
       )}
+      {dialog}
     </div>
   );
 }

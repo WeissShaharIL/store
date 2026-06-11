@@ -183,7 +183,7 @@ function DoorCard({
           <div className="field field--small">
             <span>קיצור</span>
             <div className="closet-builder__door-vis" role="radiogroup" aria-label="קיצור">
-              {[{v:0,l:"ללא"},{v:1,l:"+ מגירה"},{v:2,l:"+ 2 מגירות"}].map(({v,l}) => (
+              {[{v:0,l:"ללא"},{v:1,l:"+ מגירה"},{v:2,l:"+ 2 מגירות"},{v:3,l:"+ 3 מגירות"},{v:4,l:"+ 4 מגירות"}].map(({v,l}) => (
                 <button key={v} type="button" role="radio" aria-checked={(door.drawerStack ?? 0) === v}
                   className={"closet-builder__door-vis-btn" + ((door.drawerStack ?? 0) === v ? " closet-builder__door-vis-btn--active" : "")}
                   onClick={() => setDoor((d) => { d.drawerStack = v; })}

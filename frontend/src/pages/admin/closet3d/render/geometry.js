@@ -1,4 +1,4 @@
-import { DRAWER_ROW_FRACTION } from "./constants.js";
+import { DRAWER_ROW_H } from "./constants.js";
 
 /**
  * v1.79.0 — door-geometry helper. Extracted from ClosetFromConfig
@@ -39,10 +39,10 @@ export function doorGeometry(door, { H, T }) {
     };
   }
 
-  // Each row is a constant slice of inner height. Total drawer
-  // area grows with row count; door area shrinks to whatever is
-  // left.
-  const drawerAreaH = innerH * DRAWER_ROW_FRACTION * stack;
+  // Each row is a fixed 23 cm slice. Total drawer area grows with
+  // row count; capped at 65% of inner height so extreme stacks
+  // still leave a visible door/compartment.
+  const drawerAreaH = Math.min(DRAWER_ROW_H * stack, innerH * 0.65);
   const doorAreaH = innerH - drawerAreaH;
   const compartmentBottomY = T + drawerAreaH;
   const compartmentTopY = H - T;

@@ -85,16 +85,20 @@ export default function ClosetInteriorPlan({ cfg, items, onChange, paletteCompon
   const RIGHT_PAD = 8;
   const drawableH = VIEW_HEIGHT - VIEW_TOP_PAD - VIEW_BOTTOM_PAD;
   const drawableW = VIEW_WIDTH - LEFT_GUTTER - RIGHT_PAD;
-  // Interior plan is an interactive design tool — always fill the full drawable
-  // area regardless of the closet's real aspect ratio. Cm labels show the true
-  // dimensions; the proportional view would leave wasted space for narrow closets.
-  const CABINET_WIDTH_PX = drawableW;
-  const CABINET_HEIGHT_PX = drawableH;
-  const cmPerPx = heightCm / CABINET_HEIGHT_PX;
+  // Scale preserving the closet's real aspect ratio so narrow closets
+  // look narrow and wide ones look wide. The smaller of the two scale
+  // factors wins, then excess space is split evenly as padding.
+  const scaleH = drawableH / heightCm;
+  const scaleW = drawableW / widthCm;
+  const scale = Math.min(scaleH, scaleW);
+  const CABINET_WIDTH_PX = widthCm * scale;
+  const CABINET_HEIGHT_PX = heightCm * scale;
+  const cmPerPx = 1 / scale;
 
   const verticalSlack = drawableH - CABINET_HEIGHT_PX;
-  const bodyLeftPx = LEFT_GUTTER;
-  const bodyRightPx = LEFT_GUTTER + CABINET_WIDTH_PX;
+  const horizontalSlack = drawableW - CABINET_WIDTH_PX;
+  const bodyLeftPx = LEFT_GUTTER + horizontalSlack / 2;
+  const bodyRightPx = bodyLeftPx + CABINET_WIDTH_PX;
   const bodyTopPx = VIEW_TOP_PAD + verticalSlack / 2;
   const bodyBottomPx = bodyTopPx + CABINET_HEIGHT_PX;
   const wallPx = T / cmPerPx;

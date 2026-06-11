@@ -132,6 +132,25 @@ video.bug-att__media { object-fit: contain; }
 }
 .bug-att__del:hover { color: #f87171; border-color: rgba(248, 113, 113, 0.6); }
 .bug-att__del svg { width: 12px; height: 12px; }
+.bug-att__open {
+  position: absolute;
+  top: -7px;
+  inset-inline-start: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.bug-att__open:hover { color: #60a5fa; border-color: rgba(96, 165, 250, 0.6); }
 
 .bug-att-add {
   display: inline-flex;
@@ -150,3 +169,27 @@ video.bug-att__media { object-fit: contain; }
 }
 .bug-att-add:hover { border-color: rgba(255, 255, 255, 0.4); color: #fff; }
 .bug-att-add svg { width: 18px; height: 18px; }
+
+.bug-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.bug-edit__title,
+.bug-edit__desc {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.95rem;
+  background: #111113;
+  color: #f2f2f4;
+  outline: none;
+  resize: vertical;
+  transition: border-color 150ms ease;
+}
+.bug-edit__title:focus,
+.bug-edit__desc:focus { border-color: rgba(255, 255, 255, 0.4); }
+.bug-edit__title { font-weight: 600; }
+.bug-edit__desc { font-size: 0.86rem; }
+.bug-edit__actions { display: flex; gap: 0.5rem; }

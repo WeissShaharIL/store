@@ -704,6 +704,12 @@ export default function ClosetFromConfig({
     );
   }
 
+  // Count structural sections for leg generation: each cabin start
+  // represents a section separated by an internal divider (or the
+  // cabinet edges). nSections = number of cabins.
+  let nSections = 0;
+  for (let i = 0; i < N; i++) if (isCabinStart(i)) nSections++;
+
   return (
     <group>
       {/* v1.79.0 — base scenery (floor + legs + stage) lives in
@@ -711,7 +717,7 @@ export default function ClosetFromConfig({
           the cabinet floats over the marble floor with the
           Environment preset as the only visible background. */}
       <AdaptiveBackground woodHex={palette.wood} />
-      <CabinetBase W={W} D={D} hasBase={showBase} />
+      <CabinetBase W={W} D={D} hasBase={showBase} nSections={nSections} />
 
       {/* Exterior dimension callouts (v1.48.0). Anchored in
           cabinet-local world space so they rotate with the
