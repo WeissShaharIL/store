@@ -29,6 +29,8 @@ from schemas import CatalogItem, OrderLineOut, OrderOut
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "./uploads")).resolve()
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+VIDEO_EXTENSIONS = {"mp4", "webm", "mov", "m4v"}
+MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50 MB (nginx client_max_body_size is 60M)
 
 
 def parse_cart(snapshot: Optional[str]) -> list:
@@ -74,6 +76,34 @@ def save_upload(file: UploadFile) -> str:
     filename = f"{uuid.uuid4().hex}.{ext}"
     dest = UPLOAD_DIR / filename
     dest.write_bytes(data)
+    return filename
+
+
+def save_video_upload(file: UploadFile) -> str:
+    """Save an uploaded video (bug-report attachments). Returns the filename.
+
+    Validates extension and size only — there's no cheap content sniff for
+    video the way PIL verifies images; these files are admin-uploaded and
+    served back as static media by nginx.
+    """
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower()
+    if ext not in VIDEO_EXTENSIONS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"סוג וידאו לא נתמך. מותר: {', '.join(sorted(VIDEO_EXTENSIONS))}",
+        )
+    data = bytearray()
+    while True:
+        chunk = file.file.read(1024 * 1024)
+        if not chunk:
+            break
+        data.extend(chunk)
+        if len(data) > MAX_VIDEO_SIZE:
+            raise HTTPException(status_code=413, detail="הווידאו גדול מדי (מקסימום 50MB)")
+    if not data:
+        raise HTTPException(status_code=422, detail="קובץ ריק")
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    (UPLOAD_DIR / filename).write_bytes(bytes(data))
     return filename
 
 
