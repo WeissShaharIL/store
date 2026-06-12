@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.35",
-  "released_at": "2026-06-12T12:28:55Z",
-  "notes": "968f768 fix(3d): stabilize hinged door handle height when drawers are present"
+  "version": "v1.64.36",
+  "released_at": "2026-06-12T15:11:42Z",
+  "notes": "5434aaf Add carpentry intro animation to entry splash"
 }
