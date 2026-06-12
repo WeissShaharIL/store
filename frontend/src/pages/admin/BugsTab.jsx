@@ -19,7 +19,7 @@ function formatDate(iso) {
   catch { return ""; }
 }
 
-function AttachmentTile({ att, onDelete }) {
+function AttachmentTile({ att, onDelete, onLightbox }) {
   const url = `/uploads/${att.path}`;
   return (
     <div className="bug-att">
@@ -39,8 +39,8 @@ function AttachmentTile({ att, onDelete }) {
           src={url}
           alt={att.original_name || "צילום מסך"}
           loading="lazy"
-          style={{ cursor: "pointer" }}
-          onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+          style={{ cursor: "zoom-in" }}
+          onClick={() => onLightbox(url, att.original_name || "")}
           title={att.original_name || ""}
         />
       )}
@@ -68,6 +68,9 @@ export default function BugsTab() {
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editSaving, setEditSaving] = useState(false);
+
+  // Lightbox
+  const [lightbox, setLightbox] = useState(null); // { url, alt }
 
   // Per-bug upload state
   const [uploadingId, setUploadingId] = useState(null);
@@ -287,7 +290,7 @@ export default function BugsTab() {
 
                 <div className="bug-card__attachments">
                   {bug.attachments.map((att, i) => (
-                    <AttachmentTile key={`${att.path}-${i}`} att={att} onDelete={() => handleDeleteAttachment(bug, i)} />
+                    <AttachmentTile key={`${att.path}-${i}`} att={att} onDelete={() => handleDeleteAttachment(bug, i)} onLightbox={(url, alt) => setLightbox({ url, alt })} />
                   ))}
                   <label className="bug-att-add" title="העלה תמונה או וידאו לשחזור">
                     <Upload />
@@ -308,6 +311,22 @@ export default function BugsTab() {
           </section>
         ))}
       {dialog}
+      {lightbox && (
+        <div
+          className="images-lightbox"
+          onClick={() => setLightbox(null)}
+          onKeyDown={(e) => e.key === "Escape" && setLightbox(null)}
+          tabIndex={-1}
+        >
+          <img
+            src={lightbox.url}
+            alt={lightbox.alt}
+            className="images-lightbox__img"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="images-lightbox__close" onClick={() => setLightbox(null)} aria-label="סגור"><X /></button>
+        </div>
+      )}
     </div>
   );
 }
