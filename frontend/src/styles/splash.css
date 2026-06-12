@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
 }
 .splash--hide {
   opacity: 0;
@@ -73,8 +73,184 @@
   to { opacity: 1; }
 }
 
+/* ── Carpentry intro (full splash) ──────────────────────────────────────
+   Timeline: plank drops in (0–.45s) → saw enters + cuts (.35–1.4s, dust
+   falls) → halves rotate up into the closet sides (1.32s) → top/bottom/back
+   join (1.74–1.9s) → doors slide shut (2.04s) → handles pop (2.46s) →
+   wordmark reveals (2.2s+). Overlay hides at 3.25s. */
+
+.splash--intro .splash__inner { gap: 10px; }
+.splash--intro .splash__letter { font-size: clamp(26px, 5.5vw, 46px); }
+.splash--intro .splash__rule-fill { animation-delay: 2.55s; }
+.splash--intro .splash__tagline { animation-delay: 2.72s; }
+
+.intro {
+  width: min(82vw, 340px);
+  height: auto;
+  display: block;
+}
+
+.intro__wood {
+  stroke: #d9a25f;
+  stroke-width: 2;
+  fill: rgba(217, 162, 95, 0.07);
+}
+.intro__grain {
+  stroke: #d9a25f;
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+/* Plank entrance */
+.intro__plank {
+  opacity: 0;
+  animation: intro-drop-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) 0.05s forwards;
+}
+@keyframes intro-drop-in {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Halves fly up + rotate into the closet's side panels.
+   Geometry: each 170×22 half rotated 90° about its center lands one nudge
+   away from its final side-panel spot — hence the small translate. */
+.intro__half {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.intro__half--left {
+  animation: intro-half-left 0.45s cubic-bezier(0.5, 0.05, 0.25, 1) 1.32s forwards;
+}
+.intro__half--right {
+  animation: intro-half-right 0.45s cubic-bezier(0.5, 0.05, 0.25, 1) 1.32s forwards;
+}
+@keyframes intro-half-left {
+  to { transform: translate(16px, 10px) rotate(90deg); }
+}
+@keyframes intro-half-right {
+  to { transform: translate(-16px, 10px) rotate(-90deg); }
+}
+
+/* Kerf line — grows with the saw, vanishes when the halves split */
+.intro__cut {
+  fill: #f3d9ae;
+  transform-box: fill-box;
+  transform-origin: center top;
+  transform: scaleY(0);
+  animation:
+    intro-cut-grow 0.55s ease-in-out 0.6s forwards,
+    intro-cut-fade 0.12s linear 1.32s forwards;
+}
+@keyframes intro-cut-grow { to { transform: scaleY(1); } }
+@keyframes intro-cut-fade { to { opacity: 0; } }
+
+/* Sawdust */
+.intro__speck {
+  fill: #ecca96;
+  opacity: 0;
+  animation: intro-dust 0.55s ease-in forwards;
+}
+@keyframes intro-dust {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  25%  { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(var(--dx, 4px), var(--fall, 20px)); }
+}
+
+/* Handsaw: fly in → 5 cutting strokes advancing through the plank → exit */
+.intro__saw {
+  opacity: 0;
+  animation: intro-saw 1.08s ease-in-out 0.34s forwards;
+}
+@keyframes intro-saw {
+  0%   { transform: translate(46px, -56px); opacity: 0; }
+  13%  { transform: translate(0, 0); opacity: 1; }
+  25%  { transform: translate(-9px, 5px); }
+  37%  { transform: translate(9px, 9px); }
+  49%  { transform: translate(-9px, 14px); }
+  61%  { transform: translate(9px, 18px); }
+  72%  { transform: translate(-7px, 21px); }
+  80%  { transform: translate(4px, 24px); opacity: 1; }
+  100% { transform: translate(40px, -44px); opacity: 0; }
+}
+.intro__blade {
+  stroke: #c9ced8;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  fill: rgba(201, 206, 216, 0.08);
+}
+.intro__sawhandle {
+  stroke: #d9a25f;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  fill: rgba(217, 162, 95, 0.1);
+}
+.intro__sawhole {
+  stroke: #d9a25f;
+  stroke-width: 1.5;
+  fill: none;
+  opacity: 0.7;
+}
+
+/* Carcass pieces */
+.intro__piece { opacity: 0; }
+.intro__piece--top {
+  animation: intro-from-above 0.32s ease-out 1.74s forwards;
+}
+.intro__piece--bottom {
+  animation: intro-from-below 0.32s ease-out 1.82s forwards;
+}
+@keyframes intro-from-above {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes intro-from-below {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.intro__back {
+  stroke: rgba(217, 162, 95, 0.3);
+  stroke-width: 1;
+  fill: rgba(217, 162, 95, 0.04);
+  opacity: 0;
+  animation: intro-fade-in 0.3s ease 1.9s forwards;
+}
+@keyframes intro-fade-in { to { opacity: 1; } }
+
+/* Doors slide shut from the outer edges to the center */
+.intro__door {
+  transform-box: fill-box;
+  transform: scaleX(0);
+}
+.intro__door--left {
+  transform-origin: left center;
+  animation: intro-door 0.4s cubic-bezier(0.3, 0.1, 0.25, 1) 2.04s forwards;
+}
+.intro__door--right {
+  transform-origin: right center;
+  animation: intro-door 0.4s cubic-bezier(0.3, 0.1, 0.25, 1) 2.04s forwards;
+}
+@keyframes intro-door { to { transform: scaleX(1); } }
+.intro__doorpanel {
+  stroke: #d9a25f;
+  stroke-width: 2;
+  fill: rgba(217, 162, 95, 0.1);
+}
+
+/* Handles pop with a spring overshoot */
+.intro__handle {
+  fill: #e9c184;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  animation: intro-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes intro-pop { to { transform: scale(1); } }
+
 @media (prefers-reduced-motion: reduce) {
-  .splash__letter, .splash__rule-fill, .splash__tagline {
+  .splash__letter, .splash__rule-fill, .splash__tagline,
+  .intro__plank, .intro__half, .intro__cut, .intro__speck, .intro__saw,
+  .intro__piece, .intro__back, .intro__door, .intro__handle {
     animation-duration: 0.01ms !important;
     animation-delay: 0s !important;
   }
