@@ -238,9 +238,9 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
       dimensions: { ...cfg.dimensions, ...customDims },
       color: customColor,
       hasInternalDivider: customDivider,
-      hasBase: customBase,
+      hasBase: customBase && totalW <= (closetCfg?.stageMaxWidth ?? 240),
     };
-  }, [cfg, customDims, customColor, customDivider, customBase, customDividers, customItems, componentPrices, fromScratch]);
+  }, [cfg, customDims, customColor, customDivider, customBase, customDividers, customItems, componentPrices, fromScratch, totalW, closetCfg]);
 
   useEffect(() => {
     saveDesignerState(item.id, {
