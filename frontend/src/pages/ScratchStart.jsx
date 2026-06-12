@@ -129,7 +129,7 @@ export default function ScratchStart({ onClose }) {
                   key={o.id}
                   type="button"
                   className={"scratch-start__option" + (kind === o.id ? " scratch-start__option--active" : "")}
-                  onClick={() => setKind(o.id)}
+                  onClick={() => { if (o.id === "sliding" && doorCount < 2) setDoorCount(2); setKind(o.id); }}
                 >
                   <span className="scratch-start__option-label">{o.label}</span>
                   <span className="scratch-start__option-hint">{o.hint}</span>
@@ -146,7 +146,8 @@ export default function ScratchStart({ onClose }) {
               <button
                 key={n}
                 type="button"
-                className={"scratch-start__door" + (doorCount === n ? " scratch-start__door--active" : "")}
+                className={"scratch-start__door" + (doorCount === n ? " scratch-start__door--active" : "") + (n === 1 && kind === "sliding" ? " scratch-start__door--disabled" : "")}
+                disabled={n === 1 && kind === "sliding"}
                 onClick={() => setDoorCount(n)}
               >
                 {n}

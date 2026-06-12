@@ -113,6 +113,12 @@
   background: rgba(37, 99, 235, 0.12);
   color: #93c5fd;
 }
+.scratch-start__door--disabled,
+.scratch-start__door:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .scratch-start__cta {
   width: 100%;

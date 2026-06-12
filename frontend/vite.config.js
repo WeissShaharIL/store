@@ -37,6 +37,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: "/index.html",
+        navigateFallbackDenylist: [/^\/uploads\//],
         globIgnores: [
           "**/three-bundle-*.js",
           "**/closet3d-shared-*.js",
