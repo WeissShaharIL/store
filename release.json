@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.30",
-  "released_at": "2026-06-12T10:05:20Z",
-  "notes": "b868550 feat(settings): theme picker, logo manager, nav menu controls"
+  "version": "v1.64.31",
+  "released_at": "2026-06-12T10:11:03Z",
+  "notes": "805d117 feat(designer): enforce max width for stage add-on, configurable in admin"
 }
