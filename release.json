@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.33",
-  "released_at": "2026-06-12T11:03:44Z",
-  "notes": "7b5eace fix(custom-closet): seed stageMaxWidth default and merge on load"
+  "version": "v1.64.34",
+  "released_at": "2026-06-12T12:07:32Z",
+  "notes": "7fdb7f3 fix(designer): auto-reset customBase when width exceeds stage limit"
 }
