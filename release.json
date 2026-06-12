@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.32",
-  "released_at": "2026-06-12T10:15:10Z",
-  "notes": "d93efb0 fix(designer): hide stage from 3D model when closet exceeds max width"
+  "version": "v1.64.33",
+  "released_at": "2026-06-12T11:03:44Z",
+  "notes": "7b5eace fix(custom-closet): seed stageMaxWidth default and merge on load"
 }
