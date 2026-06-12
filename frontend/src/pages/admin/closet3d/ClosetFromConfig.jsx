@@ -704,11 +704,12 @@ export default function ClosetFromConfig({
     );
   }
 
-  // Count structural sections for leg generation: each cabin start
-  // represents a section separated by an internal divider (or the
-  // cabinet edges). nSections = number of cabins.
-  let nSections = 0;
-  for (let i = 0; i < N; i++) if (isCabinStart(i)) nSections++;
+  // Structural sections for leg generation. Standard closet modules are
+  // 2 doors wide; ceil(N/2) gives the physical unit count regardless of
+  // whether optional within-unit dividers are on or off. This keeps leg
+  // count consistent with the real furniture structure (e.g. a 6-door
+  // closet always has 4 leg positions: 2 outer walls + 2 unit boundaries).
+  const nSections = Math.ceil(N / 2);
 
   return (
     <group>
