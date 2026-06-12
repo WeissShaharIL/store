@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.34",
-  "released_at": "2026-06-12T12:07:32Z",
-  "notes": "7fdb7f3 fix(designer): auto-reset customBase when width exceeds stage limit"
+  "version": "v1.64.35",
+  "released_at": "2026-06-12T12:28:55Z",
+  "notes": "968f768 fix(3d): stabilize hinged door handle height when drawers are present"
 }
