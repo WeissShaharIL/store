@@ -187,6 +187,13 @@ export default function ClosetDesigner({ item, onClose, initialColor, mode = "fu
   const setTotalW = (w) =>
     setCustomDims((d) => ({ ...d, compartmentWidth: Math.round(w / nDoors) }));
 
+  // Auto-clear customBase when the closet width exceeds the stage limit so
+  // snapshots, cart items, and lead previews are consistent with the UI.
+  useEffect(() => {
+    const limit = closetCfg?.stageMaxWidth ?? 240;
+    if (customBase && totalW > limit) setCustomBase(false);
+  }, [totalW, closetCfg, customBase]);
+
   const customConfig = useMemo(() => {
     // Merge the stage-2 interior plan (customItems: { doorId: [{type,y}] })
     // into each door's compartment so the renderer (which reads
