@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.27",
-  "released_at": "2026-06-12T08:04:04Z",
-  "notes": "f439c6d fix: uploads open site root; disable 1-door for sliding"
+  "version": "v1.64.28",
+  "released_at": "2026-06-12T09:09:18Z",
+  "notes": "7e7bf17 fix(3d): legs at structural unit boundaries (every 2-door module)"
 }
