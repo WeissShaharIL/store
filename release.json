@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.26",
-  "released_at": "2026-06-11T23:37:24Z",
-  "notes": "6ea491c chore: ignore .claude/skills/ (Claude Code project skills, not app code)\n9e7446e fix: update drawer geometry test + pill-style bug card action buttons\n4210530 fix: admin bugs batch — image/video click, drawer height, platform toggle, proportions, design button"
+  "version": "v1.64.27",
+  "released_at": "2026-06-12T08:04:04Z",
+  "notes": "f439c6d fix: uploads open site root; disable 1-door for sliding"
 }
