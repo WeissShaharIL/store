@@ -12,6 +12,7 @@ const DEFAULT = {
   allowDivider: true, allowHinged: true, allowSliding: true,
   allowShelf: true, allowRod: true, allowDrawer: true,
   minShelvesPerCabin: 2,
+  stageMaxWidth: 240,
   addOnComponentIds: [],
   // Base pricing for the from-scratch designer: a simple 2-door closet per
   // door kind, plus a surcharge per additional door. Components (shelves,
@@ -166,6 +167,13 @@ export default function CustomClosetConfigTab() {
         <DimSection label="גובה" value={cfg.height}           onChange={set("height")} />
         <DimSection label="עומק" value={cfg.depth}            onChange={set("depth")} />
         <DimSection label="רוחב תא" value={cfg.compartmentWidth} onChange={set("compartmentWidth")} />
+        <div className="cc-row" style={{ marginTop: "0.5rem" }}>
+          <label className="cc-dim__field">
+            <span>רוחב מקסימלי לבמה (רגליים)</span>
+            <NumInput value={cfg.stageMaxWidth ?? 240} onChange={set("stageMaxWidth")} min={100} max={600} step={10} />
+            <span className="cc-unit">ס״מ</span>
+          </label>
+        </div>
       </div>
 
       {/* ── Doors ──────────────────────────────────────────── */}

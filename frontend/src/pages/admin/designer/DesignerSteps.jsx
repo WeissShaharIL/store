@@ -31,6 +31,9 @@ export default function DesignerSteps({
   interiorCounts, priceLabel,
 }) {
   if (step === 1) {
+    const stageMaxW = closetCfg?.stageMaxWidth ?? 240;
+    const stageTooWide = totalW > stageMaxW;
+
     return (
       <div className="closet-designer__body">
         <div className="closet-designer__controls">
@@ -65,11 +68,17 @@ export default function DesignerSteps({
             <>
               <div className="closet-designer__color-block">
                 <h5 className="closet-designer__color-title">בסיס</h5>
-                <ToggleField
-                  label="במה — הארון עומד על רגליים"
-                  checked={customBase}
-                  onChange={setCustomBase}
-                />
+                {stageTooWide ? (
+                  <p className="closet-designer__stage-limit-note">
+                    ניתן להוסיף במה לארון עד {stageMaxW} ס״מ רוחב
+                  </p>
+                ) : (
+                  <ToggleField
+                    label="במה — הארון עומד על רגליים"
+                    checked={customBase}
+                    onChange={setCustomBase}
+                  />
+                )}
               </div>
               {nDoors > 1 && (
                 <div className="closet-designer__color-block">
@@ -99,11 +108,17 @@ export default function DesignerSteps({
               {closetCfg?.allowBase !== false && (
                 <div className="closet-designer__color-block">
                   <h5 className="closet-designer__color-title">בסיס</h5>
-                  <ToggleField
-                    label="במה — הארון עומד על רגליים"
-                    checked={customBase}
-                    onChange={setCustomBase}
-                  />
+                  {stageTooWide ? (
+                    <p className="closet-designer__stage-limit-note">
+                      ניתן להוסיף במה לארון עד {stageMaxW} ס״מ רוחב
+                    </p>
+                  ) : (
+                    <ToggleField
+                      label="במה — הארון עומד על רגליים"
+                      checked={customBase}
+                      onChange={setCustomBase}
+                    />
+                  )}
                 </div>
               )}
               {nDoors > 1 && closetCfg?.allowDivider !== false && (
