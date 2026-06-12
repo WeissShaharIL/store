@@ -575,12 +575,13 @@ export function HingedDoor({
   woodTexture,
   material = "wood",
   handleMaterial = HANDLES[DEFAULT_HANDLE],
+  handleOffset,
   fadeOpacity = 1,
 }) {
   const isLeft = hingeSide === "left";
   const pivotSign = isLeft ? -1 : 1;
   const handleX = -pivotSign * (width - 0.07);
-  const handleY = -panelHeight * 0.05;
+  const handleY = handleOffset !== undefined ? handleOffset : -panelHeight * 0.05;
   const handleLen = Math.min(0.32, panelHeight * 0.18);
   const ref = useAnimatedAxis(
     [0, pivotSign * openAngle, 0],

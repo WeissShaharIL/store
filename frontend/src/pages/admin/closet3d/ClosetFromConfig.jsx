@@ -481,6 +481,12 @@ export default function ClosetFromConfig({
     // merged cabin's external drawer is raised by the same amount (otherwise a
     // non-start door covers the wide drawer below it).
     const { doorAreaH, doorCenterY } = doorGeometry({ ...door, drawerStack: cabinStackAt(i) });
+    // Compute the handle's local-Y so it maps to the same world-Y regardless
+    // of how many drawers shorten the door. Target = where the handle sits on a
+    // full-height door (H/2 - innerH*0.05). Translating to door-local space:
+    //   handleOffset = targetWorldY - doorCenterY
+    const innerH = H - 2 * T;
+    const handleOffset = (H / 2 - innerH * 0.05) - doorCenterY;
     // v1.69.0 — per-door handle. State override wins (customer
     // designer step 3 picks per-door), then the door's own field,
     // then the cabinet's default handle, then silver as a final
@@ -594,6 +600,7 @@ export default function ClosetFromConfig({
           woodColor={palette.wood}
           woodTexture={palette.texture}
           handleMaterial={handleMaterial}
+          handleOffset={handleOffset}
           fadeOpacity={state.slidingDoorsHidden ? 0 : 1}
         />
       );
