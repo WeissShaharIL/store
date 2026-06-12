@@ -29,6 +29,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "allowRod":     True,
     "allowDrawer":  True,
     "minShelvesPerCabin": 2,
+    "stageMaxWidth": 240,
 }
 
 router = APIRouter()
@@ -40,7 +41,7 @@ def _load(db: Session) -> Dict[str, Any]:
     if not row:
         return dict(DEFAULT_CONFIG)
     try:
-        return json.loads(row.value)
+        return {**DEFAULT_CONFIG, **json.loads(row.value)}
     except Exception:
         return dict(DEFAULT_CONFIG)
 
