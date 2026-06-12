@@ -51,6 +51,9 @@ PUBLIC_SETTING_KEYS = frozenset({
     "about_text",
     "default_closet_image",
     "trust_items",
+    "site_theme",
+    "nav_font_size",
+    "nav_items_json",
 })
 
 
