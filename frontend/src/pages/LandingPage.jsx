@@ -333,21 +333,29 @@ const contactRef = useRef(null);
                before. Grid now reads: הזזה · פתיחה · עצבו ארון משלכם. */}
             <article className="landing-category-card landing-category-card--design">
               <div className="design-preview-anim" aria-hidden="true">
-                <div className="dpa__closet">
-                  {/* Left panel */}
-                  <div className="dpa__panel dpa__panel--l">
-                    <div className="dpa__shelf dpa__shelf--1" />
-                    <div className="dpa__shelf dpa__shelf--2" />
-                    <div className="dpa__shelf dpa__shelf--3" />
-                    <div className="dpa__color-bg" />
-                    <div className="dpa__door dpa__door--l" />
+                <div className="dpa__stage">
+                  <div className="dpa__dim" />
+                  <div className="dpa__closet">
+                    {/* Left panel */}
+                    <div className="dpa__panel dpa__panel--l">
+                      <div className="dpa__shelf dpa__shelf--1" />
+                      <div className="dpa__shelf dpa__shelf--2" />
+                      <div className="dpa__shelf dpa__shelf--3" />
+                      <div className="dpa__door dpa__door--l" />
+                    </div>
+                    <div className="dpa__divider" />
+                    {/* Right panel */}
+                    <div className="dpa__panel dpa__panel--r">
+                      <div className="dpa__rod" />
+                      <div className="dpa__hanger dpa__hanger--1" />
+                      <div className="dpa__hanger dpa__hanger--2" />
+                      <div className="dpa__door dpa__door--r" />
+                    </div>
+                    <div className="dpa__sheen" />
                   </div>
-                  <div className="dpa__divider" />
-                  {/* Right panel */}
-                  <div className="dpa__panel dpa__panel--r">
-                    <div className="dpa__rod" />
-                    <div className="dpa__door dpa__door--r" />
-                  </div>
+                  <div className="dpa__leg dpa__leg--l" />
+                  <div className="dpa__leg dpa__leg--r" />
+                  <div className="dpa__shadow" />
                 </div>
                 <div className="dpa__palette">
                   <div className="dpa__dot dpa__dot--1" />

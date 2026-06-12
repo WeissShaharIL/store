@@ -137,228 +137,388 @@
 .landing-category-card--design h3 { margin-top: 0; }
 
 /* ── Closet design preview animation — 18s story loop ────────────────────────
-   0-5%  (0-0.9s): box appears
-   5-18% (0.9-3.2s): doors slide OPEN (left→right, right→left)
-   18-38%(3.2-6.8s): shelves added inside
-   38-52%(6.8-9.4s): doors slide CLOSED
-   52-62%(9.4-11.2s): door color changes (palette selects)
-   62-72%(11.2-13s): doors slide OPEN again
-   72-82%(13-14.8s): 2 shelves removed
-   82-92%(14.8-16.6s): doors CLOSE
-   92-100%(16.6-18s): fade out → loop
-*/
+   A miniature "design session": the closet appears, gets resized (dimension
+   line, like the width slider in the designer), stands on legs, doors open to
+   furnish the interior (shelves, rod, swaying hangers), doors close, the
+   palette re-skins the doors three times (sheen sweep per pick), one more
+   open-and-tweak pass, then a handle glint and a soft fade → loop.
+
+   Timeline (% of 18s):
+   0-3    stage rises in, shadow blooms, legs pop
+   5-12   width resize 126→172px, dimension line visible
+   17-27  doors slide open
+   20-35  interior: shelves ×3, rod, hangers ×2
+   40-48  doors close
+   50-52  palette rises
+   53/59/65  dot picks → door skin oak / mist / graphite (+ sheen sweeps)
+   70-78  doors reopen, shelf 2 removed (iterating on the design)
+   80-88  doors close (graphite stays)
+   90-93  handle glint + finale sweep
+   94-100 ease out → loop                                                    */
 .design-preview-anim {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: var(--space-4) 0 var(--space-2);
+  justify-content: center;
+  gap: 22px;
+  min-height: 240px;
+  padding: var(--space-5) 0 var(--space-2);
+}
+
+/* Stage carries the width-resize; everything inside tracks it. */
+.dpa__stage {
+  position: relative;
+  width: 172px;
+  margin: 14px 0 16px;
+  animation: dpa-stage 18s ease-in-out infinite;
+}
+@keyframes dpa-stage {
+  0%       { opacity: 0; transform: translateY(8px); width: 126px; }
+  2.5%     { opacity: 1; transform: translateY(0);   width: 126px; }
+  5%       { width: 126px; }
+  12%      { width: 172px; }
+  93%      { opacity: 1; transform: translateY(0); }
+  99%, 100%{ opacity: 0; transform: translateY(-4px); width: 172px; }
 }
 
 .dpa__closet {
+  position: relative;
   display: flex;
-  width: 160px;
-  height: 128px;
-  border: 1.5px solid rgba(255,255,255,0.22);
-  border-radius: 3px;
+  width: 100%;
+  height: 148px;
+  border: 2px solid #4a4036;
+  border-radius: 4px;
   overflow: hidden;
-  background: rgba(0,0,0,0.25);
-  animation: dpa-box-in 0.6s ease forwards;
-}
-@keyframes dpa-box-in {
-  from { opacity: 0; transform: scaleY(0.5); }
-  to   { opacity: 1; transform: scaleY(1); }
+  background: linear-gradient(180deg, #1d1a16 0%, #14120f 100%);
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .dpa__panel { position: relative; flex: 1; overflow: hidden; }
 .dpa__panel--l { flex: 1.25; }
 .dpa__panel--r { flex: 0.85; }
-.dpa__divider  { width: 1.5px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+.dpa__divider {
+  width: 2px;
+  background: linear-gradient(180deg, rgba(217, 162, 95, 0.4), rgba(217, 162, 95, 0.18));
+  flex-shrink: 0;
+}
 
-/* ── Shelves ── */
+/* ── Shelves — wooden boards that draw in (RTL: from the right) ── */
 .dpa__shelf {
   position: absolute;
-  left: 4px; right: 4px;
-  height: 1.5px;
-  background: rgba(139,111,71,0.9);
-  border-radius: 1px;
+  left: 5px; right: 5px;
+  height: 3px;
+  border-radius: 1.5px;
+  background: linear-gradient(180deg, #c89b66, #9a743f);
+  box-shadow: 0 1.5px 2px rgba(0, 0, 0, 0.45);
+  transform-origin: right;
 }
-/* shelf-1: added at 18%, removed at 72% */
-.dpa__shelf--1 { top: 28%; animation: dpa-shelf-story 18s ease infinite; }
-@keyframes dpa-shelf-story {
-  0%,17%  { opacity:0; transform:scaleX(0); transform-origin:right; }
-  22%     { opacity:1; transform:scaleX(1); }
-  70%     { opacity:1; }
-  75%     { opacity:0; }
-  100%    { opacity:0; }
+.dpa__shelf--1 { top: 26%; animation: dpa-shelf1 18s ease infinite; }
+.dpa__shelf--2 { top: 50%; animation: dpa-shelf2 18s ease infinite; }
+.dpa__shelf--3 { top: 74%; animation: dpa-shelf3 18s ease infinite; }
+@keyframes dpa-shelf1 {
+  0%, 20%  { opacity: 0; transform: scaleX(0); }
+  24%      { opacity: 1; transform: scaleX(1); }
+  92%      { opacity: 1; transform: scaleX(1); }
+  96%,100% { opacity: 0; transform: scaleX(1); }
 }
-/* shelf-2: added at 24%, removed at 77% */
-.dpa__shelf--2 { top: 54%; animation: dpa-shelf2-story 18s ease infinite; }
-@keyframes dpa-shelf2-story {
-  0%,23%  { opacity:0; transform:scaleX(0); transform-origin:right; }
-  28%     { opacity:1; transform:scaleX(1); }
-  74%     { opacity:1; }
-  79%     { opacity:0; }
-  100%    { opacity:0; }
+@keyframes dpa-shelf2 {
+  0%, 25%  { opacity: 0; transform: scaleX(0); }
+  29%      { opacity: 1; transform: scaleX(1); }
+  73%      { opacity: 1; transform: scaleX(1); }
+  76%,100% { opacity: 0; transform: scaleX(0); }  /* removed in the tweak pass */
 }
-/* shelf-3: added at 30%, stays */
-.dpa__shelf--3 { top: 76%; animation: dpa-shelf3-story 18s ease infinite; }
-@keyframes dpa-shelf3-story {
-  0%,29%  { opacity:0; transform:scaleX(0); transform-origin:right; }
-  34%     { opacity:1; transform:scaleX(1); }
-  92%     { opacity:1; }
-  96%     { opacity:0; }
-  100%    { opacity:0; }
+@keyframes dpa-shelf3 {
+  0%, 30%  { opacity: 0; transform: scaleX(0); }
+  34%      { opacity: 1; transform: scaleX(1); }
+  92%      { opacity: 1; transform: scaleX(1); }
+  96%,100% { opacity: 0; transform: scaleX(1); }
 }
 
-/* ── Rod (right panel, appears when door opens) ── */
+/* ── Rod + hangers (right compartment) ── */
 .dpa__rod {
   position: absolute;
-  left: 5px; right: 5px;
-  top: 32%;
-  height: 2px;
+  left: 6px; right: 6px;
+  top: 24%;
+  height: 2.5px;
   border-radius: 2px;
-  background: rgba(154,154,159,0.75);
-  animation: dpa-rod-story 18s ease infinite;
+  background: linear-gradient(180deg, #cfd3da, #8e939d);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transform-origin: center;
+  animation: dpa-rod 18s ease infinite;
 }
-.dpa__rod::before {
+@keyframes dpa-rod {
+  0%, 21%  { opacity: 0; transform: scaleX(0); }
+  24%      { opacity: 1; transform: scaleX(1); }
+  92%      { opacity: 1; transform: scaleX(1); }
+  96%,100% { opacity: 0; transform: scaleX(1); }
+}
+
+/* A hanger = hook (::before) + triangular shoulders. Sways gently. */
+.dpa__hanger {
+  position: absolute;
+  top: calc(24% + 2px);
+  width: 14px;
+  height: 9px;
+  animation: dpa-hanger-sway 2.8s ease-in-out infinite alternate;
+  transform-origin: top center;
+}
+.dpa__hanger::before {
   content: "";
   position: absolute;
-  left: 50%; top: 2px;
-  width: 1px; height: 20px;
-  background: rgba(154,154,159,0.4);
+  top: 0; left: 50%;
+  width: 1.5px; height: 4px;
+  background: rgba(210, 214, 222, 0.8);
   transform: translateX(-50%);
 }
-@keyframes dpa-rod-story {
-  0%,17%  { opacity: 0; }
-  20%     { opacity: 1; }
-  92%     { opacity: 1; }
-  96%     { opacity: 0; }
-  100%    { opacity: 0; }
+.dpa__hanger::after {
+  content: "";
+  position: absolute;
+  top: 4px; left: 0;
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 5px solid rgba(210, 214, 222, 0.75);
+}
+.dpa__hanger--1 { left: 12%; animation: dpa-hanger1 18s ease infinite, dpa-hanger-sway 2.8s ease-in-out infinite alternate; }
+.dpa__hanger--2 { left: 58%; animation: dpa-hanger2 18s ease infinite, dpa-hanger-sway 3.4s ease-in-out 0.4s infinite alternate-reverse; }
+@keyframes dpa-hanger1 {
+  0%, 26%  { opacity: 0; margin-top: -7px; }
+  30%      { opacity: 1; margin-top: 0; }
+  92%      { opacity: 1; margin-top: 0; }
+  96%,100% { opacity: 0; margin-top: 0; }
+}
+@keyframes dpa-hanger2 {
+  0%, 31%  { opacity: 0; margin-top: -7px; }
+  35%      { opacity: 1; margin-top: 0; }
+  92%      { opacity: 1; margin-top: 0; }
+  96%,100% { opacity: 0; margin-top: 0; }
+}
+@keyframes dpa-hanger-sway {
+  from { transform: rotate(-4deg); }
+  to   { transform: rotate(4deg); }
 }
 
-/* ── Color background on left panel — changes while doors are closed ── */
-.dpa__color-bg {
+/* ── Doors — solid fronts whose color is the "design choice".
+   Skin morphs putty → oak → mist → graphite at the palette picks. ── */
+.dpa__door {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  animation: dpa-color-story 18s ease infinite;
+  background-color: #a08f7c;        /* putty — the un-skinned base */
 }
-@keyframes dpa-color-story {
-  0%,51%  { opacity: 0; background: rgba(210,180,140,0.18); }
-  55%     { opacity: 1; background: rgba(210,180,140,0.18); }   /* warm wood */
-  59%     { background: rgba(200,200,215,0.22); }               /* cool grey */
-  63%     { background: rgba(55,60,80,0.35); }                  /* dark */
-  67%     { opacity: 1; }
-  70%     { opacity: 0; }
-  100%    { opacity: 0; }
+.dpa__door::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 38%, rgba(0, 0, 0, 0.12) 100%);
 }
-
-/* ── LEFT DOOR — slides right to open, slides back to close ── */
+.dpa__door::after {
+  content: "";                       /* handle */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3.5px; height: 16px;
+  border-radius: 2px;
+  background: #14161a;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
 .dpa__door--l {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.07);
-  border-right: 1.5px solid rgba(255,255,255,0.22);
-  transform: translateX(0%);
-  animation: dpa-door-l 18s ease infinite;
+  border-right: 1.5px solid rgba(0, 0, 0, 0.35);
+  animation: dpa-door-l 18s ease-in-out infinite;
 }
-.dpa__door--l::after {
-  content: "";
-  position: absolute;
-  right: 6px; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 12px;
-  background: rgba(255,255,255,0.3);
-  border-radius: 2px;
-}
-@keyframes dpa-door-l {
-  0%      { opacity: 0; transform: translateX(0%); }
-  4%      { opacity: 1; transform: translateX(0%); }   /* door appears, closed */
-  7%      { opacity: 1; transform: translateX(0%); }
-  18%     { opacity: 1; transform: translateX(112%); }  /* OPEN — slid right */
-  50%     { opacity: 1; transform: translateX(112%); }  /* stays open */
-  60%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
-  65%     { opacity: 1; transform: translateX(0%); background: rgba(210,180,140,0.18); } /* color 1 */
-  59%     { background: rgba(200,200,215,0.22); }       /* color 2 */
-  63%     { background: rgba(55,60,80,0.35); }          /* color 3 */
-  68%     { opacity: 1; transform: translateX(0%); background: rgba(255,255,255,0.07); }
-  72%     { opacity: 1; transform: translateX(112%); }  /* OPEN again */
-  84%     { opacity: 1; transform: translateX(112%); }
-  92%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
-  96%     { opacity: 0; }
-  100%    { opacity: 0; }
-}
-
-/* ── RIGHT DOOR — slides left to open ── */
+.dpa__door--l::after { right: 7px; animation: dpa-handle-glint 18s ease infinite; }
 .dpa__door--r {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.07);
-  border-left: 1.5px solid rgba(255,255,255,0.22);
-  transform: translateX(0%);
-  animation: dpa-door-r 18s ease infinite;
+  border-left: 1.5px solid rgba(0, 0, 0, 0.35);
+  animation: dpa-door-r 18s ease-in-out infinite;
 }
-.dpa__door--r::after {
-  content: "";
-  position: absolute;
-  left: 6px; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 12px;
-  background: rgba(255,255,255,0.3);
-  border-radius: 2px;
+.dpa__door--r::after { left: 7px; animation: dpa-handle-glint 18s ease infinite; }
+
+@keyframes dpa-door-l {
+  0%   { opacity: 0; transform: translateX(0);    background-color: #a08f7c; }
+  2.5% { opacity: 1; transform: translateX(0); }
+  17%  { transform: translateX(0); }
+  27%  { transform: translateX(112%); }            /* open */
+  40%  { transform: translateX(112%); }
+  48%  { transform: translateX(0); }               /* closed */
+  50%  { background-color: #a08f7c; }
+  56%  { background-color: #b9854e; }              /* pick 1: oak */
+  62%  { background-color: #cfd0da; }              /* pick 2: mist */
+  68%  { background-color: #41465e; }              /* pick 3: graphite */
+  70%  { transform: translateX(0); }
+  78%  { transform: translateX(112%); }            /* reopen for the tweak */
+  80%  { transform: translateX(112%); }
+  88%  { transform: translateX(0); }               /* closed, graphite stays */
+  94%  { opacity: 1; transform: translateX(0);     background-color: #41465e; }
+  98%, 100% { opacity: 0; transform: translateX(0); background-color: #41465e; }
 }
 @keyframes dpa-door-r {
-  0%      { opacity: 0; transform: translateX(0%); }
-  4%      { opacity: 1; transform: translateX(0%); }
-  7%      { opacity: 1; transform: translateX(0%); }
-  18%     { opacity: 1; transform: translateX(-112%); } /* OPEN — slid left */
-  50%     { opacity: 1; transform: translateX(-112%); }
-  60%     { opacity: 1; transform: translateX(0%); }   /* CLOSED */
-  68%     { opacity: 1; transform: translateX(0%); }
-  72%     { opacity: 1; transform: translateX(-112%); } /* OPEN again */
-  84%     { opacity: 1; transform: translateX(-112%); }
-  92%     { opacity: 1; transform: translateX(0%); }
-  96%     { opacity: 0; }
-  100%    { opacity: 0; }
+  0%   { opacity: 0; transform: translateX(0);    background-color: #a08f7c; }
+  2.5% { opacity: 1; transform: translateX(0); }
+  17%  { transform: translateX(0); }
+  27%  { transform: translateX(-112%); }
+  40%  { transform: translateX(-112%); }
+  48%  { transform: translateX(0); }
+  50%  { background-color: #a08f7c; }
+  56%  { background-color: #b9854e; }
+  62%  { background-color: #cfd0da; }
+  68%  { background-color: #41465e; }
+  70%  { transform: translateX(0); }
+  78%  { transform: translateX(-112%); }
+  80%  { transform: translateX(-112%); }
+  88%  { transform: translateX(0); }
+  94%  { opacity: 1; transform: translateX(0);     background-color: #41465e; }
+  98%, 100% { opacity: 0; transform: translateX(0); background-color: #41465e; }
+}
+@keyframes dpa-handle-glint {
+  0%, 89% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35); }
+  91%     { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 10px 2px rgba(233, 193, 132, 0.55); }
+  93%,100%{ box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35); }
 }
 
-/* ── Palette ── */
+/* ── Sheen — a light sweep across the closed doors on each palette pick ── */
+.dpa__sheen {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: translateX(-130%) skewX(-12deg);
+  opacity: 0;
+  pointer-events: none;
+  animation: dpa-sheen 18s ease-in-out infinite;
+}
+@keyframes dpa-sheen {
+  0%, 54%      { opacity: 0; transform: translateX(-130%) skewX(-12deg); }
+  54.5%        { opacity: 1; }
+  57%          { opacity: 0; transform: translateX(320%) skewX(-12deg); }
+  60%          { opacity: 0; transform: translateX(-130%) skewX(-12deg); }
+  60.5%        { opacity: 1; }
+  63%          { opacity: 0; transform: translateX(320%) skewX(-12deg); }
+  66%          { opacity: 0; transform: translateX(-130%) skewX(-12deg); }
+  66.5%        { opacity: 1; }
+  69%          { opacity: 0; transform: translateX(320%) skewX(-12deg); }
+  90%          { opacity: 0; transform: translateX(-130%) skewX(-12deg); }
+  90.5%        { opacity: 1; }
+  93%, 100%    { opacity: 0; transform: translateX(320%) skewX(-12deg); }
+}
+
+/* ── Legs (the במה) + grounding shadow ── */
+.dpa__leg {
+  position: absolute;
+  top: 100%;
+  width: 6px; height: 8px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(180deg, #8b6f47, #6b5234);
+  transform-origin: top;
+  animation: dpa-legs 18s ease infinite;
+}
+.dpa__leg--l { left: 10%; }
+.dpa__leg--r { right: 10%; }
+@keyframes dpa-legs {
+  0%, 2.5% { opacity: 0; transform: scaleY(0); }
+  4.5%     { opacity: 1; transform: scaleY(1); }
+  93%      { opacity: 1; transform: scaleY(1); }
+  97%,100% { opacity: 0; transform: scaleY(1); }
+}
+.dpa__shadow {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 4%; right: 4%;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55) 0%, transparent 68%);
+  animation: dpa-shadow 18s ease infinite;
+}
+@keyframes dpa-shadow {
+  0%       { opacity: 0; transform: scaleX(0.6); }
+  3%       { opacity: 1; transform: scaleX(0.85); }
+  12%      { transform: scaleX(1); }
+  94%      { opacity: 1; transform: scaleX(1); }
+  100%     { opacity: 0; transform: scaleX(1); }
+}
+
+/* ── Dimension line above the closet during the width resize ── */
+.dpa__dim {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  animation: dpa-dim 18s ease infinite;
+}
+.dpa__dim::before,
+.dpa__dim::after {
+  content: "";
+  position: absolute;
+  top: -3.5px;
+  width: 1px; height: 8px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.dpa__dim::before { left: 0; }
+.dpa__dim::after  { right: 0; }
+@keyframes dpa-dim {
+  0%, 3%   { opacity: 0; }
+  5%       { opacity: 0.9; }
+  14%      { opacity: 0.9; }
+  17%,100% { opacity: 0; }
+}
+
+/* ── Palette — the color picks driving the door skins ── */
 .dpa__palette {
   display: flex;
-  gap: 9px;
-  animation: dpa-palette-story 18s ease infinite;
+  gap: 10px;
+  animation: dpa-palette 18s ease infinite;
 }
-@keyframes dpa-palette-story {
-  0%,51% { opacity: 0; }
-  55%    { opacity: 1; }
-  92%    { opacity: 1; }
-  97%    { opacity: 0; }
-  100%   { opacity: 0; }
+@keyframes dpa-palette {
+  0%, 49%  { opacity: 0; transform: translateY(5px); }
+  52%      { opacity: 1; transform: translateY(0); }
+  93%      { opacity: 1; transform: translateY(0); }
+  97%,100% { opacity: 0; transform: translateY(0); }
 }
 .dpa__dot {
-  width: 14px; height: 14px;
+  width: 16px; height: 16px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
-.dpa__dot--1 { background: #d2b48c; animation: dpa-d1 18s ease infinite; }
-.dpa__dot--2 { background: #c8c8d2; animation: dpa-d2 18s ease infinite; }
-.dpa__dot--3 { background: #3c3c50; animation: dpa-d3 18s ease infinite; }
-.dpa__dot--4 { background: #8b6f47; }
+.dpa__dot--1 { background: #b9854e; animation: dpa-d1 18s ease infinite; }
+.dpa__dot--2 { background: #cfd0da; animation: dpa-d2 18s ease infinite; }
+.dpa__dot--3 { background: #41465e; animation: dpa-d3 18s ease infinite; }
+.dpa__dot--4 { background: #7a5c3a; }
+/* Selection ring: each pick pops, and the ring stays on the active color
+   until the next pick — graphite keeps it to the end. */
 @keyframes dpa-d1 {
-  0%,54%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
-  57%,61% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
-  64%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  0%, 52%  { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
+  54%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.3); }
+  58%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.12); }
+  60%,100% { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
 }
 @keyframes dpa-d2 {
-  0%,59%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
-  62%,65% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
-  68%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  0%, 58%  { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
+  60%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.3); }
+  64%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.12); }
+  66%,100% { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
 }
 @keyframes dpa-d3 {
-  0%,64%  { border-color: rgba(255,255,255,0.15); transform: scale(1); }
-  67%,70% { border-color: rgba(255,255,255,0.8);  transform: scale(1.3); }
-  73%,100%{ border-color: rgba(255,255,255,0.15); transform: scale(1); }
+  0%, 64%  { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
+  66%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.3); }
+  70%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.12); }
+  93%      { border-color: rgba(255, 255, 255, 0.95); transform: scale(1.12); }
+  96%,100% { border-color: rgba(255, 255, 255, 0.18); transform: scale(1); }
+}
+
+/* Reduced motion: freeze on a finished oak closet with the palette shown. */
+@media (prefers-reduced-motion: reduce) {
+  .design-preview-anim * { animation: none !important; }
+  .dpa__stage { opacity: 1; }
+  .dpa__dim, .dpa__sheen { display: none; }
+  .dpa__door { background-color: #b9854e; }
+  .dpa__shelf, .dpa__rod { opacity: 0; }
+  .dpa__hanger { opacity: 0; }
+  .dpa__leg, .dpa__shadow, .dpa__palette { opacity: 1; }
+  .dpa__dot--1 { border-color: rgba(255, 255, 255, 0.95); }
 }
 /* Category card CTA: small frosted-glass pill with subtle blue aurora.
    This is the original reference design (restored from the pre-refactor
