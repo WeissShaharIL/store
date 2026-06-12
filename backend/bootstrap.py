@@ -23,6 +23,9 @@ DEFAULT_SETTINGS = {
     "about_text": "",
     "default_closet_image": "",
     "trust_items": "",
+    "site_theme": "light",
+    "nav_font_size": "md",
+    "nav_items_json": '[{"id":"catalog","label":"קטלוג","visible":true},{"id":"orders","label":"הזמנות","visible":true},{"id":"messages","label":"הודעות","visible":true}]',
 }
 
 DEFAULT_PALETTE_COLORS = [
