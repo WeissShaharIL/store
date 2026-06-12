@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.29",
-  "released_at": "2026-06-12T09:33:47Z",
-  "notes": "1390340 fix(bugs): image click opens lightbox instead of new tab"
+  "version": "v1.64.30",
+  "released_at": "2026-06-12T10:05:20Z",
+  "notes": "b868550 feat(settings): theme picker, logo manager, nav menu controls"
 }
