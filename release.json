@@ -1,5 +1,5 @@
 ﻿{
-  "version": "v1.64.31",
-  "released_at": "2026-06-12T10:11:03Z",
-  "notes": "805d117 feat(designer): enforce max width for stage add-on, configurable in admin"
+  "version": "v1.64.32",
+  "released_at": "2026-06-12T10:15:10Z",
+  "notes": "d93efb0 fix(designer): hide stage from 3D model when closet exceeds max width"
 }
